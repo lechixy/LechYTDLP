@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page x:Class="LechYTDLP.Views.SettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+      xmlns:ui="using:CommunityToolkit.WinUI"
+      xmlns:local="using:LechYTDLP.Views"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      mc:Ignorable="d">
+
+    <Page.Resources>
+        <!--  These styles can be referenced to create a consistent SettingsPage layout  -->
+        <!--  Spacing between cards  -->
+        <x:Double x:Key="SettingsCardSpacing">4</x:Double>
+
+        <!--  Style (inc. the correct spacing) of a section header  -->
+        <Style x:Key="SettingsSectionHeaderTextBlockStyle"
+               BasedOn="{StaticResource BodyStrongTextBlockStyle}"
+               TargetType="TextBlock">
+            <Style.Setters>
+                <Setter Property="Margin"
+                        Value="1,30,0,6" />
+            </Style.Setters>
+        </Style>
+    </Page.Resources>
+
+    <ScrollViewer>
+        <Grid>
+            <StackPanel MaxWidth="1000"
+                        HorizontalAlignment="Stretch"
+                        Spacing="{StaticResource SettingsCardSpacing}"
+                        Margin="36,40"
+                        Orientation="Vertical">
+
+                <StackPanel.ChildrenTransitions>
+                    <EntranceThemeTransition FromVerticalOffset="50" />
+                    <RepositionThemeTransition IsStaggeringEnabled="False" />
+                </StackPanel.ChildrenTransitions>
+
+                <TextBlock Text="Settings"
+                           Style="{StaticResource TitleLargeTextBlockStyle}" />
+
+                <!--YT-DLP-->
+                <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
+                           Text="YT-DLP" />
+
+                <controls:SettingsExpander Description="How yt-dlp should treat you?"
+                                           Header="Customize YT-DLP"
+                                           HeaderIcon="{ui:FontIcon Glyph=&#xE713;}">
+                    <controls:SettingsExpander.Items>
+                        <controls:SettingsCard Header="YT-DLP Path"
+                                               Description="Path to yt-dlp executable (yt-dlp.exe)">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox PlaceholderText="Path"
+                                         MaxWidth="300"
+                                         Grid.Column="0"
+                                         x:Name="YTDLPPathSetting"
+                                         TextChanged="PathSetting_TextChanged" />
+                                <Button Grid.Column="1"
+                                        Margin="8,0,0,0"
+                                        x:Name="PickYTdlpButton"
+                                        Click="Button_Click">
+                                    <SymbolIcon Symbol="OpenFile" />
+                                </Button>
+                            </Grid>
+                        </controls:SettingsCard>
+                        <controls:SettingsCard Header="FFmpeg Path"
+                                               Description="Path to FFmpeg executable (ffmpeg.exe)">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox PlaceholderText="Path"
+                                         MaxWidth="300"
+                                         x:Name="FFmpegPathSetting"
+                                         TextChanged="PathSetting_TextChanged" />
+                                <Button Grid.Column="1"
+                                        Margin="8,0,0,0"
+                                        x:Name="PickFFmpegButton"
+                                        Click="Button_Click">
+                                    <SymbolIcon Symbol="OpenFile" />
+                                </Button>
+                            </Grid>
+                        </controls:SettingsCard>
+                        <controls:SettingsCard x:Name="ApplicationStatusCheck"
+                                               Description="Check your dependencies is working correctly.">
+                            <controls:SettingsCard.Resources>
+                                <x:Double x:Key="SettingsCardLeftIndention">0</x:Double>
+                            </controls:SettingsCard.Resources>
+
+                            <Button Content="Check Dependencies"
+                                    Style="{StaticResource AccentButtonStyle}"
+                                    x:Name="CheckDependencies"
+                                    Click="CheckDependencies_Click" />
+                        </controls:SettingsCard>
+                    </controls:SettingsExpander.Items>
+                </controls:SettingsExpander>
+
+                <!--Developer Options-->
+                <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
+                           Text="Developer Options" />
+
+                <controls:SettingsCard Description="You can use blob data for testing, fill Desktop\a.json with yt-dlp --dump-json data"
+                                       Header="Use Blob Data"
+                                       x:Name="BlobDataSetting"
+                                       HeaderIcon="{ui:FontIcon Glyph=&#xE8FF;}">
+                    <ToggleSwitch x:Name="BlobDataSettingSwitch"
+                                  Toggled="Switch_Toggled" />
+                </controls:SettingsCard>
+
+                <controls:SettingsCard Description="Write yt-dlp --dump-json data to Desktop\b.json"
+                                       Header="Write Video Info"
+                                       x:Name="WriteVideoInfoSetting"
+                                       HeaderIcon="{ui:FontIcon Glyph=&#xE78C;}">
+                    <ToggleSwitch x:Name="WriteVideoInfoSettingSwitch"
+                                  Toggled="Switch_Toggled" />
+                </controls:SettingsCard>
+
+                <!--About-->
+                <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
+                           Text="About" />
+
+                <controls:SettingsExpander Description="This will change"
+                                           x:Name="AboutExpander"
+                                           Header="Lech YT-DLP"
+                                           HeaderIcon="{ui:BitmapIcon Source=ms-appx:///Assets/StoreLogo.scale-150.png}">
+                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               Text="Version"
+                               x:Name="AboutExpanderContent" />
+                    <controls:SettingsExpander.Items>
+                        <controls:SettingsCard HorizontalContentAlignment="Left"
+                                               ContentAlignment="Left">
+                            <StackPanel Margin="-12,0,0,0"
+                                        Orientation="Vertical">
+                                <HyperlinkButton Content="Check out source code - GitHub"
+                                                 x:Name="GithubLink"
+                                                 NavigateUri="" />
+                                <HyperlinkButton Content="Check out roadmap"
+                                                 x:Name="RoadMapLink"
+                                                 NavigateUri="https://www.notion.so/lechixy/2dc9ce1d06e580d0824fe51030fe51f9?v=2dc9ce1d06e580f38b45000ca867db36&amp;source=copy_link" />
+                            </StackPanel>
+                        </controls:SettingsCard>
+                    </controls:SettingsExpander.Items>
+                </controls:SettingsExpander>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>

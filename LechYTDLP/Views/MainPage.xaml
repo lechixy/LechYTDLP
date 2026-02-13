@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page x:Class="LechYTDLP.Views.MainPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:LechYTDLP.Views"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      mc:Ignorable="d">
+
+    <Page.Resources>
+        <DataTemplate x:Key="ImageTemplate"
+                      x:DataType="x:String">
+            <ItemContainer HorizontalAlignment="Left"
+                           Width="200"
+                           Height="140">
+                <TextBlock Text="{x:Bind}"
+                           TextWrapping="WrapWholeWords" />
+            </ItemContainer>
+        </DataTemplate>
+    </Page.Resources>
+
+    <StackPanel Orientation="Vertical"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Spacing="24">
+
+        <Grid ColumnSpacing="6" HorizontalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="Lech"
+                       Grid.Column="0"
+                       TextWrapping="WrapWholeWords"
+                       Style="{StaticResource TitleLargeTextBlockStyle}"
+                       Foreground="{ThemeResource TextFillColorPrimaryBrush}"
+                        />
+            <TextBlock Text="YT-DLP"
+                       x:Name="YTDLPText"
+                       Grid.Column="1"
+                       TextWrapping="WrapWholeWords"
+                       FontWeight="Black"
+                       Style="{StaticResource TitleLargeTextBlockStyle}"
+                       Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                        />
+        </Grid>
+        <!--<TextBlock Text="You can download any videos you like just type the link below"
+                   FontFamily="Calibri"
+                   FontSize="20"
+                   TextWrapping="WrapWholeWords"
+                   Foreground="{ThemeResource TextFillColorPrimaryBrush}"
+                   TextAlignment="Center" />-->
+
+        <Grid MinWidth="300"
+              ColumnSpacing="8"
+              MaxWidth="500">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBox TextChanged="TextBox_TextChanged"
+                     KeyDown="TextBox_KeyDown"
+                     PlaceholderText="Enter a link"
+                     VerticalAlignment="Stretch"
+                     Grid.Column="0"
+                     x:Name="LinkTextBox" />
+
+            <Button Click="PasteTextButton_Click"
+                    Grid.Column="1"
+                    x:Name="PasteTextButton">
+                <SymbolIcon Symbol="Paste" />
+            </Button>
+
+            <Button Click="DownloadButton_Click"
+                    Grid.Column="2"
+                    HorizontalAlignment="Right"
+                    Style="{StaticResource AccentButtonStyle}"
+                    IsEnabled="False"
+                    x:Name="DownloadButton">
+                <SymbolIcon Symbol="Download" />
+            </Button>
+        </Grid>
+
+        <InfoBar IsOpen="False"
+                 IsIconVisible="True"
+                 IsClosable="False"
+                 Title="Hey"
+                 x:Name="InfoBar"
+                 Message="You found the secret word :)" />
+    </StackPanel>
+</Page>

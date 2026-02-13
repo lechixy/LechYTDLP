@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="LechYTDLP.Components.SelectFormat"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:classes="using:LechYTDLP.Classes"
+             xmlns:local="using:LechYTDLP.Components"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <!--  These styles can be referenced to create a consistent SettingsPage layout  -->
+        <!--  Spacing between cards  -->
+        <x:Double x:Key="SettingsCardSpacing">4</x:Double>
+    </UserControl.Resources>
+
+    <Grid RowSpacing="16"
+          MaxWidth="{Binding ActualWidth, ElementName=VideoInfoGrid}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        
+        <!--Video Info-->
+        <Grid ColumnSpacing="12"
+              x:Name="VideoInfoGrid"
+              Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <!-- Resim -->
+                <ColumnDefinition Width="*" />
+                <!-- Metinler (Kalan yer) -->
+            </Grid.ColumnDefinitions>
+
+            <!-- Resim Alanı: Sabit Boyutlandırma -->
+            <Border CornerRadius="{StaticResource ControlCornerRadius}"
+                    x:Name="ThumbnailImageBorder"
+                    Height="100"
+                    Width="177"
+                    MaxWidth="180"
+                    Loaded="ThumbnailImageBorder_Loaded"
+                    MinWidth="170">
+                <Border.Background>
+                    <LinearGradientBrush x:Name="ShimmerBrush"
+                                         StartPoint="0,0"
+                                         EndPoint="1,0"
+                                         MappingMode="RelativeToBoundingBox">
+                        <GradientStop Color="#22FFFFFF"
+                                      Offset="0" />
+                        <GradientStop Color="#11FFFFFF"
+                                      Offset="0.5" />
+                        <GradientStop Color="#22FFFFFF"
+                                      Offset="1" />
+                    </LinearGradientBrush>
+                </Border.Background>
+
+                <Image x:Name="ThumbnailImage"
+                       Height="100"
+                       Width="177"
+                       Stretch="Uniform"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       MaxWidth="180"
+                       ImageOpened="ThumbnailImage_ImageOpened"
+                       MinWidth="100" />
+            </Border>
+
+            <!-- Metin Alanı -->
+            <Grid Grid.Column="1"
+                  RowSpacing="4"
+                  VerticalAlignment="Top">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- Title -->
+                <TextBlock Grid.Row="0"
+                           x:Name="VideoTitle"
+                           Style="{ThemeResource SubtitleTextBlockStyle}"
+                           TextTrimming="CharacterEllipsis"
+                           MaxLines="2"
+                           TextWrapping="Wrap" />
+
+                <!-- Uploader -->
+                <TextBlock Grid.Row="1"
+                           x:Name="VideoUploader"
+                           Style="{ThemeResource CaptionTextBlockStyle}"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           TextTrimming="CharacterEllipsis"
+                           MaxLines="1"
+                           TextWrapping="NoWrap" />
+                
+                <!-- Uploader -->
+                <TextBlock Grid.Row="2"
+                           x:Name="VideoAltInfo"
+                           Style="{ThemeResource CaptionTextBlockStyle}"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           MaxLines="2"
+                           TextWrapping="Wrap" />
+            </Grid>
+        </Grid>
+
+        <!--Video-->
+        <Grid ColumnSpacing="12"
+              Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <ComboBox Grid.Column="0"
+                      x:Name="ResolutionSelect"
+                      Header="Resolution"
+                      DisplayMemberPath="Text"
+                      PlaceholderText="Select"
+                      SelectionChanged="Format_SelectionChanged" />
+
+            <ComboBox Grid.Column="1"
+                      x:Name="CodecSelect"
+                      Header="Codec"
+                      DisplayMemberPath="Text"
+                      Opacity="0"
+                      PlaceholderText="Select"
+                      SelectionChanged="Format_SelectionChanged" />
+
+            <TextBlock Grid.Column="2"
+                       x:Name="VideoInfo"
+                       VerticalAlignment="Bottom"
+                       TextWrapping="Wrap"
+                       Style="{ThemeResource CaptionTextBlockStyle}"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+        </Grid>
+        <!--Audio-->
+        <Grid ColumnSpacing="12"
+              Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <ComboBox Grid.Column="0"
+                      x:Name="AudioSelect"
+                      Header="Audio"
+                      DisplayMemberPath="Text"
+                      PlaceholderText="Select"
+                      SelectionChanged="Format_SelectionChanged" />
+
+            <TextBlock Grid.Column="1"
+                       x:Name="AudioInfo"
+                       VerticalAlignment="Bottom"
+                       TextWrapping="Wrap"
+                       Style="{ThemeResource CaptionTextBlockStyle}"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+        </Grid>
+    </Grid>
+</UserControl>

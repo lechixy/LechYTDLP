@@ -1,0 +1,82 @@
+<UserControl x:Class="LechYTDLP.Components.MediaItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:LechYTDLP.Components"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+
+    <Button x:Name="QueueMediaItem"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            CornerRadius="{StaticResource OverlayCornerRadius}"
+            Click="QueueMediaItem_Click"
+            VerticalAlignment="Stretch"
+            HorizontalAlignment="Stretch"
+            HorizontalContentAlignment="Left"
+            >
+
+        <Grid ColumnSpacing="12"
+              Padding="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <!-- Resim -->
+                <ColumnDefinition Width="*" />
+                <!-- Metinler (Kalan yer) -->
+            </Grid.ColumnDefinitions>
+
+            <!-- Resim Alanı: Sabit Boyutlandırma -->
+            <Border CornerRadius="{StaticResource ControlCornerRadius}"
+                    Height="100"
+                    Width="177"
+                    MaxWidth="180"
+                    MinWidth="170"
+                    Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}">
+                <Image x:Name="QueueMediaItemThumbnail"
+                       Height="100"
+                       Width="177"
+                       Stretch="UniformToFill"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       MaxWidth="180"
+                       MinWidth="100" />
+            </Border>
+
+            <!-- Metin Alanı -->
+            <Grid Grid.Column="1"
+                  RowSpacing="4"
+                  VerticalAlignment="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- Title: TextTrimming EKLENDİ -->
+                <TextBlock Grid.Row="0"
+                           x:Name="QueueMediaItemTitle"
+                           Style="{ThemeResource SubtitleTextBlockStyle}"
+                           TextTrimming="CharacterEllipsis"
+                           MaxLines="1"
+                           TextWrapping="NoWrap" />
+
+                <!-- Uploader: TextTrimming EKLENDİ -->
+                <TextBlock Grid.Row="1"
+                           x:Name="QueueMediaItemUploaderAndSavingTo"
+                           Style="{ThemeResource CaptionTextBlockStyle}"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           TextTrimming="CharacterEllipsis"
+                           MaxLines="1"
+                           TextWrapping="NoWrap" />
+
+                <!-- Status -->
+                <TextBlock Grid.Row="2"
+                           x:Name="QueueMediaItemStatus"
+                           Style="{ThemeResource CaptionTextBlockStyle}"
+                           Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                           TextTrimming="CharacterEllipsis"
+                           MaxLines="1"
+                           TextWrapping="NoWrap" />
+            </Grid>
+        </Grid>
+    </Button>
+</UserControl>

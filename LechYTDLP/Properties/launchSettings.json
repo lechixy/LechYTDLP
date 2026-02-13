@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "LechYTDLP (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "LechYTDLP (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
