@@ -61,7 +61,6 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <TextBox TextChanged="TextBox_TextChanged"
-                     KeyDown="TextBox_KeyDown"
                      PlaceholderText="Enter a link"
                      VerticalAlignment="Stretch"
                      Grid.Column="0"

@@ -296,16 +296,20 @@ namespace LechYTDLP.Components
             }
         }
 
-        private bool CheckIsReadyToSave(bool DownloadFormat = false)
+        private bool CheckIsReadyToSave(bool downloadFormat = false)
         {
+            var video = ResolutionSelect.SelectedItem as ComboOption;
+            var audio = AudioSelect.SelectedItem as ComboOption;
+            var codecSelected = CodecSelect.SelectedItem != null;
+
             bool videoValid =
-                ResolutionSelect.SelectedItem != null &&
-                !ResolutionSelect.SelectedItem.ToString()!.Contains("Doesn't include") &&
-                CodecSelect.SelectedItem != null;
+                video?.Text is string videoText &&
+                !videoText.Contains("Doesn't include", StringComparison.OrdinalIgnoreCase) &&
+                codecSelected;
 
             bool audioValid =
-                AudioSelect.SelectedItem != null &&
-                !AudioSelect.SelectedItem.ToString()!.Contains("Doesn't include");
+                audio?.Text is string audioText &&
+                !audioText.Contains("Doesn't include", StringComparison.OrdinalIgnoreCase);
 
             bool isReady = videoValid || audioValid;
 

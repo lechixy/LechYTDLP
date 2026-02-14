@@ -31,65 +31,87 @@ namespace LechYTDLP.Views;
 public sealed partial class MainPage : Page
 {
 
-    public string textboxText = "https://www.instagram.com/p/DTtECW1iPct/";
+    private string _textboxText = "https://www.instagram.com/p/DTtECW1iPct/";
+    public string Text => _textboxText;
+
+    public string SetText(string text) => _textboxText = text;
 
     public ObservableCollection<string> QueueCollection { get; } = [];
-
-    private bool _isSearching = false;
 
     public MainPage()
     {
         InitializeComponent();
 
-        // Text initialization
-        LinkTextBox.Text = textboxText;
-        if (textboxText.Length == 0)
+        if (App.DownloadController.IsBusy)
+        {
             DownloadButton.IsEnabled = false;
+            LinkTextBox.Text = App.DownloadController.CurrentUrl;
+            LinkTextBox.IsEnabled = false;
+            PasteTextButton.IsEnabled = false;
+        }
         else
-            DownloadButton.IsEnabled = true;
+        {
+            LinkTextBox.Text = Text;
 
-        UpdateTextDependingOnLink();
+            if (Text.Length == 0)
+                DownloadButton.IsEnabled = false;
+            else
+                DownloadButton.IsEnabled = true;
+        }
 
-        DownloadsService DownloadsService = App.DownloadService;
+        UpdateTextDependingOnLink(Text);
+
         Debug.WriteLine("Rendered one time: MainPage");
-        App.ApiServer.DownloadRequested += DownloadRequested;
 
-        //DownloadsService.DownloadProgressChanged += OnProgressChanged;
-        //DownloadsService.DownloadBusyChanged += OnBusyChanged;
+        App.DownloadController.BusyChanged += OnBusyChanged;
+        // App.DownloadController.VideoInfoReady += OnVideoInfoReady;
+        App.DownloadController.ErrorOccured += OnError;
     }
 
-    private void DownloadRequested(RequestData data)
+    private void OnBusyChanged(bool isBusy, string Url)
     {
-        Debug.WriteLine($"{data.ExtensionBrowser} extension added media: {data.Url}");
         DispatcherQueue.TryEnqueue(() =>
         {
-            LogService.Add($"{data.ExtensionBrowser} extension added media: {data.Url}", LogTag.ApiServer);
-            // Show info bar about browser extension added
-            App.InfoBarService.Show(new InfoBarMessage($"{data.ExtensionBrowser} extension added media", "", InfoBarSeverity.Success, 5000, false));
+            DownloadButton.IsEnabled = !isBusy;
+            LinkTextBox.IsEnabled = !isBusy;
+            LinkTextBox.Text = Url;
+            PasteTextButton.IsEnabled = !isBusy;
 
-            textboxText = data.Url;
-            LinkTextBox.Text = data.Url;
-            Download();
+            if (isBusy)
+            {
+                DownloadButton.Content = new ProgressRing
+                {
+                    IsActive = true,
+                    Width = 20,
+                    Height = 20,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    HorizontalAlignment = HorizontalAlignment.Center
+                };
+
+                var RequestData = App.DownloadController.RequestData;
+                if (RequestData != null)
+                {
+                    App.InfoBarService.Show(new InfoBarMessage($"{RequestData.ExtensionBrowser} extension added media", "", InfoBarSeverity.Success, 5000, false));
+                }
+            }
+            else
+            {
+                DownloadButton.Content = new SymbolIcon(Symbol.Download);
+            }
         });
     }
 
-    private void Download()
+    private void OnError(string errorMessage)
     {
-        if (textboxText.Length == 0) return;
-
-        // Clear information stuff
-        InfoBar.IsOpen = false;
-        DownloadButton.IsEnabled = false;
-        DownloadButton.Content = new ProgressRing
+        DispatcherQueue.TryEnqueue(() =>
         {
-            IsActive = true,
-            Width = 20,
-            Height = 20,
-            VerticalAlignment = VerticalAlignment.Center,
-            HorizontalAlignment = HorizontalAlignment.Center
-        };
+            App.InfoBarService.Show(new InfoBarMessage("Error", errorMessage, InfoBarSeverity.Error, 5000, true));
+        });
+    }
 
-        ShowFormatsDialog();
+    private async void Download()
+    {
+        await App.DownloadController.SearchAsync(Text);
     }
 
     private void DownloadButton_Click(object sender, RoutedEventArgs e)
@@ -97,42 +119,30 @@ public sealed partial class MainPage : Page
         Download();
     }
 
-    enum DownloadButtonStatus
-    {
-        Download,
-        Reset
-    }
+    //enum DownloadButtonStatus
+    //{
+    //    Download,
+    //    Reset
+    //}
 
-    private async void SetDownloadButtonStatus(DownloadButtonStatus status)
-    {
-        if (status == DownloadButtonStatus.Download)
-        {
-            _isSearching = true;
-        }
-        else if (status == DownloadButtonStatus.Reset)
-        {
-            DownloadButton.Content = new SymbolIcon(Symbol.Download);
-            _isSearching = false;
-            DownloadButton.IsEnabled = true;
-        }
-    }
+    //private async void SetDownloadButtonStatus(DownloadButtonStatus status)
+    //{
+    //    if (status == DownloadButtonStatus.Download)
+    //    {
+    //        _isSearching = true;
+    //    }
+    //    else if (status == DownloadButtonStatus.Reset)
+    //    {
+    //        DownloadButton.Content = new SymbolIcon(Symbol.Download);
+    //        _isSearching = false;
+    //        DownloadButton.IsEnabled = true;
+    //    }
+    //}
 
-    private async void ShowFormatsDialog()
+    private async void ShowFormatsDialog(string Url, VideoInfo videoInfo)
     {
         try
         {
-            string downloadUrl = textboxText;
-            Debug.WriteLine("Show formats dialog download url is" + downloadUrl);
-
-            SetDownloadButtonStatus(DownloadButtonStatus.Download);
-
-            YTDLP ytdlp = new();
-            var videoInfo = await ytdlp.GetVideoInfoAsync(downloadUrl);
-
-            SetDownloadButtonStatus(DownloadButtonStatus.Reset);
-            if (videoInfo == null) return;
-
-
             var content = new SelectFormat();
             content.SetData(videoInfo);
 
@@ -158,7 +168,7 @@ public sealed partial class MainPage : Page
 
             if (result == ContentDialogResult.Primary)
             {
-                App.DownloadService.Enqueue(downloadUrl, videoInfo, content.SelectedFormat);
+                App.DownloadService.Enqueue(Url, videoInfo, content.SelectedFormat);
 
                 Debug.WriteLine("Download added to queue.");
 
@@ -182,22 +192,21 @@ public sealed partial class MainPage : Page
         catch (Exception ex)
         {
             Debug.WriteLine(ex);
-            SetDownloadButtonStatus(DownloadButtonStatus.Reset);
             KnownErrors.Check(ex);
         }
     }
 
-    private void UpdateTextDependingOnLink()
+    private void UpdateTextDependingOnLink(string link)
     {
-        if (textboxText.Contains("youtube", StringComparison.OrdinalIgnoreCase))
+        if (link.Contains("youtube", StringComparison.OrdinalIgnoreCase))
         {
             YTDLPText.Foreground = Util.Util.GetAppGradient("youtube");
         }
-        else if (textboxText.Contains("tiktok", StringComparison.OrdinalIgnoreCase))
+        else if (link.Contains("tiktok", StringComparison.OrdinalIgnoreCase))
         {
             YTDLPText.Foreground = Util.Util.GetAppGradient("tiktok");
         }
-        else if (textboxText.Contains("instagram", StringComparison.OrdinalIgnoreCase))
+        else if (link.Contains("instagram", StringComparison.OrdinalIgnoreCase))
         {
             YTDLPText.Foreground = Util.Util.GetAppGradient("instagram");
         }
@@ -209,28 +218,25 @@ public sealed partial class MainPage : Page
         if (sender is TextBox textBox)
         {
             Debug.WriteLine("TextBox text changed: " + textBox.Text);
-            textboxText = textBox.Text;
+            SetText(textBox.Text);
+            UpdateTextDependingOnLink(textBox.Text);
 
-            UpdateTextDependingOnLink();
+            if (App.DownloadController.IsBusy) return;
 
-            if (_isSearching) return;
-
-            if (textboxText.Length == 0)
+            if (Text.Length == 0)
                 DownloadButton.IsEnabled = false;
             else
                 DownloadButton.IsEnabled = true;
         }
     }
 
-    private void TextBox_KeyDown(object sender, KeyRoutedEventArgs e)
-    {
-        if (e.Key == Windows.System.VirtualKey.Enter)
-        {
-            Debug.WriteLine("Enter pressed!");
-
-            Download();
-        }
-    }
+    //private void TextBox_KeyDown(object sender, KeyRoutedEventArgs e)
+    //{
+    //    if (e.Key == VirtualKey.Enter)
+    //    {
+    //        Download();
+    //    }
+    //}
 
     private async void PasteTextButton_Click(object sender, RoutedEventArgs e)
     {
@@ -245,6 +251,8 @@ public sealed partial class MainPage : Page
     protected override void OnNavigatedFrom(NavigationEventArgs e)
     {
         base.OnNavigatedFrom(e);
-        App.ApiServer.DownloadRequested -= DownloadRequested;
+        App.DownloadController.BusyChanged -= OnBusyChanged;
+        // App.DownloadController.VideoInfoReady -= OnVideoInfoReady;
+        App.DownloadController.ErrorOccured -= OnError;
     }
 }

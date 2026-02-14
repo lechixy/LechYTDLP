@@ -1,14 +1,15 @@
-﻿using LechYTDLP.Views;
+﻿using LechYTDLP.Services;
+using LechYTDLP.Views;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using System.Diagnostics;
-using WinRT.Interop;
-using LechYTDLP.Services;
-using System.Collections;
 using System;
+using System.Collections;
+using System.Diagnostics;
 using System.Linq;
+using Windows.ApplicationModel.Activation;
+using WinRT.Interop;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
