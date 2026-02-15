@@ -9,8 +9,29 @@ using Windows.UI;
 
 namespace LechYTDLP.Util
 {
-    public class Util
+    public class Main
     {
+        public static string GetDynamicSearchBoxPlaceholder()
+        {
+            string[] placeholders = [
+                "Paste video link here...",
+                "Try me Beyonce... ✨",
+                "I want to download that cute cat video I saw yesterday...",
+                "Share me a playlist link...",
+                "I bet you have some cool videos to download...",
+                "Don't be shy, paste a link...",
+                "Your video link goes here...",
+                "Got a video in mind? Paste it here...",
+                "Ready to download? Paste the link...",
+                "I can download videos from over 1000 sites, try me with any link...",
+                "Looking for something?..",
+            ];
+
+            Random rnd = new();
+            int index = rnd.Next(placeholders.Length);
+
+            return placeholders[index];
+        }
         public static LinearGradientBrush GetAppGradient(string App)
         {
             if (App.Contains("instagram", StringComparison.OrdinalIgnoreCase))

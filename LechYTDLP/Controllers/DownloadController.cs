@@ -3,6 +3,7 @@ using Microsoft.Windows.AppNotifications;
 using Microsoft.Windows.AppNotifications.Builder;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -24,17 +25,22 @@ namespace LechYTDLP.Controllers
         public string CurrentUrl => _currentUrl;
         public RequestData? RequestData => _requestData;
 
-        public async Task SearchAsync(string url, RequestData? reqData = null)
+        public async Task SearchAsync(string url, VideoInfo? videoInfo = null)
         {
             if (_isBusy) return;
 
-            _requestData = reqData;
             SetBusy(true, url);
 
             try
             {
-                var ytdlp = new YTDLP();
-                var info = await ytdlp.GetVideoInfoAsync(url);
+                VideoInfo? info = null;
+
+                if (videoInfo == null)
+                {
+                    var ytdlp = new YTDLP();
+                    info = await ytdlp.GetVideoInfoAsync(url);
+                }
+                else info = videoInfo;
 
                 if (info != null)
                 {

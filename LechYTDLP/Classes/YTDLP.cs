@@ -1,5 +1,6 @@
 ﻿using LechYTDLP.Components;
 using LechYTDLP.Services;
+using LechYTDLP.Util;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -197,10 +198,11 @@ namespace LechYTDLP.Classes
         public string? OutputPath { get; set; }
         public string? FFmpegLocation { get; set; }
         public string? JavaScriptRuntime { get; set; }
-
         public bool DumpJson { get; set; } = false;
+
         public bool EmbedMetadata { get; set; } = false;
         public bool EmbedThumbnail { get; set; } = false;
+        public bool EmbedSubs { get; set; } = false;
 
         public string BuildArgs()
         {
@@ -231,7 +233,7 @@ namespace LechYTDLP.Classes
             if (!string.IsNullOrEmpty(CookiesPath))
                 args.Add($"--cookies \"{CookiesPath}\"");
             if (!string.IsNullOrEmpty(JavaScriptRuntime))
-                args.Add($"--js-runtime {JavaScriptRuntime}");
+                args.Add($"--js-runtimes {JavaScriptRuntime}");
 
             if (OutputPath != null)
                 args.Add($"-o \"{OutputPath}\"");
@@ -241,6 +243,9 @@ namespace LechYTDLP.Classes
 
             if (EmbedThumbnail)
                 args.Add("--embed-thumbnail");
+
+            if (EmbedSubs)
+                args.Add("--embed-subs");
 
             return string.Join(" ", args);
         }
@@ -265,12 +270,10 @@ namespace LechYTDLP.Classes
                 return await tcs.Task;
             }
 
-            //try
-            //{
             var mustHaveArgs = new YTDLPDownloadArgs
             {
-                CookiesPath = "\"C:\\PathPrograms\\ytcookies.txt\"",
-                JavaScriptRuntime = "bun",
+                CookiesPath = SettingsService.CookiesfilePath,
+                JavaScriptRuntime = string.IsNullOrEmpty(SettingsService.JavaScriptRuntime) ? "" : SettingsService.JavaScriptRuntime,
             }.BuildArgs();
 
             var ytdlpArgs = args.BuildArgs();
@@ -315,7 +318,7 @@ namespace LechYTDLP.Classes
             {
                 if (!string.IsNullOrEmpty(e.Data))
                 {
-                    tcs.TrySetException(new Exception(e.Data));
+                    KnownErrors.Check(new Exception(e.Data));
                     ErrorReceived?.Invoke(e.Data);
                 }
             };
@@ -323,26 +326,27 @@ namespace LechYTDLP.Classes
             _process.Exited += (s, e) =>
             {
                 var p = (Process)s!;
-                if (p.ExitCode != 0)
-                    tcs.TrySetResult(p.ExitCode);
-                else
-                    tcs.TrySetResult(p.ExitCode);
+
+                // if (p.ExitCode != 0)
+
+                tcs.TrySetResult(p.ExitCode);
 
                 ProcessExited?.Invoke(p.ExitCode);
                 p.Dispose();
                 _process = null;
             };
 
-
-            _process.Start();
-            _process.BeginOutputReadLine();
-            _process.BeginErrorReadLine();
-            //}
-            //catch
-            //{
-            //    _process = null;
-            //    throw;
-            //}
+            try
+            {
+                _process.Start();
+                _process.BeginOutputReadLine();
+                _process.BeginErrorReadLine();
+            }
+            catch (Exception ex)
+            {
+                KnownErrors.Check(ex);
+                tcs.TrySetException(ex);
+            }
 
             return await tcs.Task;
         }
@@ -437,6 +441,7 @@ namespace LechYTDLP.Classes
                 catch (Exception ex)
                 {
                     OutputReceived -= OnOutput;
+                    KnownErrors.Check(ex);
                     tcs.TrySetException(ex);
                 }
             });
@@ -485,6 +490,7 @@ namespace LechYTDLP.Classes
                 catch (Exception ex)
                 {
                     OutputReceived -= OnOutput;
+                    KnownErrors.Check(ex);
                     tcs.TrySetException(ex);
                 }
             });

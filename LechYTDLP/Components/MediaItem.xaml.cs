@@ -1,4 +1,5 @@
 ﻿using LechYTDLP.Services;
+using LechYTDLP.Util;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -59,7 +60,7 @@ namespace LechYTDLP.Components
             }
 
             string uploader = item.Info.Uploader ?? "Unknown Uploader";
-            string saveStatus = item.State == DownloadState.Completed
+            string saveStatus = item.State == DownloadState.Completed || item.State == DownloadState.Failed
                 ? $"Saved to {item.FilePath}"
                 : $"Saving to {SettingsService.DownloadPath}";
 
@@ -71,6 +72,10 @@ namespace LechYTDLP.Components
             if (item.State == DownloadState.Paused)
             {
                 QueueMediaItemStatus.Foreground = Application.Current.Resources["SystemFillColorCautionBrush"] as Brush;
+            }
+            else if (item.State == DownloadState.Failed)
+            {
+                QueueMediaItemStatus.Foreground = Application.Current.Resources["SystemFillColorCriticalBrush"] as Brush;
             }
             else
             {
@@ -92,16 +97,9 @@ namespace LechYTDLP.Components
                         UseShellExecute = true
                     });
                 }
-                catch (Exception ex)
+                catch (FileNotFoundException)
                 {
-                    Console.WriteLine($"Dosya açılamadı: {ex.Message}");
-                    App.InfoBarService.Show(new InfoBarMessage(
-                        "File cannot be opened",
-                        $"The file at {path} cannot be opened. It may have been moved or deleted.",
-                        InfoBarSeverity.Error,
-                        5000,
-                        false
-                    ));
+                    KnownErrors.ShowGenericError(KnownErrors.GenericError.NoFileOrDirectory);
                 }
             }
         }

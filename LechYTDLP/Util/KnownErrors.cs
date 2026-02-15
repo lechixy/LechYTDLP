@@ -2,6 +2,7 @@
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,25 @@ namespace LechYTDLP.Util
 {
     public class KnownErrors
     {
+        public enum GenericError
+        {
+            NoFileOrDirectory,
+        }
+
+        public static void ShowGenericError(GenericError error)
+        {
+            if (error == GenericError.NoFileOrDirectory)
+            {
+                Console.WriteLine($"File cannot be opened.");
+                App.InfoBarService.Show(new InfoBarMessage(
+                    "File cannot be opened",
+                    $"Check the file, it may have been moved or deleted.",
+                    InfoBarSeverity.Error,
+                    5000,
+                    false
+                ));
+            }
+        }
         public static void Check(Exception ex)
         {
             // There is no yt-dlp executable.

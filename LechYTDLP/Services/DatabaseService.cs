@@ -41,6 +41,7 @@ namespace LechYTDLP.Services
                 @"
                 CREATE TABLE IF NOT EXISTS Downloads (
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    GuidId TEXT NOT NULL,
                     Url TEXT NOT NULL,
                     InfoJson TEXT NOT NULL,
                     State INTEGER NOT NULL,
@@ -71,11 +72,12 @@ namespace LechYTDLP.Services
                 command.CommandText =
                 @"
                 INSERT INTO Downloads
-                (Url, InfoJson, State, Progress, SelectedFormatJson, FilePath, CreatedAt)
+                (GuidId, Url, InfoJson, State, Progress, SelectedFormatJson, FilePath, CreatedAt)
                 VALUES
-                ($url, $info, $state, $progress, $format, $filePath, $createdAt);
+                ($guidid, $url, $info, $state, $progress, $format, $filePath, $createdAt);
             ";
 
+                command.Parameters.AddWithValue("$guidid", item.Id.ToString());
                 command.Parameters.AddWithValue("$url", item.Url);
                 command.Parameters.AddWithValue("$info", JsonSerializer.Serialize(item.Info));
                 command.Parameters.AddWithValue("$state", (int)item.State);
@@ -104,20 +106,22 @@ namespace LechYTDLP.Services
 
                 var command = connection.CreateCommand();
                 command.CommandText =
-                    "SELECT Url, InfoJson, State, Progress, SelectedFormatJson, FilePath FROM Downloads ORDER BY Id DESC;";
+                    "SELECT Id, GuidId, Url, InfoJson, State, Progress, SelectedFormatJson, FilePath FROM Downloads ORDER BY Id ASC;";
 
                 using var reader = await command.ExecuteReaderAsync();
 
                 while (await reader.ReadAsync())
                 {
+                    // Id is at index 0, but we don't need it since we have GuidId
                     list.Add(new DownloadItem
                     {
-                        Url = reader.GetString(0),
-                        Info = JsonSerializer.Deserialize<VideoInfo>(reader.GetString(1))!,
-                        State = (DownloadState)reader.GetInt32(2),
-                        Progress = reader.GetInt32(3),
-                        SelectedFormat = JsonSerializer.Deserialize<SelectedFormat>(reader.GetString(4))!,
-                        FilePath = reader.GetString(5)
+                        Id = Guid.Parse(reader.GetString(1)),
+                        Url = reader.GetString(2),
+                        Info = JsonSerializer.Deserialize<VideoInfo>(reader.GetString(3))!,
+                        State = (DownloadState)reader.GetInt32(4),
+                        Progress = reader.GetInt32(5),
+                        SelectedFormat = JsonSerializer.Deserialize<SelectedFormat>(reader.GetString(6))!,
+                        FilePath = reader.GetString(7)
                     });
                 }
             }
@@ -129,7 +133,7 @@ namespace LechYTDLP.Services
             return list;
         }
 
-        public async Task DeleteByUrlAsync(string url)
+        public async Task DeleteByGuidIdAsync(string GuidId)
         {
             await _semaphore.WaitAsync();
             try
@@ -138,8 +142,8 @@ namespace LechYTDLP.Services
                 await connection.OpenAsync();
 
                 var command = connection.CreateCommand();
-                command.CommandText = "DELETE FROM Downloads WHERE Url = $url;";
-                command.Parameters.AddWithValue("$url", url);
+                command.CommandText = "DELETE FROM Downloads WHERE GuidId = $guidid;";
+                command.Parameters.AddWithValue("$guidid", GuidId);
 
                 await command.ExecuteNonQueryAsync();
             }

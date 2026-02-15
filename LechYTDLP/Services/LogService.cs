@@ -15,6 +15,9 @@ namespace LechYTDLP.Services
 
     public enum LogTag
     {
+        // ofc i had to add this one <3
+        Lechixy,
+        // Tags
         Normal,
         LechYTDLP,
         Warning,

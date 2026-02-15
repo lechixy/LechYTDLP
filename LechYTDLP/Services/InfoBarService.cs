@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
@@ -24,16 +25,29 @@ namespace LechYTDLP.Services
         private InfoBar? _infoBar;
         private bool _isShowing;
         private CancellationTokenSource? _cts;
+        private DispatcherQueue? _dispatcher;
 
         public void Register(InfoBar infoBar)
         {
             _infoBar = infoBar;
+            _dispatcher = infoBar.DispatcherQueue;
         }
 
         public void Show(InfoBarMessage msg)
         {
             _queue.Enqueue(msg);
-            TryShowNext();
+            ProcessQueue();
+        }
+
+        private void ProcessQueue()
+        {
+            if (_dispatcher == null)
+                return;
+
+            _dispatcher.TryEnqueue(() =>
+            {
+                TryShowNext();
+            });
         }
 
         private async void TryShowNext()
@@ -50,7 +64,12 @@ namespace LechYTDLP.Services
             _infoBar.Message = msg.Message;
             _infoBar.Severity = msg.Severity;
 
-            // Süresiz mesajlar ZORUNLU cancellable
+            // Making background more transparent for success messages to make it less intrusive
+            //if (msg.Severity == InfoBarSeverity.Success)
+            //{
+            //    _infoBar.Background = blabla
+            //}
+
             _infoBar.IsClosable = msg.IsCancelable || msg.DurationMs <= 0;
 
             _infoBar.Opacity = 0;
@@ -60,7 +79,6 @@ namespace LechYTDLP.Services
 
             _infoBar.Closed += OnClosed;
 
-            // ⛔ Süresiz ise burada dur
             if (msg.DurationMs <= 0)
                 return;
 
@@ -72,7 +90,6 @@ namespace LechYTDLP.Services
 
             CloseInfoBar();
         }
-
 
         private void OnClosed(InfoBar sender, InfoBarClosedEventArgs args)
         {
@@ -94,11 +111,14 @@ namespace LechYTDLP.Services
                 _infoBar.IsOpen = false;
 
             _isShowing = false;
-            TryShowNext();
+            ProcessQueue();
         }
 
         private void AnimateOpacity(double from, double to)
         {
+            if (_infoBar == null)
+                return;
+
             var animation = new DoubleAnimation
             {
                 From = from,

@@ -22,7 +22,10 @@
 
             <ListView Grid.Row="0"
                       Height="400"
-                      x:Name="LogListView" SelectionMode="None">
+                      Padding="12"
+                      x:Name="LogListView" SelectionMode="None"
+                      Background="{StaticResource SmokeFillColorDefaultBrush}"
+                      CornerRadius="{StaticResource OverlayCornerRadius}">
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="log:LogItem">
                         <Grid>
@@ -35,6 +38,7 @@
                                        TextWrapping="Wrap"
                                        FontFamily="Consolas"
                                        FontSize="14"
+                                       IsTextSelectionEnabled="True"
                                        Foreground="{x:Bind Tag, Converter={StaticResource LogTagToBrushConverter}}" />
                         </Grid>
                     </DataTemplate>

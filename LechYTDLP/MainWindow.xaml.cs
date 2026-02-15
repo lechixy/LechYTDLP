@@ -45,7 +45,6 @@ namespace LechYTDLP
             App.NavigationService.Initialize(AppFrame, NavView);
             // App.NavigationService.Navigate<MainPage>();
 
-            LogService.Add("The logs will be appear here, mate <3");
             LogService.BadgeChanged += UpdateLogBadge;
             DownloadsService.OnBadgeChanged += UpdateLogBadge;
         }

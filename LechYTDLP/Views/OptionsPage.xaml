@@ -4,10 +4,12 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:local="using:LechYTDLP.Views"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+      xmlns:ui="using:CommunityToolkit.WinUI"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       mc:Ignorable="d">
 
-    <StackPanel Orientation="Vertical"
+    <!--<StackPanel Orientation="Vertical"
                 Margin="36,40,36,0">
 
         <TextBlock Text="Options"
@@ -39,5 +41,104 @@
                          TextChanged="SaveToTextBox_TextChanged" />
             </Grid>
         </Grid>
-    </StackPanel>
+    </StackPanel>-->
+
+    <Page.Resources>
+        <!--  These styles can be referenced to create a consistent SettingsPage layout  -->
+        <!--  Spacing between cards  -->
+        <x:Double x:Key="SettingsCardSpacing">4</x:Double>
+
+        <!--  Style (inc. the correct spacing) of a section header  -->
+        <Style x:Key="SettingsSectionHeaderTextBlockStyle"
+               BasedOn="{StaticResource BodyStrongTextBlockStyle}"
+               TargetType="TextBlock">
+            <Style.Setters>
+                <Setter Property="Margin"
+                        Value="1,30,0,6" />
+            </Style.Setters>
+        </Style>
+    </Page.Resources>
+
+    <ScrollViewer>
+        <Grid>
+            <StackPanel MaxWidth="1000"
+                        HorizontalAlignment="Stretch"
+                        Spacing="{StaticResource SettingsCardSpacing}"
+                        Margin="36,40"
+                        Orientation="Vertical">
+
+                <StackPanel.ChildrenTransitions>
+                    <EntranceThemeTransition FromVerticalOffset="50" />
+                    <RepositionThemeTransition IsStaggeringEnabled="False" />
+                </StackPanel.ChildrenTransitions>
+
+                <TextBlock Text="Options"
+                           Style="{StaticResource TitleLargeTextBlockStyle}" />
+
+                <!--File-->
+                <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
+                           Text="File" />
+
+                <controls:SettingsCard x:Name="FileNameSettingsCard"
+                                       Header="Filename template"
+                                       HeaderIcon="{ui:FontIcon Glyph=&#xE8AC;}">
+                    <controls:SettingsCard.Description>
+                        <HyperlinkButton x:Name="FileNameHyperLink"
+                                         Content="YT-DLP output template examples" />
+                    </controls:SettingsCard.Description>
+                    <TextBox x:Name="FileNameTextBox"
+                             TextChanged="TextChanged"
+                             PlaceholderText="FilenameTemplate" />
+                </controls:SettingsCard>
+
+                <controls:SettingsCard x:Name="SaveToSettingsCard"
+                                       Description="Which directory should your downloaded media save"
+                                       Header="Save directory"
+                                       HeaderIcon="{ui:FontIcon Glyph=&#xE8B7;}">
+                    <TextBox x:Name="SaveToTextBox"
+                             PlaceholderText="Downloads"
+                             TextChanged="TextChanged" />
+                </controls:SettingsCard>
+
+                <controls:SettingsCard Description="Embed thumbnail in the video as cover art"
+                                       Header="Embed thumbnail"
+                                       x:Name="EmbedThumbnailSetting"
+                                       HeaderIcon="{ui:FontIcon Glyph=&#xE8B9;}">
+                    <ToggleSwitch x:Name="EmbedThumbnailSettingSwitch"
+                                  Toggled="SwitchToggled" />
+                </controls:SettingsCard>
+
+                <controls:SettingsCard Description="Embed subtitles in the video (only for mp4, webm and mkv videos)"
+                                       Header="Embed subs"
+                                       x:Name="EmbedSubsSetting"
+                                       HeaderIcon="{ui:FontIcon Glyph=&#xE7F0;}">
+                    <ToggleSwitch x:Name="EmbedSubsSettingSwitch"
+                                  Toggled="SwitchToggled" />
+                </controls:SettingsCard>
+
+                <!--Account-->
+                <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
+                           Text="Account" />
+                <!--<controls:HeaderedContentControl Header="Account" Margin="0,0,0,4">
+                    <TextBlock FontSize="12"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               Text="Sometimes requests need to be sent with cookie (to verify you are not a bot), this sections covers it."
+                               TextWrapping="Wrap" />
+                </controls:HeaderedContentControl>-->
+
+                <controls:SettingsCard x:Name="CookiesSettingsCard"
+                                       Header="Cookies file"
+                                       HeaderIcon="{ui:FontIcon Glyph=&#xE8BC;}">
+                    <controls:SettingsCard.Description>
+                        <HyperlinkButton x:Name="CookiesFileHyperLink"
+                                         Content="Hey! Why I need to pass my cookies to here?" />
+                    </controls:SettingsCard.Description>
+                    <TextBox x:Name="CookiesFileTextBox"
+                             PlaceholderText="Path to cookie file"
+                             TextChanged="TextChanged" />
+                </controls:SettingsCard>
+
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
 </Page>

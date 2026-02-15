@@ -49,7 +49,7 @@
                                            Header="Customize YT-DLP"
                                            HeaderIcon="{ui:FontIcon Glyph=&#xE713;}">
                     <controls:SettingsExpander.Items>
-                        <controls:SettingsCard Header="YT-DLP Path"
+                        <controls:SettingsCard Header="YT-DLP path"
                                                Description="Path to yt-dlp executable (yt-dlp.exe)">
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -69,7 +69,7 @@
                                 </Button>
                             </Grid>
                         </controls:SettingsCard>
-                        <controls:SettingsCard Header="FFmpeg Path"
+                        <controls:SettingsCard Header="FFmpeg path"
                                                Description="Path to FFmpeg executable (ffmpeg.exe)">
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -89,7 +89,7 @@
                             </Grid>
                         </controls:SettingsCard>
                         <controls:SettingsCard x:Name="ApplicationStatusCheck"
-                                               Description="Check your dependencies is working correctly.">
+                                               Description="Check your dependencies is working correctly">
                             <controls:SettingsCard.Resources>
                                 <x:Double x:Key="SettingsCardLeftIndention">0</x:Double>
                             </controls:SettingsCard.Resources>
@@ -98,6 +98,18 @@
                                     Style="{StaticResource AccentButtonStyle}"
                                     x:Name="CheckDependencies"
                                     Click="CheckDependencies_Click" />
+                        </controls:SettingsCard>
+                        <controls:SettingsCard Header="JavaScript runtime"
+                                               Description="Additional JavaScript runtime to enable">
+                            <ComboBox SelectionChanged="SelectionChanged"
+                                      PlaceholderText="Select runtime"
+                                      x:Name="JsRuntimeComboBox">
+                                <x:String>None</x:String>
+                                <x:String>Deno</x:String>
+                                <x:String>Node</x:String>
+                                <x:String>Quickjs</x:String>
+                                <x:String>Bun</x:String>
+                            </ComboBox>
                         </controls:SettingsCard>
                     </controls:SettingsExpander.Items>
                 </controls:SettingsExpander>

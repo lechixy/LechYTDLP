@@ -13,7 +13,8 @@ namespace LechYTDLP.Services
         private static ApplicationDataContainer Settings =>
             ApplicationData.Current.LocalSettings;
 
-        // Options
+        // # Options
+        // File
         public static string FilenameTemplate
         {
             get => (string?)Settings.Values[nameof(FilenameTemplate)]
@@ -29,8 +30,28 @@ namespace LechYTDLP.Services
 
             set => Settings.Values[nameof(DownloadPath)] = value;
         }
+        public static bool EmbedThumbnail
+        {
+            get => (bool?)Settings.Values[nameof(EmbedThumbnail)]
+                   ?? false;
+            set => Settings.Values[nameof(EmbedThumbnail)] = value;
+        }
+        public static bool EmbedSubs
+        {
+            get => (bool?)Settings.Values[nameof(EmbedSubs)]
+                   ?? false;
+            set => Settings.Values[nameof(EmbedSubs)] = value;
+        }
+        // Account
+        public static string CookiesfilePath
+        {
+            get => (string?)Settings.Values[nameof(CookiesfilePath)]
+                   ?? string.Empty;
+            set => Settings.Values[nameof(CookiesfilePath)] = value;
+        }
 
-        // Settings management
+        // # Settings
+        // Customize YT-DLP
         public static string YTDLPPath
         {
             get => (string?)Settings.Values[nameof(YTDLPPath)]
@@ -45,6 +66,13 @@ namespace LechYTDLP.Services
 
             set => Settings.Values[nameof(FFmpegPath)] = value;
         }
+        public static string JavaScriptRuntime
+        {
+            get => (string?)Settings.Values[nameof(JavaScriptRuntime)]
+                ?? "";
+            set => Settings.Values[nameof(JavaScriptRuntime)] = value;
+        }
+        // Developer options
         public static bool IsUsingBlobData
         {
             get => (bool?)Settings.Values[nameof(IsUsingBlobData)]

@@ -22,48 +22,60 @@
     <StackPanel Orientation="Vertical"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
-                Spacing="24">
+                Spacing="16">
 
-        <Grid ColumnSpacing="6" HorizontalAlignment="Center">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
+        <Grid HorizontalAlignment="Center"
+              RowSpacing="6"
+              VerticalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-            <TextBlock Text="Lech"
-                       Grid.Column="0"
+            <Grid ColumnSpacing="6"
+                  Grid.Row="0"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Lech"
+                           Grid.Column="0"
+                           TextWrapping="WrapWholeWords"
+                           Style="{StaticResource TitleLargeTextBlockStyle}"
+                           Foreground="{ThemeResource TextFillColorPrimaryBrush}" />
+                <TextBlock Text="YT-DLP"
+                           x:Name="YTDLPText"
+                           Grid.Column="1"
+                           TextWrapping="WrapWholeWords"
+                           FontWeight="Black"
+                           Style="{StaticResource TitleLargeTextBlockStyle}"
+                           Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" />
+            </Grid>
+            <TextBlock FontFamily="Cascadia Code"
+                       FontSize="12"
+                       Grid.Row="1"
+                       Foreground="{ThemeResource TextFillColorTertiaryBrush}"
                        TextWrapping="WrapWholeWords"
-                       Style="{StaticResource TitleLargeTextBlockStyle}"
-                       Foreground="{ThemeResource TextFillColorPrimaryBrush}"
-                        />
-            <TextBlock Text="YT-DLP"
-                       x:Name="YTDLPText"
-                       Grid.Column="1"
-                       TextWrapping="WrapWholeWords"
-                       FontWeight="Black"
-                       Style="{StaticResource TitleLargeTextBlockStyle}"
-                       Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                        />
+                       Name="Subtitle"
+                       TextAlignment="Center" />
         </Grid>
-        <!--<TextBlock Text="You can download any videos you like just type the link below"
-                   FontFamily="Calibri"
-                   FontSize="20"
-                   TextWrapping="WrapWholeWords"
-                   Foreground="{ThemeResource TextFillColorPrimaryBrush}"
-                   TextAlignment="Center" />-->
 
         <Grid MinWidth="300"
               ColumnSpacing="8"
               MaxWidth="500">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <TextBox TextChanged="TextBox_TextChanged"
-                     PlaceholderText="Enter a link"
+                     PlaceholderText="Try me beyonce"
                      VerticalAlignment="Stretch"
                      Grid.Column="0"
+                     Width="300"
                      x:Name="LinkTextBox" />
 
             <Button Click="PasteTextButton_Click"

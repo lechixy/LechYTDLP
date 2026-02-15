@@ -27,32 +27,74 @@ public sealed partial class OptionsPage : Page
     public OptionsPage()
     {
         InitializeComponent();
+
+        // File
         SaveToTextBox.PlaceholderText = SettingsService.DownloadPath;
         SaveToTextBox.Text = SettingsService.DownloadPath;
-
         FileNameTextBox.PlaceholderText = SettingsService.FilenameTemplate;
         FileNameTextBox.Text = SettingsService.FilenameTemplate;
+        EmbedThumbnailSettingSwitch.IsOn = SettingsService.EmbedThumbnail;
+        EmbedSubsSettingSwitch.IsOn = SettingsService.EmbedSubs;
+
+        // Account
+        CookiesFileTextBox.PlaceholderText = SettingsService.CookiesfilePath;
+        CookiesFileTextBox.Text = SettingsService.CookiesfilePath;
+
+
+        // Hyperlinks
+        FileNameHyperLink.NavigateUri = new Uri("https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#output-template");
+        CookiesFileHyperLink.NavigateUri = new Uri("https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp");
     }
 
-    private void SaveToTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    private void SwitchToggled(object sender, RoutedEventArgs e)
     {
-        if(SaveToTextBox.Text.Length == 0)
-        {
-            SettingsService.ResetSetting(nameof(SettingsService.DownloadPath));
-            SaveToTextBox.PlaceholderText = SettingsService.DownloadPath;
+        if (sender is ToggleSwitch toggle){
+            if (toggle.Name == "EmbedThumbnailSettingSwitch")
+            {
+                SettingsService.EmbedThumbnail = toggle.IsOn;
+            }
+            else if (toggle.Name == "EmbedSubsSettingSwitch")
+            {
+                SettingsService.EmbedSubs = toggle.IsOn;
+            }
         }
-        else
-            SettingsService.DownloadPath = SaveToTextBox.Text;
     }
 
-    private void FileNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    private void TextChanged(object sender, TextChangedEventArgs e)
     {
-        if (FileNameTextBox.Text.Length == 0)
+        if (sender is TextBox textbox)
         {
-            SettingsService.ResetSetting(nameof(SettingsService.FilenameTemplate));
-            FileNameTextBox.PlaceholderText = SettingsService.FilenameTemplate;
+            if (textbox.Name == "FileNameTextBox")
+            {
+                if (textbox.Text.Length == 0)
+                {
+                    SettingsService.ResetSetting(nameof(SettingsService.FilenameTemplate));
+                    textbox.PlaceholderText = SettingsService.FilenameTemplate;
+                }
+                else
+                    SettingsService.FilenameTemplate = textbox.Text;
+            }
+            else if (textbox.Name == "SaveToTextBox")
+            {
+                if (textbox.Text.Length == 0)
+                {
+                    SettingsService.ResetSetting(nameof(SettingsService.DownloadPath));
+                    textbox.PlaceholderText = SettingsService.DownloadPath;
+                }
+                else
+                    SettingsService.DownloadPath = textbox.Text;
+            }
+            else if (textbox.Name == "CookiesFileTextBox")
+            {
+                if (textbox.Text.Length == 0)
+                {
+                    SettingsService.ResetSetting(nameof(SettingsService.CookiesfilePath));
+                    textbox.PlaceholderText = SettingsService.CookiesfilePath;
+                }
+                else
+                    SettingsService.CookiesfilePath = textbox.Text;
+
+            }
         }
-        else
-            SettingsService.FilenameTemplate = FileNameTextBox.Text;
     }
 }

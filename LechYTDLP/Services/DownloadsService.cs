@@ -29,6 +29,7 @@ namespace LechYTDLP.Services
 
     public class DownloadItem
     {
+        public Guid Id { get; set; } = Guid.Empty;
         public string Url { get; set; } = string.Empty;
         public VideoInfo Info { get; set; } = null!;
         public DownloadState State { get; set; } = DownloadState.Queued;
@@ -51,7 +52,9 @@ namespace LechYTDLP.Services
         public bool IsPaused => _isPaused;
         public DownloadItem? CurrentMedia => _queue.Count == 0 ? null : _queue.Peek();
 
+        // EVENTS
         public event Action? QueueUpdated;
+        public event Action<bool>? HistoryUpdated;
         public event Action? CurrentMediaUpdated;
 
         public IReadOnlyCollection<DownloadItem> Queue => [.. _queue];
@@ -91,8 +94,15 @@ namespace LechYTDLP.Services
 
         public void Enqueue(string url, VideoInfo videoInfo, SelectedFormat selectedFormat)
         {
+            //if (selectedFormat == null)
+            //{
+            //    App.DownloadController.SearchAsync(url, videoInfo);
+            //    return;
+            //}
+
             var item = new DownloadItem
             {
+                Id = Guid.NewGuid(),
                 Url = url,
                 State = DownloadState.Queued,
                 Info = videoInfo,
@@ -130,9 +140,14 @@ namespace LechYTDLP.Services
             // İndirme işlemini başlat
             var args = new YTDLPDownloadArgs
             {
+                // # Required arguments
                 SelectedFormat = item.SelectedFormat,
                 OutputPath = $"{SettingsService.DownloadPath}\\{SettingsService.FilenameTemplate}",
-                FFmpegLocation = $"{SettingsService.FFmpegPath}"
+                FFmpegLocation = $"{SettingsService.FFmpegPath}",
+
+                // Optional arguments
+                EmbedThumbnail = SettingsService.EmbedThumbnail,
+                EmbedSubs = SettingsService.EmbedSubs
             };
 
             var processCode = await _ytdlp.DownloadVideo(item.Url, args);
@@ -147,7 +162,7 @@ namespace LechYTDLP.Services
                 _isRunning = false;
                 return;
             }
-            else if (processCode == -1)
+            else if (processCode == 1)
             {
                 Debug.WriteLine("Download failed with an error. Marking as failed.");
             }
@@ -166,6 +181,8 @@ namespace LechYTDLP.Services
             await App.DatabaseService.AddOrUpdateAsync(item);
 
             QueueUpdated?.Invoke();
+            // Update history with new items from database
+            HistoryUpdated?.Invoke(true);
             OnBadgeChanged?.Invoke(DownloadsCount, "Downloads");
             _isRunning = false;
 

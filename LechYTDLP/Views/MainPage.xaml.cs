@@ -30,8 +30,9 @@ namespace LechYTDLP.Views;
 /// </summary>
 public sealed partial class MainPage : Page
 {
+    private string _subtitleText = "❝Download any video, you like.❞";
 
-    private string _textboxText = "https://www.instagram.com/p/DTtECW1iPct/";
+    private string _textboxText = "";
     public string Text => _textboxText;
 
     public string SetText(string text) => _textboxText = text;
@@ -41,6 +42,8 @@ public sealed partial class MainPage : Page
     public MainPage()
     {
         InitializeComponent();
+        Subtitle.Text = _subtitleText;
+        LinkTextBox.PlaceholderText = Main.GetDynamicSearchBoxPlaceholder();
 
         if (App.DownloadController.IsBusy)
         {
@@ -87,12 +90,6 @@ public sealed partial class MainPage : Page
                     VerticalAlignment = VerticalAlignment.Center,
                     HorizontalAlignment = HorizontalAlignment.Center
                 };
-
-                var RequestData = App.DownloadController.RequestData;
-                if (RequestData != null)
-                {
-                    App.InfoBarService.Show(new InfoBarMessage($"{RequestData.ExtensionBrowser} extension added media", "", InfoBarSeverity.Success, 5000, false));
-                }
             }
             else
             {
@@ -105,7 +102,7 @@ public sealed partial class MainPage : Page
     {
         DispatcherQueue.TryEnqueue(() =>
         {
-            App.InfoBarService.Show(new InfoBarMessage("Error", errorMessage, InfoBarSeverity.Error, 5000, true));
+            App.InfoBarService.Show(new InfoBarMessage("Unhandled Error", errorMessage, InfoBarSeverity.Error, 5000, true));
         });
     }
 
@@ -200,15 +197,15 @@ public sealed partial class MainPage : Page
     {
         if (link.Contains("youtube", StringComparison.OrdinalIgnoreCase))
         {
-            YTDLPText.Foreground = Util.Util.GetAppGradient("youtube");
+            YTDLPText.Foreground = Util.Main.GetAppGradient("youtube");
         }
         else if (link.Contains("tiktok", StringComparison.OrdinalIgnoreCase))
         {
-            YTDLPText.Foreground = Util.Util.GetAppGradient("tiktok");
+            YTDLPText.Foreground = Util.Main.GetAppGradient("tiktok");
         }
         else if (link.Contains("instagram", StringComparison.OrdinalIgnoreCase))
         {
-            YTDLPText.Foreground = Util.Util.GetAppGradient("instagram");
+            YTDLPText.Foreground = Util.Main.GetAppGradient("instagram");
         }
         else YTDLPText.Foreground = App.Current.Resources["AccentTextFillColorPrimaryBrush"] as SolidColorBrush;
     }

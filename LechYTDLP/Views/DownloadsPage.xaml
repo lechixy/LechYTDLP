@@ -8,20 +8,13 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:controls="using:Microsoft.UI.Xaml.Controls"
+      xmlns:ui="using:CommunityToolkit.WinUI"
       mc:Ignorable="d">
 
     <Page.Resources>
         <!--  These styles can be referenced to create a consistent SettingsPage layout  -->
         <!--  Spacing between cards  -->
         <x:Double x:Key="SettingsCardSpacing">4</x:Double>
-
-        <DataTemplate x:Key="MediaItemTemplate"
-                      x:DataType="services:DownloadItem">
-            <ItemContainer HorizontalAlignment="Stretch">
-                <components:MediaItem Item="{x:Bind}"
-                                      HorizontalAlignment="Stretch" />
-            </ItemContainer>
-        </DataTemplate>
     </Page.Resources>
 
     <ScrollViewer>
@@ -41,8 +34,9 @@
                            Style="{StaticResource TitleLargeTextBlockStyle}"
                            Margin="0,0,0,24" />
 
+                <!--No Queue Container-->
                 <Button x:Name="NoQueueContainer"
-                        Click="HandleButton"
+                        Click="OnClick"
                         Background="{ThemeResource SmokeFillColorDefaultBrush}"
                         CornerRadius="{ThemeResource OverlayCornerRadius}"
                         HorizontalAlignment="Stretch"
@@ -55,11 +49,12 @@
                                TextWrapping="Wrap" />
                 </Button>
 
+                <!--Current Media Section-->
                 <Button x:Name="CurrentMediaContainer"
                         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         CornerRadius="{ThemeResource OverlayCornerRadius}"
                         Visibility="Collapsed"
-                        Click="HandleButton"
+                        Click="OnClick"
                         VerticalAlignment="Stretch"
                         HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Stretch"
@@ -69,6 +64,30 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
+                        <!--<Grid.ContextFlyout>
+                            <MenuFlyout>
+                                <MenuFlyoutItem Text="Download again"
+                                                Click="OnClick"
+                                                Icon="{ui:FontIcon Glyph=&#xE896;}"
+                                                Name="DownloadAgain" />
+                                <MenuFlyoutSubItem Text="Copy"
+                                                   Icon="{ui:FontIcon Glyph=&#xE8C8;}">
+                                    <MenuFlyoutItem Text="Copy title"
+                                                    Click="OnClick"
+                                                    Icon="{ui:FontIcon Glyph=&#xE8D2;}"
+                                                    Name="CopyTitle" />
+                                    <MenuFlyoutItem Text="Copy link"
+                                                    Click="OnClick"
+                                                    Icon="{ui:FontIcon Glyph=&#xE71B;}"
+                                                    Name="CopyLink" />
+                                </MenuFlyoutSubItem>
+                                <MenuFlyoutItem Text="Delete"
+                                                Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                                                Click="OnClick"
+                                                Icon="{ui:FontIcon Glyph=&#xE74D;}"
+                                                Name="Delete" />
+                            </MenuFlyout>
+                        </Grid.ContextFlyout>-->
 
                         <Border CornerRadius="{StaticResource ControlCornerRadius}"
                                 Height="100"
@@ -87,7 +106,8 @@
                         </Border>
 
                         <Grid Grid.Column="1"
-                              RowSpacing="2" HorizontalAlignment="Stretch">
+                              RowSpacing="2"
+                              HorizontalAlignment="Stretch">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
@@ -130,7 +150,7 @@
                                         Style="{StaticResource AccentButtonStyle}"
                                         IsEnabled="False"
                                         x:Name="PauseOrResumeButton"
-                                        Click="PauseOrResumeButton_Click">
+                                        Click="OnClick">
                                     <SymbolIcon Symbol="Pause" />
                                 </Button>
                             </Grid>
@@ -144,17 +164,57 @@
                     </Grid>
                 </Button>
 
+                <!--In Queue Section-->
                 <TextBlock Text="In queue"
-                           Style="{StaticResource SubtitleTextBlockStyle}"
+                           Style="{StaticResource TitleTextBlockStyle}"
                            Visibility="Collapsed"
                            x:Name="QueueTitleText"
-                           Margin="0,6,0,6" />
+                           Margin="0,24,0,0" />
 
-                <ListView ItemTemplate="{StaticResource MediaItemTemplate}"
-                          SelectionMode="None"
+                <ListView SelectionMode="None"
                           x:Name="QueueListView"
                           HorizontalContentAlignment="Stretch"
                           Margin="0,6,0,0">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="services:DownloadItem">
+                            <Grid>
+                                <!--<Grid.ContextFlyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutItem Text="Download again"
+                                                    Click="OnClick"
+                                                    Icon="{ui:FontIcon Glyph=&#xE896;}"
+                                                    Name="DownloadAgain" />
+                                    <MenuFlyoutItem Text="Open in explorer"
+                                                    Click="OnClick"
+                                                    Icon="{ui:FontIcon Glyph=&#xEC50;}"
+                                                    Name="OpenInExplorer" />
+                                    <MenuFlyoutSubItem Text="Copy"
+                                                       Icon="{ui:FontIcon Glyph=&#xE8C8;}">
+                                        <MenuFlyoutItem Text="Copy title"
+                                                        Click="OnClick"
+                                                        Icon="{ui:FontIcon Glyph=&#xE8D2;}"
+                                                        Name="CopyTitle" />
+                                        <MenuFlyoutItem Text="Copy link"
+                                                        Click="OnClick"
+                                                        Icon="{ui:FontIcon Glyph=&#xE71B;}"
+                                                        Name="CopyLink" />
+                                        <MenuFlyoutItem Text="Copy file path"
+                                                        Click="OnClick"
+                                                        Icon="{ui:FontIcon Glyph=&#xE8B7;}"
+                                                        Name="CopyFilepath" />
+                                    </MenuFlyoutSubItem>
+                                    <MenuFlyoutItem Text="Delete"
+                                                    Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                                                    Click="OnClick"
+                                                    Icon="{ui:FontIcon Glyph=&#xE74D;}"
+                                                    Name="Delete" />
+                                </MenuFlyout>
+                            </Grid.ContextFlyout>-->
+                                <components:MediaItem Item="{x:Bind}"
+                                                      HorizontalAlignment="Stretch" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Setter Property="HorizontalContentAlignment"
@@ -162,38 +222,84 @@
                             <Setter Property="Padding"
                                     Value="0" />
                             <Setter Property="Margin"
-                                    Value="0" />
+                                    Value="0,6,0,6" />
                         </Style>
                     </ListView.ItemContainerStyle>
                 </ListView>
 
-                <Grid>
+                <!--History Section-->
+                <Grid Margin="0,6,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="History"
-                               Style="{StaticResource SubtitleTextBlockStyle}"
+                               Style="{StaticResource TitleTextBlockStyle}"
                                Visibility="Collapsed"
                                x:Name="HistoryTitleText"
-                               Grid.Column="0"
-                               Margin="0,6,0,0" />
+                               Grid.Column="0" />
                     <Button Grid.Column="1"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
-                            Style="{StaticResource AccentButtonStyle}"
+                            Style="{StaticResource SubtleButtonStyle}"
                             IsEnabled="False"
                             x:Name="ClearHistoryButton"
-                            Click="HandleButton">
+                            Click="OnClick">
                         Clear
                     </Button>
                 </Grid>
 
-                <ListView ItemTemplate="{StaticResource MediaItemTemplate}"
-                          SelectionMode="None"
+                <ProgressBar x:Name="HistoryProgressBar"
+                             Visibility="Collapsed"
+                             IsIndeterminate="True"
+                             VerticalAlignment="Bottom"
+                             HorizontalAlignment="Stretch"
+                             Margin="0,6,0,6" />
+
+                <ListView SelectionMode="None"
                           x:Name="HistoryListView"
                           HorizontalContentAlignment="Stretch"
-                          Margin="0,12,0,0">
+                          Margin="0,6,0,0">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="services:DownloadItem">
+                            <Grid>
+                                <Grid.ContextFlyout>
+                                    <MenuFlyout>
+                                        <MenuFlyoutItem Text="Download again"
+                                                        Click="OnClick"
+                                                        Icon="{ui:FontIcon Glyph=&#xE896;}"
+                                                        Name="DownloadAgain" />
+                                        <MenuFlyoutItem Text="Open in explorer"
+                                                        Click="OnClick"
+                                                        Icon="{ui:FontIcon Glyph=&#xEC50;}"
+                                                        Name="OpenInExplorer" />
+                                        <MenuFlyoutSubItem Text="Copy"
+                                                           Icon="{ui:FontIcon Glyph=&#xE8C8;}">
+                                            <MenuFlyoutItem Text="Copy title"
+                                                            Click="OnClick"
+                                                            Icon="{ui:FontIcon Glyph=&#xE8D2;}"
+                                                            Name="CopyTitle" />
+                                            <MenuFlyoutItem Text="Copy link"
+                                                            Click="OnClick"
+                                                            Icon="{ui:FontIcon Glyph=&#xE71B;}"
+                                                            Name="CopyLink" />
+                                            <MenuFlyoutItem Text="Copy file path"
+                                                            Click="OnClick"
+                                                            Icon="{ui:FontIcon Glyph=&#xE8B7;}"
+                                                            Name="CopyFilepath" />
+                                        </MenuFlyoutSubItem>
+                                        <MenuFlyoutItem Text="Delete"
+                                                        Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                                                        Click="OnClick"
+                                                        Icon="{ui:FontIcon Glyph=&#xE74D;}"
+                                                        Name="Delete" />
+                                    </MenuFlyout>
+                                </Grid.ContextFlyout>
+                                <components:MediaItem Item="{x:Bind}"
+                                                      HorizontalAlignment="Stretch" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Setter Property="HorizontalContentAlignment"

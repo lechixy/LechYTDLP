@@ -1,6 +1,7 @@
 ﻿using LechYTDLP.Classes;
 using LechYTDLP.Components;
 using LechYTDLP.Services;
+using LechYTDLP.Util;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -13,8 +14,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.DataTransfer;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -39,6 +42,7 @@ namespace LechYTDLP.Views
             if (App.DownloadService != null)
             {
                 App.DownloadService.QueueUpdated += QueueUpdated;
+                App.DownloadService.HistoryUpdated += HistoryUpdated;
                 App.DownloadService.CurrentMediaUpdated += CurrentMediaUpdated;
             }
 
@@ -57,14 +61,14 @@ namespace LechYTDLP.Views
             DispatcherQueue.TryEnqueue(async () => await UpdateHistoryQueue(true));
         }
 
+        private void HistoryUpdated(bool getHistoryFromDatabase)
+        {
+            DispatcherQueue.TryEnqueue(() => _ = UpdateHistoryQueue(getHistoryFromDatabase));
+        }
+
         private void QueueUpdated()
         {
             DispatcherQueue.TryEnqueue(UpdateCurrentQueue);
-        }
-
-        private void HistoryUpdated()
-        {
-            DispatcherQueue.TryEnqueue(() => _ = UpdateHistoryQueue());
         }
 
         private void CurrentMediaUpdated()
@@ -110,8 +114,16 @@ namespace LechYTDLP.Views
 
                 if (getHistoryFromDatabase)
                 {
-                    snapshot = await App.DatabaseService.GetAllAsync();
-                    //snapshot.Reverse();
+                    HistoryProgressBar.Visibility = Visibility.Visible;
+
+                    try
+                    {
+                        snapshot = await Task.Run(() => App.DatabaseService.GetAllAsync());
+                    }
+                    finally
+                    {
+                        HistoryProgressBar.Visibility = Visibility.Collapsed;
+                    }
                 }
                 else
                 {
@@ -138,11 +150,27 @@ namespace LechYTDLP.Views
                     HistoryListView.Visibility = Visibility.Collapsed;
                 }
 
-                HistoryCollection.Clear();
+                var existingIds = HistoryCollection.Select(x => x.Id).ToHashSet();
+                var newIds = snapshot.Select(x => x.Id).ToHashSet();
+
+                // Add new ones
                 foreach (var item in snapshot)
                 {
-                    HistoryCollection.Add(item);
+                    if (!existingIds.Contains(item.Id))
+                    {
+                        HistoryCollection.Insert(0, item);
+                    }
                 }
+
+                // Remove removed ones
+                for (int i = HistoryCollection.Count - 1; i >= 0; i--)
+                {
+                    if (!newIds.Contains(HistoryCollection[i].Id))
+                    {
+                        HistoryCollection.RemoveAt(i);
+                    }
+                }
+
             }
             catch (Exception ex)
             {
@@ -208,26 +236,103 @@ namespace LechYTDLP.Views
                 NoQueueContainer.Visibility = Visibility.Visible;
             }
         }
-
-        private async void PauseOrResumeButton_Click(object sender, RoutedEventArgs e)
+        private async void OnClick(object sender, RoutedEventArgs e)
         {
-            await App.DownloadService.PauseOrResume();
-        }
-
-        private async void ClearHistoryButton_Click()
-        {
-            await App.DatabaseService.ClearAllAsync();
-            await UpdateHistoryQueue(true);
-        }
-
-        private void HandleButton(object sender, RoutedEventArgs e)
-        {
-            if (sender is Button btn)
+            if (sender is MenuFlyoutItem flyout)
             {
-                if (btn.Name == "ClearHistoryButton")
+                if (flyout.DataContext is DownloadItem dataContext)
+                {
+                    if (flyout.Name == "DownloadAgain")
+                    {
+                        try
+                        {
+                            await App.DownloadController.SearchAsync(dataContext.Url, dataContext.Info);
+                            // App.InfoBarService.Show(new InfoBarMessage("Copied to clipboard", "", InfoBarSeverity.Informational, 3000));
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine(ex);
+                            App.InfoBarService.Show(
+                                new InfoBarMessage(
+                                    "Download again failed",
+                                    ex.Message,
+                                    InfoBarSeverity.Error,
+                                    4000
+                                )
+                            );
+                        }
+                    }
+                    else if (flyout.Name == "OpenInExplorer")
+                    {
+                        string filePath = dataContext.FilePath;
+
+                        if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
+                        {
+                            KnownErrors.ShowGenericError(KnownErrors.GenericError.NoFileOrDirectory);
+                            return;
+                        }
+
+                        Process.Start(new ProcessStartInfo
+                        {
+                            FileName = "explorer.exe",
+                            Arguments = $"/select,\"{filePath}\"",
+                            UseShellExecute = true
+                        });
+                    }
+                    else if (flyout.Name.StartsWith("Copy"))
+                    {
+                        var package = new DataPackage();
+
+                        if (flyout.Name == "CopyLink") package.SetText(dataContext.Url);
+                        else if (flyout.Name == "CopyFilepath") package.SetText(dataContext.FilePath);
+                        else if (flyout.Name == "CopyTitle") package.SetText(dataContext.Info.Title ?? "No title");
+
+                        App.InfoBarService.Show(new InfoBarMessage("Copied to clipboard", "", InfoBarSeverity.Informational, 3000));
+                        Clipboard.SetContent(package);
+                    }
+                    else if (flyout.Name == "Delete")
+                    {
+                        Debug.WriteLine($"Delete clicked for: {dataContext.Id}");
+                        try
+                        {
+                            await App.DatabaseService.DeleteByGuidIdAsync(dataContext.Id.ToString());
+                            await UpdateHistoryQueue(true);
+                            App.InfoBarService.Show(
+                                new InfoBarMessage(
+                                    "Deleted video from history",
+                                    "",
+                                    InfoBarSeverity.Informational,
+                                    3000
+                                )
+                            );
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine(ex);
+                            App.InfoBarService.Show(
+                                new InfoBarMessage(
+                                    "Delete failed",
+                                    ex.Message,
+                                    InfoBarSeverity.Error,
+                                    4000
+                                )
+                            );
+                        }
+                    }
+                }
+            }
+            else if (sender is Button btn)
+            {
+                if (btn.Name == "PauseOrResumeButton")
+                {
+
+                    await App.DownloadService.PauseOrResume();
+                }
+                else if (btn.Name == "ClearHistoryButton")
                 {
                     ClearHistoryButton_Click();
-                } else if (btn.Name == "CurrentMediaContainer")
+                }
+                else if (btn.Name == "CurrentMediaContainer")
                 {
                     var currentDownload = App.DownloadService.CurrentMedia;
                     if (currentDownload != null)
@@ -235,16 +340,24 @@ namespace LechYTDLP.Views
                         var filePath = currentDownload.FilePath;
                         Debug.WriteLine(filePath);
                     }
-                } else if (btn.Name == "NoQueueContainer")
+                }
+                else if (btn.Name == "NoQueueContainer")
                 {
                     App.NavigationService.Navigate<MainPage>();
                 }
             }
+
+        }
+        private async void ClearHistoryButton_Click()
+        {
+            await App.DatabaseService.ClearAllAsync();
+            await UpdateHistoryQueue(true);
         }
 
         private void DownloadsPage_Unloaded(object sender, RoutedEventArgs e)
         {
             App.DownloadService.QueueUpdated -= QueueUpdated;
+            App.DownloadService.HistoryUpdated -= HistoryUpdated;
             App.DownloadService.CurrentMediaUpdated -= CurrentMediaUpdated;
         }
     }

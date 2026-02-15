@@ -1,4 +1,5 @@
-﻿using LechYTDLP.Services;
+﻿using LechYTDLP.Classes;
+using LechYTDLP.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -8,13 +9,13 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
-using LechYTDLP.Classes;
-using System.Diagnostics;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -36,18 +37,25 @@ public sealed partial class SettingsPage : Page
     {
         InitializeComponent();
 
-        AboutExpander.Description = $"🤍 Made by @lechixy";
-        AboutExpanderContent.Text = $"Version {App.AppVersion}";
-        GithubLink.NavigateUri = new Uri(App.GithubLink);
-
+        // # Customize YT-DLP
         YTDLPPathSetting.PlaceholderText = SettingsService.YTDLPPath;
         YTDLPPathSetting.Text = SettingsService.YTDLPPath;
 
         FFmpegPathSetting.PlaceholderText = SettingsService.FFmpegPath;
         FFmpegPathSetting.Text = SettingsService.FFmpegPath;
 
+        var textInfo = new CultureInfo("en-US", false).TextInfo;
+        JsRuntimeComboBox.SelectedItem = string.IsNullOrEmpty(SettingsService.JavaScriptRuntime)
+            ? "None"
+            : textInfo.ToTitleCase(SettingsService.JavaScriptRuntime);
 
+        // # Developer Options
         BlobDataSettingSwitch.IsOn = SettingsService.IsUsingBlobData;
+
+        // # About
+        AboutExpander.Description = $"🤍 Made by @lechixy";
+        AboutExpanderContent.Text = $"Version {App.AppVersion}";
+        GithubLink.NavigateUri = new Uri(App.GithubLink);
     }
 
     private void ChangeSetting(SettingType Setting)
@@ -153,6 +161,20 @@ public sealed partial class SettingsPage : Page
                 PickFile(SettingType.PathYTDLP);
             else if (btn.Name == "PickFFmpegButton")
                 PickFile(SettingType.PathFFMPEG);
+        }
+    }
+
+    private void SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (sender is ComboBox comboBox)
+        {
+            string selected = (string)comboBox.SelectedItem;
+            if (comboBox.Name == "JsRuntimeComboBox")
+            {
+                // Use "None" as a display value for an empty string, but store an empty string in settings
+                if (selected == "None") selected = "";
+                SettingsService.JavaScriptRuntime = selected.ToLower();
+            }
         }
     }
 }

@@ -53,7 +53,6 @@ namespace LechYTDLP.Services
 
                     content.IsUserCanSave += canSave =>
                     {
-                        Debug.WriteLine($"Can save: {canSave}");
                         dialog.IsPrimaryButtonEnabled = canSave;
                     };
 

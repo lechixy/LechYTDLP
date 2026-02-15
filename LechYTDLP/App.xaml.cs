@@ -16,6 +16,7 @@ using Windows.ApplicationModel.Activation;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -68,9 +69,6 @@ namespace LechYTDLP
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            var instance = Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent();
-            instance.Activated += OnAppActivated;
-
             _ = DatabaseService.InitializeAsync();
 
             ApiServer = new LocalApiServer();
@@ -81,39 +79,18 @@ namespace LechYTDLP
 
             FormatDialogService = new FormatDialogService(Window);
 
+            LogService.Add("✨ The logs will be appear here, mate <3", LogTag.Lechixy);
+
             ApiServer.DownloadRequested += async data =>
             {
                 Debug.WriteLine($"{data.ExtensionBrowser} extension added media: {data.Url}");
                 LogService.Add($"{data.ExtensionBrowser} extension added media: {data.Url}", LogTag.ApiServer);
 
-                await DownloadController.SearchAsync(data.Url, data);
+                InfoBarService.Show(new InfoBarMessage($"{data.ExtensionBrowser} extension added media", "", InfoBarSeverity.Success, 5000, false));
+
+                await DownloadController.SearchAsync(data.Url);
             };
         }
-
-        private void OnAppActivated(object? sender, AppActivationArguments args)
-        {
-            if (args.Kind == ExtendedActivationKind.Protocol)
-            {
-                var protocolArgs = args.Data as ProtocolActivatedEventArgs;
-                var uri = protocolArgs?.Uri;
-
-                if (uri?.Host == "open")
-                {
-                    Debug.WriteLine($"Received protocol activation with URI: {uri}");
-                }
-                else if (uri?.Host == "download" && uri.Query.Contains("url="))
-                {
-                    Debug.WriteLine($"Received download protocol activation with URI: {uri}");
-                    //var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
-                    //var downloadUrl = queryParams["url"];
-                    //if (!string.IsNullOrEmpty(downloadUrl))
-                    //{
-                    //    Debug.WriteLine($"Received download request for URL: {downloadUrl}");
-                    //}
-                }
-            }
-        }
-
 
         public static async Task<string?> PickFileAsync(string[] FilterExtensions, Window window)
         {
@@ -149,6 +126,7 @@ namespace LechYTDLP
         {
             return value switch
             {
+                LogTag.Lechixy => new SolidColorBrush(Colors.Aqua),
                 LogTag.LechYTDLP => new SolidColorBrush(Colors.DeepSkyBlue),
                 LogTag.Warning => new SolidColorBrush(Colors.Gold),
                 LogTag.Error => new SolidColorBrush(Colors.IndianRed),

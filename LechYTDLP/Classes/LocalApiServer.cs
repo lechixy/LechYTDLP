@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace LechYTDLP.Classes
 {
+    using LechYTDLP.Services;
     using System.IO;
     using System.Net;
     using System.Text;
@@ -34,8 +35,18 @@ namespace LechYTDLP.Classes
 
         public void Start()
         {
-            _listener.Start();
-            Task.Run(ListenLoop);
+            try
+            {
+                _listener.Start();
+                Task.Run(ListenLoop);
+            }
+            catch (HttpListenerException ex)
+            {
+                // Handle the case where the listener fails to start, e.g., due to insufficient permissions
+                Console.WriteLine($"Browser extension will not work • Failed to start Browser Extension HTTP listener: {ex.Message}");
+                LogService.Add($"Browser extension will not work • Failed to start Browser Extension HTTP listener: {ex.Message}", LogTag.ApiServer);
+                return;
+            }
         }
 
         public void Stop()
