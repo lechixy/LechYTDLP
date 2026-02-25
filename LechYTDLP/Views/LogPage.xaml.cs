@@ -39,7 +39,6 @@ namespace LechYTDLP.Views
 
             LogListView.ItemsSource = UiLogs;
 
-            // Sayfa açılırken mevcut logları yükle
             foreach (var log in LogService.GetAll())
                 UiLogs.Add(log);
 

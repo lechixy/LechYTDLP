@@ -10,9 +10,9 @@
         x:Name="RootFrame"
         Title="LechYTDLP">
 
-    <Window.SystemBackdrop>
-        <MicaBackdrop Kind="Base" />
-    </Window.SystemBackdrop>
+    <!--<Window.SystemBackdrop>
+        <MicaBackdrop Kind="BaseAlt" />
+    </Window.SystemBackdrop>-->
 
     <Grid>
         <Grid.RowDefinitions>
@@ -23,7 +23,6 @@
         </Grid.RowDefinitions>
 
         <TitleBar Title="Lech YT-DLP"
-                  Subtitle="Version"
                   IsBackButtonVisible="False"
                   IsPaneToggleButtonVisible="False"
                   x:Name="AppTitleBar">
@@ -39,7 +38,7 @@
                         IsBackButtonVisible="Collapsed"
                         IsSettingsVisible="True">
             <NavigationView.MenuItems>
-                <NavigationViewItem Content="Downloads"
+                <NavigationViewItem x:Uid="DownloadsC"
                                     Tag="DownloadsPage">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE896;" />
@@ -51,21 +50,20 @@
                                    Opacity="{x:Bind InfoBadgeOpacity}" />
                     </NavigationViewItem.InfoBadge>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Search"
+                <NavigationViewItem x:Uid="MainNav"
                                     Tag="MainPage">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE721;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Options"
+                <NavigationViewItem x:Uid="OptionsC"
                                     Tag="OptionsPage">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE8A9;" 
                                   FontFamily="Segoe MDL2 Assets" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Logs"
-                                    Tag="LogPage">
+                <NavigationViewItem x:Uid="LogsC" Tag="LogPage">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE9D9;" />
                     </NavigationViewItem.Icon>

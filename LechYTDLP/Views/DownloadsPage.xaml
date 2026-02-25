@@ -30,7 +30,7 @@
                     <RepositionThemeTransition IsStaggeringEnabled="False" />
                 </StackPanel.ChildrenTransitions>
 
-                <TextBlock Text="Downloads"
+                <TextBlock x:Uid="Downloads"
                            Style="{StaticResource TitleLargeTextBlockStyle}"
                            Margin="0,0,0,24" />
 
@@ -44,7 +44,7 @@
                         Visibility="Visible">
                     <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
                                Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                               Text="There is no downloads on queue, hop to search to gather some videos."
+                               x:Uid="NoQueue"
                                TextAlignment="Center"
                                TextWrapping="Wrap" />
                 </Button>
@@ -119,7 +119,6 @@
                                        x:Name="CurrentVideoTitle"
                                        Style="{ThemeResource SubtitleTextBlockStyle}"
                                        Foreground="{ThemeResource TextFillColorPrimary}"
-                                       Text="Video Name"
                                        TextWrapping="NoWrap" />
 
                             <RichTextBlock Grid.Row="1"
@@ -138,7 +137,6 @@
 
                                 <TextBlock Grid.Row="0"
                                            x:Name="CurrentVideoStatus"
-                                           Text="Queued"
                                            Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
                                            Style="{ThemeResource CaptionTextBlockStyle}"
                                            VerticalAlignment="Bottom"
@@ -165,7 +163,7 @@
                 </Button>
 
                 <!--In Queue Section-->
-                <TextBlock Text="In queue"
+                <TextBlock x:Uid="InQueue"
                            Style="{StaticResource TitleTextBlockStyle}"
                            Visibility="Collapsed"
                            x:Name="QueueTitleText"
@@ -233,7 +231,7 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="History"
+                    <TextBlock x:Uid="History"
                                Style="{StaticResource TitleTextBlockStyle}"
                                Visibility="Collapsed"
                                x:Name="HistoryTitleText"
@@ -241,11 +239,11 @@
                     <Button Grid.Column="1"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
+                            x:Uid="Clear"
                             Style="{StaticResource SubtleButtonStyle}"
                             IsEnabled="False"
                             x:Name="ClearHistoryButton"
                             Click="OnClick">
-                        Clear
                     </Button>
                 </Grid>
 
@@ -265,30 +263,30 @@
                             <Grid>
                                 <Grid.ContextFlyout>
                                     <MenuFlyout>
-                                        <MenuFlyoutItem Text="Download again"
+                                        <MenuFlyoutItem x:Uid="DownloadAgain"
                                                         Click="OnClick"
                                                         Icon="{ui:FontIcon Glyph=&#xE896;}"
                                                         Name="DownloadAgain" />
-                                        <MenuFlyoutItem Text="Open in explorer"
+                                        <MenuFlyoutItem x:Uid="OpenInExplorer"
                                                         Click="OnClick"
                                                         Icon="{ui:FontIcon Glyph=&#xEC50;}"
                                                         Name="OpenInExplorer" />
-                                        <MenuFlyoutSubItem Text="Copy"
+                                        <MenuFlyoutSubItem x:Uid="Copy"
                                                            Icon="{ui:FontIcon Glyph=&#xE8C8;}">
-                                            <MenuFlyoutItem Text="Copy title"
+                                            <MenuFlyoutItem x:Uid="CopyTitle"
                                                             Click="OnClick"
                                                             Icon="{ui:FontIcon Glyph=&#xE8D2;}"
                                                             Name="CopyTitle" />
-                                            <MenuFlyoutItem Text="Copy link"
+                                            <MenuFlyoutItem x:Uid="CopyLink"
                                                             Click="OnClick"
                                                             Icon="{ui:FontIcon Glyph=&#xE71B;}"
                                                             Name="CopyLink" />
-                                            <MenuFlyoutItem Text="Copy file path"
+                                            <MenuFlyoutItem x:Uid="CopyFilePath"
                                                             Click="OnClick"
                                                             Icon="{ui:FontIcon Glyph=&#xE8B7;}"
                                                             Name="CopyFilepath" />
                                         </MenuFlyoutSubItem>
-                                        <MenuFlyoutItem Text="Delete"
+                                        <MenuFlyoutItem x:Uid="Delete"
                                                         Foreground="{ThemeResource SystemFillColorCriticalBrush}"
                                                         Click="OnClick"
                                                         Icon="{ui:FontIcon Glyph=&#xE74D;}"
@@ -314,10 +312,4 @@
             </StackPanel>
         </Grid>
     </ScrollViewer>
-
-    <!--<Grid x:Name="HistoryContainer">
-            <TextBlock Text="Downloads"
-                       Style="{StaticResource TitleLargeTextBlockStyle}"
-                       Margin="0,0,0,36" />
-        </Grid>-->
 </Page>

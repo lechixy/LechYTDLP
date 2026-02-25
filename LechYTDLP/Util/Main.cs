@@ -16,36 +16,25 @@ namespace LechYTDLP.Util
             string[] placeholders = [
                 "Paste video link here...",
                 "Try me Beyonce... ✨",
-                "I want to download that cute cat video I saw yesterday...",
-                "Share me a playlist link...",
+                "I want to download that cute cat video...",
                 "I bet you have some cool videos to download...",
                 "Don't be shy, paste a link...",
                 "Your video link goes here...",
                 "Got a video in mind? Paste it here...",
                 "Ready to download? Paste the link...",
-                "I can download videos from over 1000 sites, try me with any link...",
+                "I can download videos from over 1000 sites...",
                 "Looking for something?..",
             ];
 
             Random rnd = new();
             int index = rnd.Next(placeholders.Length);
 
-            return placeholders[index];
+            return App.LocalizationService.Get($"Placeholder{index}");
         }
         public static LinearGradientBrush GetAppGradient(string App)
         {
             if (App.Contains("instagram", StringComparison.OrdinalIgnoreCase))
             {
-                //new LinearGradientBrush
-                //{
-                //    StartPoint = new Point(0, 0),
-                //    EndPoint = new Point(1, 0),
-                //    GradientStops = {
-                //    new GradientStop { Color = Color.FromArgb(255, 193, 53, 132), Offset = 0.0 }, // mor
-                //    new GradientStop { Color = Color.FromArgb(255, 253, 29, 29),  Offset = 0.5 }, // kırmızı
-                //    new GradientStop { Color = Color.FromArgb(255, 252, 175, 69), Offset = 1.0 }  // sarı
-                //}
-                //};
                 return new LinearGradientBrush
                 {
                     StartPoint = new Point(0, 0),

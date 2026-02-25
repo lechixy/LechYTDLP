@@ -10,7 +10,7 @@
   <Identity
     Name="776b4425-bcec-4032-ae9c-27f2ad8fc145"
     Publisher="CN=lechi"
-    Version="1.1.0.0" />
+    Version="1.1.2.0" />
 
   <mp:PhoneIdentity PhoneProductId="776b4425-bcec-4032-ae9c-27f2ad8fc145" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
@@ -34,7 +34,7 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="LechYTDLP"
+        DisplayName="Lech YT-DLP"
         Description="LechYTDLP"
         BackgroundColor="transparent"
         Square150x150Logo="Assets\Square150x150Logo.png"
@@ -42,13 +42,6 @@
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"  Square71x71Logo="Assets\SmallTile.png" Square310x310Logo="Assets\LargeTile.png"/>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
-      <Extensions>
-        <uap:Extension Category="windows.protocol">
-          <uap:Protocol Name="lechytdlp">
-            <uap:DisplayName>Lech YT-DLP</uap:DisplayName>
-          </uap:Protocol>
-        </uap:Extension>
-      </Extensions>
     </Application>
   </Applications>
 

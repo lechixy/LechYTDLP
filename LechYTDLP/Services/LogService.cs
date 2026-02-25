@@ -71,6 +71,8 @@ namespace LechYTDLP.Services
 
         public static void Add(string text, LogTag tag = LogTag.Normal)
         {
+            if (tag == LogTag.Error) text = $"[{App.LocalizationService.Get("ERROR")}] {text}";
+
             var item = new LogItem
             {
                 Message = text,

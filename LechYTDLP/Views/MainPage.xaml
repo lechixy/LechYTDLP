@@ -60,6 +60,7 @@
                        Foreground="{ThemeResource TextFillColorTertiaryBrush}"
                        TextWrapping="WrapWholeWords"
                        Name="Subtitle"
+                       x:Uid="LechYTdlpSubtitle"
                        TextAlignment="Center" />
         </Grid>
 
@@ -72,7 +73,7 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <TextBox TextChanged="TextBox_TextChanged"
-                     PlaceholderText="Try me beyonce"
+                     PlaceholderText="This will change..."
                      VerticalAlignment="Stretch"
                      Grid.Column="0"
                      Width="300"
@@ -93,12 +94,5 @@
                 <SymbolIcon Symbol="Download" />
             </Button>
         </Grid>
-
-        <InfoBar IsOpen="False"
-                 IsIconVisible="True"
-                 IsClosable="False"
-                 Title="Hey"
-                 x:Name="InfoBar"
-                 Message="You found the secret word :)" />
     </StackPanel>
 </Page>

@@ -72,44 +72,43 @@
                     <RepositionThemeTransition IsStaggeringEnabled="False" />
                 </StackPanel.ChildrenTransitions>
 
-                <TextBlock Text="Options"
+                <TextBlock x:Uid="Options"
                            Style="{StaticResource TitleLargeTextBlockStyle}" />
 
                 <!--File-->
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
-                           Text="File" />
+                           x:Uid="File" />
 
-                <controls:SettingsCard x:Name="FileNameSettingsCard"
-                                       Header="Filename template"
+                <controls:SettingsCard x:Name="FilenameSettingsCard"
+                                       x:Uid="FilenameSettings"
                                        HeaderIcon="{ui:FontIcon Glyph=&#xE8AC;}">
                     <controls:SettingsCard.Description>
-                        <HyperlinkButton x:Name="FileNameHyperLink"
-                                         Content="YT-DLP output template examples" />
+                        <HyperlinkButton x:Name="FilenameHyperLink"
+                                         x:Uid="FilenameHyperLink" />
                     </controls:SettingsCard.Description>
-                    <TextBox x:Name="FileNameTextBox"
+                    <TextBox x:Name="FilenameTextBox"
                              TextChanged="TextChanged"
-                             PlaceholderText="FilenameTemplate" />
+                             x:Uid="FilenameTextBox" />
                 </controls:SettingsCard>
 
                 <controls:SettingsCard x:Name="SaveToSettingsCard"
-                                       Description="Which directory should your downloaded media save"
-                                       Header="Save directory"
+                                       x:Uid="SaveToSetting"
                                        HeaderIcon="{ui:FontIcon Glyph=&#xE8B7;}">
                     <TextBox x:Name="SaveToTextBox"
-                             PlaceholderText="Downloads"
+                             x:Uid="SaveToTextBox"
                              TextChanged="TextChanged" />
                 </controls:SettingsCard>
 
-                <controls:SettingsCard Description="Embed thumbnail in the video as cover art"
-                                       Header="Embed thumbnail"
+                <controls:SettingsCard x:Uid="EmbedThumbnailSetting"
                                        x:Name="EmbedThumbnailSetting"
+                                       IsEnabled="False"
                                        HeaderIcon="{ui:FontIcon Glyph=&#xE8B9;}">
                     <ToggleSwitch x:Name="EmbedThumbnailSettingSwitch"
                                   Toggled="SwitchToggled" />
                 </controls:SettingsCard>
 
-                <controls:SettingsCard Description="Embed subtitles in the video (only for mp4, webm and mkv videos)"
-                                       Header="Embed subs"
+                <controls:SettingsCard x:Uid="EmbedSubsSetting"
+                                       IsEnabled="False"
                                        x:Name="EmbedSubsSetting"
                                        HeaderIcon="{ui:FontIcon Glyph=&#xE7F0;}">
                     <ToggleSwitch x:Name="EmbedSubsSettingSwitch"
@@ -118,7 +117,7 @@
 
                 <!--Account-->
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
-                           Text="Account" />
+                           x:Uid="Account" />
                 <!--<controls:HeaderedContentControl Header="Account" Margin="0,0,0,4">
                     <TextBlock FontSize="12"
                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
@@ -127,15 +126,30 @@
                 </controls:HeaderedContentControl>-->
 
                 <controls:SettingsCard x:Name="CookiesSettingsCard"
-                                       Header="Cookies file"
+                                       x:Uid="CookiesSetting"
                                        HeaderIcon="{ui:FontIcon Glyph=&#xE8BC;}">
                     <controls:SettingsCard.Description>
                         <HyperlinkButton x:Name="CookiesFileHyperLink"
-                                         Content="Hey! Why I need to pass my cookies to here?" />
+                                         x:Uid="CookiesFileHyperLink" />
                     </controls:SettingsCard.Description>
-                    <TextBox x:Name="CookiesFileTextBox"
-                             PlaceholderText="Path to cookie file"
-                             TextChanged="TextChanged" />
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="CookiesFileTextBox"
+                                 MaxWidth="300"
+                                 Grid.Column="0"
+                                 x:Uid="CookiesFileTextBox"
+                                 TextChanged="TextChanged" />
+                        <Button Grid.Column="1"
+                                Margin="8,0,0,0"
+                                x:Name="PickCookiesFileButton"
+                                Click="Button_Click">
+                            <SymbolIcon Symbol="OpenFile" />
+                        </Button>
+                    </Grid>
                 </controls:SettingsCard>
 
             </StackPanel>

@@ -6,6 +6,7 @@
              xmlns:local="using:LechYTDLP.Components"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:labs="using:CommunityToolkit.Labs.WinUI.MarqueeTextRns"
              mc:Ignorable="d">
 
     <UserControl.Resources>
@@ -21,7 +22,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        
+
         <!--Video Info-->
         <Grid ColumnSpacing="12"
               x:Name="VideoInfoGrid"
@@ -92,14 +93,23 @@
                            TextTrimming="CharacterEllipsis"
                            MaxLines="1"
                            TextWrapping="NoWrap" />
-                
+
                 <!-- Uploader -->
                 <TextBlock Grid.Row="2"
                            x:Name="VideoAltInfo"
                            Style="{ThemeResource CaptionTextBlockStyle}"
                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           TextTrimming="CharacterEllipsis"
                            MaxLines="2"
                            TextWrapping="Wrap" />
+                <!--<labs:MarqueeText Behavior="Looping"
+                                  Direction="Left"
+                                  Grid.Row="2"
+                                  FontSize="12"
+                                  x:Name="VideoAltInfo"
+                                  Style="{ThemeResource CaptionTextBlockStyle}"
+                                  Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                  RepeatBehavior="Forever" />-->
             </Grid>
         </Grid>
 
@@ -114,14 +124,14 @@
 
             <ComboBox Grid.Column="0"
                       x:Name="ResolutionSelect"
-                      Header="Resolution"
+                      x:Uid="Resolution"
                       DisplayMemberPath="Text"
                       PlaceholderText="Select"
                       SelectionChanged="Format_SelectionChanged" />
 
             <ComboBox Grid.Column="1"
                       x:Name="CodecSelect"
-                      Header="Codec"
+                      x:Uid="Codec"
                       DisplayMemberPath="Text"
                       Opacity="0"
                       PlaceholderText="Select"
@@ -144,7 +154,7 @@
 
             <ComboBox Grid.Column="0"
                       x:Name="AudioSelect"
-                      Header="Audio"
+                      x:Uid="Audio"
                       DisplayMemberPath="Text"
                       PlaceholderText="Select"
                       SelectionChanged="Format_SelectionChanged" />

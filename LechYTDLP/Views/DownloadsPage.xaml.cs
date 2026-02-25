@@ -217,12 +217,12 @@ namespace LechYTDLP.Views
                     CurrentThumbnailImage.Source = new BitmapImage(new Uri(info.Thumbnail ?? "https://placehold.co/320x180.png?text=No+Thumbnail"));
                 }
 
-                CurrentVideoTitle.Text = info.Title ?? "Unknown Title";
+                CurrentVideoTitle.Text = info.Title ?? App.LocalizationService.Get("UnknownTitle");
 
                 CurrentVideoUploaderAndSavingTo.Blocks.Clear();
                 var p = new Paragraph();
-                p.Inlines.Add(new Run { Text = info.Uploader ?? "Unknown Uploader", FontWeight = Microsoft.UI.Text.FontWeights.Bold });
-                p.Inlines.Add(new Run { Text = $" • Saving to {SettingsService.DownloadPath}" });
+                p.Inlines.Add(new Run { Text = info.Uploader ?? App.LocalizationService.Get("UnknownUploader"), FontWeight = Microsoft.UI.Text.FontWeights.Bold });
+                p.Inlines.Add(new Run { Text = $" • {App.LocalizationService.GetString("SavingTo", SettingsService.DownloadPath)}" });
                 CurrentVideoUploaderAndSavingTo.Blocks.Add(p);
 
                 //CurrentVideoUploaderAndSavingTo.Text = $"{info.uploader ?? "Unknown Uploader"} - Saving to {SettingsService.DownloadPath}";
@@ -252,14 +252,14 @@ namespace LechYTDLP.Views
                         catch (Exception ex)
                         {
                             Debug.WriteLine(ex);
-                            App.InfoBarService.Show(
-                                new InfoBarMessage(
-                                    "Download again failed",
-                                    ex.Message,
-                                    InfoBarSeverity.Error,
-                                    4000
-                                )
-                            );
+
+                            App.InfoBarService.Show(new InfoBarMessage
+                            {
+                                Title = App.LocalizationService.Get("DownloadFailed"),
+                                Message = ex.Message,
+                                Severity = InfoBarSeverity.Error,
+                                DurationMs = 4000
+                            });
                         }
                     }
                     else if (flyout.Name == "OpenInExplorer")
@@ -285,9 +285,15 @@ namespace LechYTDLP.Views
 
                         if (flyout.Name == "CopyLink") package.SetText(dataContext.Url);
                         else if (flyout.Name == "CopyFilepath") package.SetText(dataContext.FilePath);
-                        else if (flyout.Name == "CopyTitle") package.SetText(dataContext.Info.Title ?? "No title");
+                        else if (flyout.Name == "CopyTitle") package.SetText(dataContext.Info.Title ?? App.LocalizationService.Get("UnknownTitle"));
 
-                        App.InfoBarService.Show(new InfoBarMessage("Copied to clipboard", "", InfoBarSeverity.Informational, 3000));
+                        App.InfoBarService.Show(new InfoBarMessage
+                        {
+                            Title = App.LocalizationService.Get("CopiedToClipboard"),
+                            Message = "",
+                            Severity = InfoBarSeverity.Informational,
+                            DurationMs = 3000
+                        });
                         Clipboard.SetContent(package);
                     }
                     else if (flyout.Name == "Delete")
@@ -297,26 +303,24 @@ namespace LechYTDLP.Views
                         {
                             await App.DatabaseService.DeleteByGuidIdAsync(dataContext.Id.ToString());
                             await UpdateHistoryQueue(true);
-                            App.InfoBarService.Show(
-                                new InfoBarMessage(
-                                    "Deleted video from history",
-                                    "",
-                                    InfoBarSeverity.Informational,
-                                    3000
-                                )
-                            );
+                            App.InfoBarService.Show(new InfoBarMessage
+                            {
+                                Title = App.LocalizationService.Get("DeletedFromHistory"),
+                                Message = "",
+                                Severity = InfoBarSeverity.Informational,
+                                DurationMs = 3000
+                            });
                         }
                         catch (Exception ex)
                         {
                             Debug.WriteLine(ex);
-                            App.InfoBarService.Show(
-                                new InfoBarMessage(
-                                    "Delete failed",
-                                    ex.Message,
-                                    InfoBarSeverity.Error,
-                                    4000
-                                )
-                            );
+                            App.InfoBarService.Show(new InfoBarMessage
+                            {
+                                Title = App.LocalizationService.Get("DeleteFailed"),
+                                Message = ex.Message,
+                                Severity = InfoBarSeverity.Error,
+                                DurationMs = 4000
+                            });
                         }
                     }
                 }

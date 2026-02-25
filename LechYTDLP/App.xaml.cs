@@ -7,7 +7,9 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.Windows.ApplicationModel.Resources;
 using Microsoft.Windows.AppLifecycle;
+using Microsoft.Windows.Globalization;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -30,25 +32,27 @@ namespace LechYTDLP
     {
         public static Window? Window { get; private set; }
 
-        public static int Major => 1;
-        public static int Year => DateTime.Now.Year;
-        public static int Minor => 1;
-
         /// <summary>
-        /// Application version string in the format "Major.Minor.Year".
+        /// Application version string in the format of "Major.Minor.Build", e.g. "1.0.0"
         /// </summary>
-        public static string AppVersion => $"{Major}.{Minor}.{Year}";
+        public static string GetAppVersion()
+        {
+            var v = Package.Current.Id.Version;
+            return $"{v.Major}.{v.Minor}.{v.Build}";
+        }
         public static string GithubLink => "https://github.com/lechixy/LechYTDLP";
 
         // Api Server for browser extension
         public static LocalApiServer ApiServer { get; private set; } = null!;
 
         // Services
+        public static SettingsService SettingsService { get; } = new SettingsService();
         public static DownloadsService DownloadService { get; } = new DownloadsService();
         public static INavigationService NavigationService { get; } = new NavigationService();
         public static InfoBarService InfoBarService { get; } = new();
         public static DatabaseService DatabaseService { get; } = new();
         public static FormatDialogService FormatDialogService { get; private set; } = null!;
+        public static LocalizationService LocalizationService { get; } = new LocalizationService();
 
         // Controllers
         public static DownloadController DownloadController { get; } = new();
@@ -74,19 +78,30 @@ namespace LechYTDLP
             ApiServer = new LocalApiServer();
             ApiServer.Start();
 
+            if (SettingsService.AppLanguage.Code != "system")
+            {
+                ApplicationLanguages.PrimaryLanguageOverride = SettingsService.AppLanguage.Code;
+                Debug.WriteLine($"App language set to {SettingsService.AppLanguage.Code}");
+            }
+
             Window = new MainWindow();
             Window.Activate();
 
             FormatDialogService = new FormatDialogService(Window);
 
-            LogService.Add("✨ The logs will be appear here, mate <3", LogTag.Lechixy);
+            LogService.Add(LocalizationService.Get("FirstLog"), LogTag.Lechixy);
 
             ApiServer.DownloadRequested += async data =>
             {
-                Debug.WriteLine($"{data.ExtensionBrowser} extension added media: {data.Url}");
-                LogService.Add($"{data.ExtensionBrowser} extension added media: {data.Url}", LogTag.ApiServer);
+                Debug.WriteLine(LocalizationService.GetString("ExtensionAddedMediaLog", data.ExtensionBrowser, data.Url));
+                LogService.Add(LocalizationService.GetString("ExtensionAddedMediaLog", data.ExtensionBrowser, data.Url), LogTag.ApiServer);
 
-                InfoBarService.Show(new InfoBarMessage($"{data.ExtensionBrowser} extension added media", "", InfoBarSeverity.Success, 5000, false));
+                InfoBarService.Show(new InfoBarMessage
+                {
+                    Title = LocalizationService.GetString("ExtensionAddedMediaInfoBarMsg", data.ExtensionBrowser),
+                    Message = "",
+                    Severity = InfoBarSeverity.Success,
+                });
 
                 await DownloadController.SearchAsync(data.Url);
             };

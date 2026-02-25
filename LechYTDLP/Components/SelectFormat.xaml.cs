@@ -85,9 +85,10 @@ namespace LechYTDLP.Components
             videoData = info;
 
             ThumbnailImage.Source = new BitmapImage(new Uri(info.Thumbnail ?? "https://placehold.co/320x180.png?text=No+Thumbnail"));
-            VideoTitle.Text = info.Title ?? "Unknown Title";
-            VideoUploader.Text = $"@{info.Uploader}" ?? "Unknown Uploader";
-            VideoAltInfo.Text = $"{info.ExtractorKey} • Saving: {info.Filename!.Split('.')[0]}.?";
+            VideoTitle.Text = info.Title ?? App.LocalizationService.Get("UnknownTitle");
+            VideoUploader.Text = $"@{info.Uploader}" ?? App.LocalizationService.Get("UnknownUploader");
+            VideoUploader.Text += $" • {info.ExtractorKey}";
+            VideoAltInfo.Text = $"{App.LocalizationService.Get("Saving")}: {info.Filename!.Split('.')[0]}.?";
 
             var VideoFormats = info.Formats!;
 
@@ -98,12 +99,12 @@ namespace LechYTDLP.Components
             NewResolutions.Add(new ComboOption
             {
                 FormatId = "no",
-                Text = "Doesn't include video"
+                Text = App.LocalizationService.Get("DontIncludeVideo")
             });
             NewAudios.Add(new ComboOption
             {
                 FormatId = "no",
-                Text = "Doesn't include audio"
+                Text = App.LocalizationService.Get("DontIncludeAudio")
             });
             ResolutionSelect.SelectedIndex = 0;
             AudioSelect.SelectedIndex = 0;
@@ -180,7 +181,7 @@ namespace LechYTDLP.Components
                         for (int i = 0; i < SelectedVideo.Formats.Length; i++)
                         {
                             var VCodec = SelectedVideo.Formats[i].VCodec;
-                            string CodecText = VCodec != null ? VCodec!.Split('.')[0] : "No Codec Info";
+                            string CodecText = VCodec != null ? VCodec!.Split('.')[0] : App.LocalizationService.Get("NoCodecInfo");
 
                             NewCodecs.Add(new ComboOption
                             {
@@ -203,11 +204,10 @@ namespace LechYTDLP.Components
                         // Update SelectedFormat with the first format's ID and object
                         SelectedFormat.VideoId = SelectedVideo.Formats[0].FormatId;
                         SelectedFormat.SelectedVideo = SelectedVideo.Formats[0];
-                        LogService.Add($"Selected video format ID: {SelectedFormat.VideoId}", LogTag.LechYTDLP);
 
                         SelectedFormat.Codec = NewCodecs[0].VCodec;
                         SelectedFormat.FileExtension = SelectedVideo.Formats[0].Ext;
-                        LogService.Add($"Selected video codec: {SelectedFormat.Codec}", LogTag.LechYTDLP);
+                        LogService.Add($"{App.LocalizationService.Get("SelectedVideoLog")}: {SelectedFormat.VideoId} - {SelectedFormat.Codec}", LogTag.LechYTDLP);
 
                         // Set default codec selection to the first codec because it's usually the best one
                         //if (AllFormatsHaveSameCodec) CodecSelect.SelectedIndex = NewCodecs.Count - 1;
@@ -224,7 +224,7 @@ namespace LechYTDLP.Components
                         {
                             VideoInfo.Visibility = Visibility.Visible;
                             CodecSelect.IsEnabled = false;
-                            VideoInfo.Text = $"{DownloadSuggester.FormatFileSize(DecideFileSize)} • Only one codec";
+                            VideoInfo.Text = $"{DownloadSuggester.FormatFileSize(DecideFileSize)} • {App.LocalizationService.Get("OnlyOneCodec")}";
                             return;
                         }
 
@@ -234,7 +234,7 @@ namespace LechYTDLP.Components
                             var suggestedFormat = DownloadSuggester.FormatTextSuggestion(SelectedFormat.Codec);
                             VideoInfo.Text = $"{DownloadSuggester.FormatFileSize(DecideFileSize)} • {suggestedFormat}";
                         }
-                        else VideoInfo.Text = $"{DownloadSuggester.FormatFileSize(DecideFileSize)} • Not suggested";
+                        else VideoInfo.Text = $"{DownloadSuggester.FormatFileSize(DecideFileSize)} • {App.LocalizationService.Get("NotSuggested")}";
                     }
                 }
                 else if (combo.Name == "CodecSelect")
@@ -250,7 +250,7 @@ namespace LechYTDLP.Components
                     SelectedFormat.SelectedVideo = SelectedVideo;
                     SelectedFormat.Codec = Selected.VCodec;
                     SelectedFormat.FileExtension = SelectedVideo.Ext;
-                    LogService.Add($"Selected video formatId-codec: {SelectedFormat.VideoId} - {SelectedFormat.Codec}", LogTag.LechYTDLP);
+                    LogService.Add($"{App.LocalizationService.Get("SelectedVideoLog")}: {SelectedFormat.VideoId} - {SelectedFormat.Codec}", LogTag.LechYTDLP);
 
                     var DecideFileSize = SelectedVideo.FileSize != null ?
                         SelectedVideo.FileSize : SelectedVideo.FileSizeApprox;
@@ -263,7 +263,7 @@ namespace LechYTDLP.Components
                         var suggestedFormat = DownloadSuggester.FormatTextSuggestion(SelectedFormat.Codec);
                         VideoInfo.Text = $"{DownloadSuggester.FormatFileSize(DecideFileSize)} • {suggestedFormat}";
                     }
-                    else VideoInfo.Text = $"{DownloadSuggester.FormatFileSize(DecideFileSize)} • Not suggested";
+                    else VideoInfo.Text = $"{DownloadSuggester.FormatFileSize(DecideFileSize)} • {App.LocalizationService.Get("NotSuggested")}";
                 }
                 else if (combo.Name == "AudioSelect")
                 {
@@ -284,7 +284,7 @@ namespace LechYTDLP.Components
                     SelectedFormat.SelectedAudio = SelectedAudio;
                     SelectedFormat.AudioId = SelectedAudio.FormatId;
                     SelectedFormat.AudioFileExtension = SelectedAudio.Ext;
-                    LogService.Add($"Selected audio formatId-codec: {SelectedFormat.AudioId} - {SelectedFormat.Audio}", LogTag.LechYTDLP);
+                    LogService.Add($"{App.LocalizationService.Get("SelectedAudioLog")}: {SelectedFormat.AudioId} - {SelectedFormat.Audio}", LogTag.LechYTDLP);
 
                     AudioInfo.Visibility = Visibility.Visible;
                     var DecideFileSize = SelectedAudio.FileSize != null ?
@@ -303,13 +303,13 @@ namespace LechYTDLP.Components
             var codecSelected = CodecSelect.SelectedItem != null;
 
             bool videoValid =
-                video?.Text is string videoText &&
-                !videoText.Contains("Doesn't include", StringComparison.OrdinalIgnoreCase) &&
+                video?.FormatId is string videoText &&
+                !videoText.Contains("no", StringComparison.OrdinalIgnoreCase) &&
                 codecSelected;
 
             bool audioValid =
-                audio?.Text is string audioText &&
-                !audioText.Contains("Doesn't include", StringComparison.OrdinalIgnoreCase);
+                audio?.FormatId is string audioText &&
+                !audioText.Contains("no", StringComparison.OrdinalIgnoreCase);
 
             bool isReady = videoValid || audioValid;
 

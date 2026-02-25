@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LechYTDLP.Util
 {
@@ -21,13 +22,14 @@ namespace LechYTDLP.Util
             if (error == GenericError.NoFileOrDirectory)
             {
                 Console.WriteLine($"File cannot be opened.");
-                App.InfoBarService.Show(new InfoBarMessage(
-                    "File cannot be opened",
-                    $"Check the file, it may have been moved or deleted.",
-                    InfoBarSeverity.Error,
-                    5000,
-                    false
-                ));
+                App.InfoBarService.Show(new InfoBarMessage
+                {
+                    Title = App.LocalizationService.Get("FileCantBeOpened"),
+                    Message = App.LocalizationService.Get("FileCantBeOpenedMsg"),
+                    Severity = InfoBarSeverity.Error,
+                    DurationMs = 5000,
+                    IsCancelable = false
+                });
             }
         }
         public static void Check(Exception ex)
@@ -35,61 +37,71 @@ namespace LechYTDLP.Util
             // There is no yt-dlp executable.
             if (ex.Message.Contains("An error occurred trying to start process"))
             {
-                LogService.Add($"Error: There is no yt-dlp.exe! Check path because we can't find any executable. Details: {ex.Message}", LogTag.Error);
-                App.InfoBarService.Show(new InfoBarMessage(
-                    "There is no yt-dlp.exe",
-                    "Check yt-dlp path because we can't find any executable.",
-                    InfoBarSeverity.Error,
-                    0,
-                    true
-                ));
+                LogService.Add(App.LocalizationService.GetString("NoYTdlpExecutableLog", ex.Message), LogTag.Error);
+                App.InfoBarService.Show(new InfoBarMessage
+                {
+                    Title = App.LocalizationService.Get("NoYTdlpExecutable"),
+                    Message = App.LocalizationService.Get("NoYTdlpExecutableMsg"),
+                    Severity = InfoBarSeverity.Error,
+                    DurationMs = 0,
+                    IsCancelable = true
+                });
             }
             // There is no ffmpeg executable.
             else if (ex.Message.Contains("ffmpeg not found") || ex.Message.Contains("ffmpeg-location"))
             {
-                LogService.Add($"Error: There is no ffmpeg.exe! Check path because we can't find any executable. Details: {ex.Message}", LogTag.Error);
-                App.InfoBarService.Show(new InfoBarMessage(
-                    "There is no ffmpeg.exe",
-                    "Check ffmpeg path because we can't find any executable.",
-                    InfoBarSeverity.Error,
-                    0,
-                    true
-                ));
+                LogService.Add(App.LocalizationService.GetString("NoFFmpegExecutableLog", ex.Message), LogTag.Error);
+                App.InfoBarService.Show(new InfoBarMessage
+                {
+                    Title = App.LocalizationService.Get("NoFFmpegExecutable"),
+                    Message = App.LocalizationService.Get("NoFFmpegExecutableMsg"),
+                    Severity = InfoBarSeverity.Error,
+                    DurationMs = 0,
+                    IsCancelable = true
+                });
             }
             // Link is invalid.
             else if (ex.Message.Contains("is not a valid URL"))
             {
-                LogService.Add($"Error: The provided link is invalid. Details: {ex.Message}", LogTag.Error);
-                App.InfoBarService.Show(new InfoBarMessage(
-                    "Invalid link",
-                    "The provided link is invalid. Please check and try again.",
-                    InfoBarSeverity.Warning,
-                    5000,
-                    false
-                ));
+                LogService.Add(App.LocalizationService.GetString("InvalidLinkLog", ex.Message), LogTag.Error);
+                App.InfoBarService.Show(new InfoBarMessage
+                {
+                    Title = App.LocalizationService.Get("InvalidLink"),
+                    Message = App.LocalizationService.Get("InvalidLinkMsg"),
+                    Severity = InfoBarSeverity.Warning,
+                    DurationMs = 5000,
+                    IsCancelable = false
+                });
             }
-            // Instagram sent an empty media response.
-            else if (ex.Message.Contains("Instagram sent an empty media response"))
+            // Server sent an empty media response.
+            else if (ex.Message.Contains("sent an empty media response"))
             {
-                LogService.Add($"Error: Instagram sent an empty media response {ex.Message}", LogTag.Error);
-                App.InfoBarService.Show(new InfoBarMessage(
-                    "Empty media response",
-                    "You need to pass cookies to YT-DLP",
-                    InfoBarSeverity.Error,
-                    0,
-                    false
-                ));
+                LogService.Add($"Server sent an empty media response {ex.Message}", LogTag.Error);
+                App.InfoBarService.Show(new InfoBarMessage
+                {
+                    Title = "Empty media response",
+                    Message = "Maybe passing your cookies for this website from Settings can solve this.",
+                    Severity = InfoBarSeverity.Error,
+                    DurationMs = 0,
+                    IsCancelable = true
+                });
             }
             else
             {
                 LogService.Add(ex.Message, LogTag.Error);
-                App.InfoBarService.Show(new InfoBarMessage(
-                    "Unhandled error",
-                    ex.Message,
-                    InfoBarSeverity.Error,
-                    0,
-                    true
-                ));
+
+                // YouTube is forcing SABR streaming for this client.
+                // This is not an error, but yt-dlp throws an exception for some reason. We can just ignore it.
+                if (ex.Message.Contains("YouTube is forcing SABR streaming for this client.")) return;
+
+                App.InfoBarService.Show(new InfoBarMessage
+                {
+                    Title = App.LocalizationService.Get("UnhandledError"),
+                    Message = ex.Message,
+                    Severity = InfoBarSeverity.Error,
+                    DurationMs = 0,
+                    IsCancelable = true
+                });
             }
         }
     }

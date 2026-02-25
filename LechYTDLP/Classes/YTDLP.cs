@@ -278,7 +278,7 @@ namespace LechYTDLP.Classes
 
             var ytdlpArgs = args.BuildArgs();
             string Arguments = $"\"{url}\" {ytdlpArgs} {mustHaveArgs}";
-            LogService.Add($"🚩 Starting YT-DLP with:", LogTag.LechYTDLP);
+            LogService.Add($"🚩 {App.LocalizationService.Get("StartingYTdlpWithLog")}:", LogTag.LechYTDLP);
             LogService.Add($"{SettingsService.YTDLPPath} {Arguments}", LogTag.Normal);
 
             _process = new Process
@@ -302,7 +302,7 @@ namespace LechYTDLP.Classes
                 {
                     if (args.DumpJson)
                     {
-                        LogService.Add("ℹ️ Video bilgileri alınıyor...", LogTag.Warning);
+                        LogService.Add($"ℹ️ {App.LocalizationService.Get("GettingVideoInfoLog")}...", LogTag.Warning);
                     }
                     else if (e.Data.StartsWith("[download]") && e.Data.Contains("of") && e.Data.Contains("at"))
                     {
@@ -368,7 +368,7 @@ namespace LechYTDLP.Classes
                 DumpJson = true,
                 OutputPath = $"{SettingsService.DownloadPath}\\{SettingsService.FilenameTemplate}"
             };
-            LogService.Add($"⏳ Getting video info: {url}", LogTag.LechYTDLP);
+            LogService.Add($"⏳ {App.LocalizationService.Get("GettingVideoInfoLog")}: {url}", LogTag.LechYTDLP);
 
             // If using blob data, read from local file instead
             if (SettingsService.IsUsingBlobData)
@@ -453,7 +453,7 @@ namespace LechYTDLP.Classes
         {
             var tcs = new TaskCompletionSource<int>();
 
-            LogService.Add($"Downloading video: {url}", LogTag.LechYTDLP);
+            LogService.Add($"⬇️ {App.LocalizationService.Get("DownloadingVideoLog")}: {url}", LogTag.LechYTDLP);
 
             void OnOutput(string data)
             {

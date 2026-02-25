@@ -11,7 +11,7 @@
     <StackPanel Orientation="Vertical"
                 Margin="36,40,36,0">
 
-        <TextBlock Text="Logs"
+        <TextBlock x:Uid="Logs"
                    Style="{StaticResource TitleLargeTextBlockStyle}"
                    Margin="0,0,0,24" />
 
@@ -23,7 +23,8 @@
             <ListView Grid.Row="0"
                       Height="400"
                       Padding="12"
-                      x:Name="LogListView" SelectionMode="None"
+                      x:Name="LogListView"
+                      SelectionMode="None"
                       Background="{StaticResource SmokeFillColorDefaultBrush}"
                       CornerRadius="{StaticResource OverlayCornerRadius}">
                 <ListView.ItemTemplate>
@@ -31,7 +32,9 @@
                         <Grid>
                             <Grid.ContextFlyout>
                                 <MenuFlyout>
-                                    <MenuFlyoutItem x:Name="Copy" Text="Copy" Click="MenuFlyoutItem_Click" />
+                                    <MenuFlyoutItem x:Name="Copy"
+                                                    x:Uid="Copy"
+                                                    Click="MenuFlyoutItem_Click" />
                                 </MenuFlyout>
                             </Grid.ContextFlyout>
                             <TextBlock Text="{x:Bind Message}"
@@ -56,8 +59,6 @@
                     </Style>
                 </ListView.ItemContainerStyle>
             </ListView>
-
         </Grid>
-
     </StackPanel>
 </Page>

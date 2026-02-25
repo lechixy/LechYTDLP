@@ -27,11 +27,46 @@ namespace LechYTDLP.Views;
 /// </summary>
 public sealed partial class SettingsPage : Page
 {
+
+    public class LanguageItem
+    {
+        public required string DisplayName { get; set; }
+        public required string Code { get; set; }
+    }
+
+    public List<LanguageItem> Languages { get; } =
+    [
+        // new LanguageItem { DisplayName = App.LocalizationService.Get("System"), Code = "system" },
+        new LanguageItem { DisplayName = "English", Code = "en-US" },
+        new LanguageItem { DisplayName = "Türkçe", Code = "tr-TR" },
+    ];
+
+    public class ThemeItem
+    {
+        public required string DisplayName { get; set; }
+        public required string Value { get; set; }
+    }
+    public List<ThemeItem> Themes { get; } =
+    [
+        new ThemeItem { DisplayName = App.LocalizationService.Get("System"), Value = "system" },
+        new ThemeItem { DisplayName = App.LocalizationService.Get("Light"), Value = "light" },
+        new ThemeItem { DisplayName = App.LocalizationService.Get("Dark"), Value = "dark" },
+    ];
+    public List<ThemeItem> Backdrops { get; } =
+    [
+        new ThemeItem { DisplayName = App.LocalizationService.Get("None"), Value = "none" },
+        new ThemeItem { DisplayName = "Mica", Value = "mica" },
+        new ThemeItem { DisplayName = App.LocalizationService.Get("Acrylic"), Value = "acrylic" },
+        new ThemeItem { DisplayName = "MicaAlt", Value = "micaalt" },
+    ];
+
     enum SettingType
     {
         PathYTDLP,
         PathFFMPEG
     }
+
+    private bool _isInitializingTheme = true;
 
     public SettingsPage()
     {
@@ -49,12 +84,22 @@ public sealed partial class SettingsPage : Page
             ? "None"
             : textInfo.ToTitleCase(SettingsService.JavaScriptRuntime);
 
+        // # Customization
+        _isInitializingTheme = true;
+        AppLanguageComboBox.ItemsSource = Languages;
+        AppLanguageComboBox.SelectedIndex = Languages.FindIndex(x => x.Code == SettingsService.AppLanguage.Code);
+        AppThemeComboBox.ItemsSource = Themes;
+        AppThemeComboBox.SelectedIndex = Themes.FindIndex(x => x.Value == SettingsService.AppTheme.Value);
+        AppBackdropComboBox.ItemsSource = Backdrops;
+        AppBackdropComboBox.SelectedIndex = Backdrops.FindIndex(x => x.Value == SettingsService.AppBackdrop.Value);
+        _isInitializingTheme = false;
+
         // # Developer Options
         BlobDataSettingSwitch.IsOn = SettingsService.IsUsingBlobData;
 
         // # About
-        AboutExpander.Description = $"🤍 Made by @lechixy";
-        AboutExpanderContent.Text = $"Version {App.AppVersion}";
+        AboutExpander.Description = App.LocalizationService.Get("MadeBy");
+        AboutExpanderContent.Text = $"{App.LocalizationService.Get("Version")} {App.GetAppVersion()}";
         GithubLink.NavigateUri = new Uri(App.GithubLink);
     }
 
@@ -104,11 +149,11 @@ public sealed partial class SettingsPage : Page
 
     private async void CheckVersion()
     {
-        ApplicationStatusCheck.Description = "Checking YT-DLP and FFmpeg versions...";
+        ApplicationStatusCheck.Description = App.LocalizationService.Get("ApplicationStatusCheck");
         try
         {
             var YTdlpVersion = await YTDLP.CheckExecutable(YTDLP.CheckExecutableApp.YTDLP);
-            ApplicationStatusCheck.Description = $"✅ YT-DLP ({YTdlpVersion}) • Checking FFmpeg version...";
+            ApplicationStatusCheck.Description = $"✅ YT-DLP ({YTdlpVersion}) • {App.LocalizationService.Get("ApplicationStatusCheckCheckingFFmpeg")}";
             var FFmpegVersion = await YTDLP.CheckExecutable(YTDLP.CheckExecutableApp.FFMPEG);
             ApplicationStatusCheck.Description = $"✅ YT-DLP ({YTdlpVersion}) • ✅ FFmpeg ({FFmpegVersion})";
         }
@@ -116,7 +161,7 @@ public sealed partial class SettingsPage : Page
         {
             Debug.WriteLine(ex.Message);
             var ErroredApp = ex.Message.Split('"')[1] == SettingsService.YTDLPPath ? "YT-DLP" : "FFmpeg";
-            ApplicationStatusCheck.Description = $"⚠️ {ErroredApp} is not working, check executable path.";
+            ApplicationStatusCheck.Description = $"⚠️ {ErroredApp} {App.LocalizationService.Get("ApplicationStatusCheckNotWorking")}";
             return;
         }
     }
@@ -168,12 +213,32 @@ public sealed partial class SettingsPage : Page
     {
         if (sender is ComboBox comboBox)
         {
-            string selected = (string)comboBox.SelectedItem;
+            if (_isInitializingTheme) return;
+
             if (comboBox.Name == "JsRuntimeComboBox")
             {
+                string selected = (string)comboBox.SelectedItem;
+
                 // Use "None" as a display value for an empty string, but store an empty string in settings
                 if (selected == "None") selected = "";
                 SettingsService.JavaScriptRuntime = selected.ToLower();
+            }
+            else if (comboBox.Name == "AppThemeComboBox")
+            {
+                var selectedTheme = (ThemeItem)comboBox.SelectedItem;
+                SettingsService.AppTheme = selectedTheme;
+                App.SettingsService.AppThemeChanged?.Invoke(selectedTheme);
+            }
+            else if (comboBox.Name == "AppBackdropComboBox")
+            {
+                var selectedBackdrop = (ThemeItem)comboBox.SelectedItem;
+                SettingsService.AppBackdrop = selectedBackdrop;
+                App.SettingsService.AppBackdropChanged?.Invoke(selectedBackdrop);
+            }
+            else if (comboBox.Name == "AppLanguageComboBox")
+            {
+                var selectedLanguage = (LanguageItem)comboBox.SelectedItem;
+                LocalizationService.SetLanguage(selectedLanguage.Code == "system" ? null : selectedLanguage);
             }
         }
     }

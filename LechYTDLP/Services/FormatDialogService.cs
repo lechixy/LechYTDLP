@@ -19,14 +19,9 @@ namespace LechYTDLP.Services
         public SelectedFormat SelectedFormat { get; set; } = default!;
     }
 
-    public class FormatDialogService
+    public class FormatDialogService(Window window)
     {
-        private readonly Window _window;
-
-        public FormatDialogService(Window window)
-        {
-            _window = window;
-        }
+        private readonly Window _window = window;
 
         public async Task<FormatSelectionResult?> ShowAsync(string url, VideoInfo videoInfo)
         {
@@ -41,11 +36,11 @@ namespace LechYTDLP.Services
 
                     var dialog = new ContentDialog
                     {
-                        Title = "Select format to download",
+                        Title = App.LocalizationService.Get("SelectFormat"),
                         Content = content,
-                        PrimaryButtonText = "Save",
+                        PrimaryButtonText = App.LocalizationService.Get("Save"),
                         PrimaryButtonStyle = Application.Current.Resources["AccentButtonStyle"] as Style,
-                        CloseButtonText = "Cancel",
+                        CloseButtonText = App.LocalizationService.Get("Cancel"),
                         IsPrimaryButtonEnabled = false,
                         XamlRoot = _window.Content.XamlRoot,
                         Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style

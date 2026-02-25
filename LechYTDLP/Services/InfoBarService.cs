@@ -1,6 +1,7 @@
 ﻿using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
@@ -11,13 +12,19 @@ using System.Threading.Tasks;
 
 namespace LechYTDLP.Services
 {
-    public record InfoBarMessage(
-        string Title,
-        string Message,
-        InfoBarSeverity Severity,
-        int DurationMs = 5000,
-        bool IsCancelable = false
-    );
+
+    public class InfoBarMessage 
+    {
+        // Required properties
+        public required string Title { get; init; }
+        public required string Message { get; init; }
+        public required InfoBarSeverity Severity { get; init; }
+        // Optional action button
+        public ButtonBase? ActionButton { get; init; } = null;
+        // Optional properties with default values
+        public int DurationMs { get; init; } = 5000;
+        public bool IsCancelable { get; init; } = false;
+    }
 
     public class InfoBarService
     {
@@ -69,6 +76,8 @@ namespace LechYTDLP.Services
             //{
             //    _infoBar.Background = blabla
             //}
+
+            _infoBar.ActionButton = msg.ActionButton;
 
             _infoBar.IsClosable = msg.IsCancelable || msg.DurationMs <= 0;
 

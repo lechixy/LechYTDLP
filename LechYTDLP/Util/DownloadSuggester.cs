@@ -18,7 +18,7 @@ namespace LechYTDLP.Util
     {
         public static string FormatFileSize(long? bytes)
         {
-            if (bytes == null) return "Unknown filesize";
+            if (bytes == null) return App.LocalizationService.Get("UnknownFilesize");
             if (bytes < 0) return "—";
             if (bytes == 0) return "0 B";
 
@@ -42,17 +42,17 @@ namespace LechYTDLP.Util
             // H.264 (AVC1) is widely supported
             if (Map(VCodec) == VideoCodec.AVC1) 
             {
-                return "Most compatible • Larger file size";
+                return App.LocalizationService.Get("SuggestAVC1");
             } else if (Map(VCodec) == VideoCodec.VP9) 
             {
-                return "Moderately compatible • Medium file size";
+                return App.LocalizationService.Get("SuggestVP9");
             } 
             else if (Map(VCodec) == VideoCodec.AV1) 
             {
-                return "Less compatible • Smaller file size";
+                return App.LocalizationService.Get("SuggestAV1");
             }
 
-            return "unknown";
+            return App.LocalizationService.Get("Unknown");
         }
 
         public static VideoFormat? SuggestBestFormat(MergedVideoFormat merged)

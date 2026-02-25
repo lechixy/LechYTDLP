@@ -22,28 +22,28 @@ namespace LechYTDLP.Views;
 /// <summary>
 /// An empty page that can be used on its own or navigated to within a Frame.
 /// </summary>
-public sealed partial class OptionsPage : Page
-{
+public sealed partial class OptionsPage : Page {
+    enum OptionType
+    {
+        CookiesFile
+    }
+
     public OptionsPage()
     {
         InitializeComponent();
 
         // File
-        SaveToTextBox.PlaceholderText = SettingsService.DownloadPath;
         SaveToTextBox.Text = SettingsService.DownloadPath;
-        FileNameTextBox.PlaceholderText = SettingsService.FilenameTemplate;
-        FileNameTextBox.Text = SettingsService.FilenameTemplate;
+        FilenameTextBox.Text = SettingsService.FilenameTemplate;
         EmbedThumbnailSettingSwitch.IsOn = SettingsService.EmbedThumbnail;
         EmbedSubsSettingSwitch.IsOn = SettingsService.EmbedSubs;
 
         // Account
-        CookiesFileTextBox.PlaceholderText = SettingsService.CookiesfilePath;
         CookiesFileTextBox.Text = SettingsService.CookiesfilePath;
 
-
         // Hyperlinks
-        FileNameHyperLink.NavigateUri = new Uri("https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#output-template");
-        CookiesFileHyperLink.NavigateUri = new Uri("https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp");
+        FilenameHyperLink.NavigateUri = new Uri("https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#output-template");
+        CookiesFileHyperLink.NavigateUri = new Uri("https://github.com/lechixy/LechYTDLP?tab=readme-ov-file#why-i-need-to-pass-my-cookies-here");
     }
 
     private void SwitchToggled(object sender, RoutedEventArgs e)
@@ -95,6 +95,24 @@ public sealed partial class OptionsPage : Page
                     SettingsService.CookiesfilePath = textbox.Text;
 
             }
+        }
+    }
+
+    private async void PickFile(OptionType Which)
+    {
+        if (App.Window == null) return;
+        var path = await App.PickFileAsync([".txt"], App.Window);
+        if (path == null) return;
+
+        if (Which == OptionType.CookiesFile)
+            CookiesFileTextBox.Text = path;
+    }
+
+    private void Button_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn)
+        {
+            if (btn.Name == "PickCookiesFileButton") PickFile(OptionType.CookiesFile);
         }
     }
 }

@@ -38,19 +38,17 @@
                     <RepositionThemeTransition IsStaggeringEnabled="False" />
                 </StackPanel.ChildrenTransitions>
 
-                <TextBlock Text="Settings"
+                <TextBlock x:Uid="Settings"
                            Style="{StaticResource TitleLargeTextBlockStyle}" />
 
                 <!--YT-DLP-->
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
                            Text="YT-DLP" />
 
-                <controls:SettingsExpander Description="How yt-dlp should treat you?"
-                                           Header="Customize YT-DLP"
+                <controls:SettingsExpander x:Uid="CustomizeYTDLP"
                                            HeaderIcon="{ui:FontIcon Glyph=&#xE713;}">
                     <controls:SettingsExpander.Items>
-                        <controls:SettingsCard Header="YT-DLP path"
-                                               Description="Path to yt-dlp executable (yt-dlp.exe)">
+                        <controls:SettingsCard x:Uid="YTdlpPathSetting">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
@@ -69,8 +67,7 @@
                                 </Button>
                             </Grid>
                         </controls:SettingsCard>
-                        <controls:SettingsCard Header="FFmpeg path"
-                                               Description="Path to FFmpeg executable (ffmpeg.exe)">
+                        <controls:SettingsCard x:Uid="FFmpegPathSetting">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
@@ -89,20 +86,19 @@
                             </Grid>
                         </controls:SettingsCard>
                         <controls:SettingsCard x:Name="ApplicationStatusCheck"
-                                               Description="Check your dependencies is working correctly">
+                                               x:Uid="CheckDepends">
                             <controls:SettingsCard.Resources>
                                 <x:Double x:Key="SettingsCardLeftIndention">0</x:Double>
                             </controls:SettingsCard.Resources>
 
-                            <Button Content="Check Dependencies"
+                            <Button x:Uid="CheckDependsButton"
                                     Style="{StaticResource AccentButtonStyle}"
                                     x:Name="CheckDependencies"
                                     Click="CheckDependencies_Click" />
                         </controls:SettingsCard>
-                        <controls:SettingsCard Header="JavaScript runtime"
-                                               Description="Additional JavaScript runtime to enable">
+                        <controls:SettingsCard x:Uid="JsRuntimeSetting">
                             <ComboBox SelectionChanged="SelectionChanged"
-                                      PlaceholderText="Select runtime"
+                                      x:Uid="JsRuntimeSettingCombo"
                                       x:Name="JsRuntimeComboBox">
                                 <x:String>None</x:String>
                                 <x:String>Deno</x:String>
@@ -114,20 +110,52 @@
                     </controls:SettingsExpander.Items>
                 </controls:SettingsExpander>
 
+                <!--Customization-->
+                <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
+                           x:Uid="Customization" />
+
+                <controls:SettingsCard x:Uid="AppLanguageSetting"
+                                       x:Name="AppLanguageSetting"
+                                       HeaderIcon="{ui:FontIcon Glyph=&#xF2B7;}">
+                    <ComboBox SelectionChanged="SelectionChanged"
+                              x:Uid="AppLanguageSettingCombo"
+                              DisplayMemberPath="DisplayName"
+                              x:Name="AppLanguageComboBox">
+                    </ComboBox>
+                </controls:SettingsCard>
+
+                <controls:SettingsCard x:Uid="AppThemeSetting"
+                                       x:Name="AppThemeSetting"
+                                       HeaderIcon="{ui:FontIcon Glyph=&#xE790;}">
+                    <ComboBox SelectionChanged="SelectionChanged"
+                              x:Uid="AppThemeSettingCombo"
+                              DisplayMemberPath="DisplayName"
+                              x:Name="AppThemeComboBox">
+                    </ComboBox>
+                </controls:SettingsCard>
+
+                <controls:SettingsCard x:Uid="AppBackdropSetting"
+                                       x:Name="AppBackdropSetting"
+                                       HeaderIcon="{ui:FontIcon Glyph=&#xE771;}">
+                    <ComboBox SelectionChanged="SelectionChanged"
+                              x:Uid="AppBackdropSettingCombo"
+                              DisplayMemberPath="DisplayName"
+                              x:Name="AppBackdropComboBox">
+                    </ComboBox>
+                </controls:SettingsCard>
+
                 <!--Developer Options-->
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
-                           Text="Developer Options" />
+                           x:Uid="DeveloperOptions" />
 
-                <controls:SettingsCard Description="You can use blob data for testing, fill Desktop\a.json with yt-dlp --dump-json data"
-                                       Header="Use Blob Data"
+                <controls:SettingsCard x:Uid="BlobDataSetting"
                                        x:Name="BlobDataSetting"
                                        HeaderIcon="{ui:FontIcon Glyph=&#xE8FF;}">
                     <ToggleSwitch x:Name="BlobDataSettingSwitch"
                                   Toggled="Switch_Toggled" />
                 </controls:SettingsCard>
 
-                <controls:SettingsCard Description="Write yt-dlp --dump-json data to Desktop\b.json"
-                                       Header="Write Video Info"
+                <controls:SettingsCard x:Uid="WriteVideoInfoSetting"
                                        x:Name="WriteVideoInfoSetting"
                                        HeaderIcon="{ui:FontIcon Glyph=&#xE78C;}">
                     <ToggleSwitch x:Name="WriteVideoInfoSettingSwitch"
@@ -136,11 +164,11 @@
 
                 <!--About-->
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
-                           Text="About" />
+                           x:Uid="About" />
 
-                <controls:SettingsExpander Description="This will change"
-                                           x:Name="AboutExpander"
+                <controls:SettingsExpander x:Name="AboutExpander"
                                            Header="Lech YT-DLP"
+                                           IsExpanded="True"
                                            HeaderIcon="{ui:BitmapIcon Source=ms-appx:///Assets/StoreLogo.scale-150.png}">
                     <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                Text="Version"
@@ -148,14 +176,12 @@
                     <controls:SettingsExpander.Items>
                         <controls:SettingsCard HorizontalContentAlignment="Left"
                                                ContentAlignment="Left">
-                            <StackPanel Margin="-12,0,0,0"
+                            <StackPanel Margin="0"
                                         Orientation="Vertical">
-                                <HyperlinkButton Content="Check out source code - GitHub"
+                                <HyperlinkButton Content="Source code - GitHub"
+                                                 x:Uid="GithubLink"
                                                  x:Name="GithubLink"
                                                  NavigateUri="" />
-                                <HyperlinkButton Content="Check out roadmap"
-                                                 x:Name="RoadMapLink"
-                                                 NavigateUri="https://www.notion.so/lechixy/2dc9ce1d06e580d0824fe51030fe51f9?v=2dc9ce1d06e580f38b45000ca867db36&amp;source=copy_link" />
                             </StackPanel>
                         </controls:SettingsCard>
                     </controls:SettingsExpander.Items>

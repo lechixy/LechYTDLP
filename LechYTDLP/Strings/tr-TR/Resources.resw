@@ -1,0 +1,525 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="DownloadsC.Content" xml:space="preserve">
+    <value>İndirilenler</value>
+  </data>
+  <data name="ExtensionAddedMediaInfoBarMsg" xml:space="preserve">
+    <value>{0} eklentisi bir medya ekledi</value>
+  </data>
+  <data name="ExtensionAddedMediaLog" xml:space="preserve">
+    <value>{0} eklentisi bir medya ekledi: {1}</value>
+  </data>
+  <data name="FirstLog" xml:space="preserve">
+    <value>✨ Çıktılar burada gözükecek dostum &lt;3</value>
+  </data>
+  <data name="LechYTdlpSubtitle.Text" xml:space="preserve">
+    <value>❝İstediğin, her videoyu indir.❞</value>
+  </data>
+  <data name="LechYTdlpTitle" xml:space="preserve">
+    <value>LechYTDLP</value>
+  </data>
+  <data name="LogsC.Content" xml:space="preserve">
+    <value>Çıktılar</value>
+  </data>
+  <data name="MainNav.Content" xml:space="preserve">
+    <value>Arama</value>
+  </data>
+  <data name="OptionsC.Content" xml:space="preserve">
+    <value>Seçenekler</value>
+  </data>
+  <data name="Options.Text" xml:space="preserve">
+    <value>Seçenekler</value>
+  </data>
+  <data name="ThemeChanged" xml:space="preserve">
+    <value>Tema {0} olarak değiştirildi</value>
+  </data>
+  <data name="BackdropChanged" xml:space="preserve">
+    <value>Arayüz arkaplanı {0} olarak değiştirildi</value>
+  </data>
+  <data name="BackdropChangedFailed" xml:space="preserve">
+    <value>Arayüz arkaplanı değiştirilemedi,, {0} bu sistemde desteklenmiyor olabilir.</value>
+  </data>
+  <data name="Settings.Text" xml:space="preserve">
+    <value>Ayarlar</value>
+  </data>
+  <data name="CustomizeYTDLP.Header" xml:space="preserve">
+    <value>YT-DLP'yi Özelleştir</value>
+  </data>
+  <data name="CustomizeYTDLP.Description" xml:space="preserve">
+    <value>Sana nasıl davranmalı?</value>
+  </data>
+  <data name="YTdlpPathSetting.Header" xml:space="preserve">
+    <value>YT-DLP yolu</value>
+  </data>
+  <data name="YTdlpPathSetting.Description" xml:space="preserve">
+    <value>yt-dlp programına yol (yt-dlp.exe)</value>
+  </data>
+  <data name="FFmpegPathSetting.Header" xml:space="preserve">
+    <value>FFmpeg yolu</value>
+  </data>
+  <data name="FFmpegPathSetting.Description" xml:space="preserve">
+    <value>FFmpeg programına yol (ffmpeg.exe)</value>
+  </data>
+  <data name="CheckDepends.Description" xml:space="preserve">
+    <value>Bağımlılıklar doğru çalışıyor mu kontrol edin</value>
+  </data>
+  <data name="CheckDependsButton.Content" xml:space="preserve">
+    <value>Bağımlılıkları kontrol et</value>
+  </data>
+  <data name="JsRuntimeSetting.Header" xml:space="preserve">
+    <value>JavaScript çalışma ortamı</value>
+  </data>
+  <data name="JsRuntimeSetting.Description" xml:space="preserve">
+    <value>Ek olarak JavaScript çalışma ortamı</value>
+  </data>
+  <data name="JsRuntimeSettingCombo.PlaceholderText" xml:space="preserve">
+    <value>Çalışma ortamı seçin</value>
+  </data>
+  <data name="Customization.Text" xml:space="preserve">
+    <value>Özelleştirme</value>
+  </data>
+  <data name="AppLanguageSetting.Header" xml:space="preserve">
+    <value>Dil</value>
+  </data>
+  <data name="AppLanguageSetting.Description" xml:space="preserve">
+    <value>Uygulamanın dilini değiştirin</value>
+  </data>
+  <data name="AppLanguageSettingCombo.PlaceholderText" xml:space="preserve">
+    <value>Dil seçin</value>
+  </data>
+  <data name="AppThemeSetting.Header" xml:space="preserve">
+    <value>Tema</value>
+  </data>
+  <data name="AppThemeSetting.Description" xml:space="preserve">
+    <value>Uygulama nasıl görünmeli</value>
+  </data>
+  <data name="AppThemeSettingCombo.PlaceholderText" xml:space="preserve">
+    <value>Tema seçin</value>
+  </data>
+  <data name="AppBackdropSetting.Description" xml:space="preserve">
+    <value>Uygulamanın arkaplanı nasıl görünmeli (bazı ayarlar her sistemde mevcut olmayabilir)</value>
+  </data>
+  <data name="AppBackdropSettingCombo.PlaceholderText" xml:space="preserve">
+    <value>Arkaplan yüzeyi seçin</value>
+  </data>
+  <data name="DeveloperOptions.Text" xml:space="preserve">
+    <value>Geliştirici Seçenekleri</value>
+  </data>
+  <data name="BlobDataSetting.Header" xml:space="preserve">
+    <value>Sahte veri kullan</value>
+  </data>
+  <data name="BlobDataSetting.Description" xml:space="preserve">
+    <value>Test etmek için sahte veri kullabilirsiniz, Masaüstü\a.json dosyasını yt-dlp --dump-json verisi ile doldurun</value>
+  </data>
+  <data name="WriteVideoInfoSetting.Header" xml:space="preserve">
+    <value>Video verisini yaz</value>
+  </data>
+  <data name="WriteVideoInfoSetting.Description" xml:space="preserve">
+    <value>yt-dlp --dump-json verisini Masaüstü\b.json dosyasına yaz</value>
+  </data>
+  <data name="About.Text" xml:space="preserve">
+    <value>Hakkında</value>
+  </data>
+  <data name="GithubLink.Content" xml:space="preserve">
+    <value>Kaynak kodu - GitHub</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Versiyon</value>
+  </data>
+  <data name="MadeBy" xml:space="preserve">
+    <value>🤍 @lechixy tarafından yapıldı</value>
+  </data>
+  <data name="AppBackdropSetting.Header" xml:space="preserve">
+    <value>Arkaplan yüzeyi</value>
+  </data>
+  <data name="ApplicationStatusCheck" xml:space="preserve">
+    <value>YT-DLP ve FFmpeg versiyonları kontrol ediliyor...</value>
+  </data>
+  <data name="ApplicationStatusCheckCheckingFFmpeg" xml:space="preserve">
+    <value>FFmpeg versiyonu kontrol ediliyor...</value>
+  </data>
+  <data name="ApplicationStatusCheckNotWorking" xml:space="preserve">
+    <value>çalışmıyor, uygulamanın yolunu kontrol edin.</value>
+  </data>
+  <data name="None" xml:space="preserve">
+    <value>Hiçbiri</value>
+  </data>
+  <data name="System" xml:space="preserve">
+    <value>Sistem</value>
+  </data>
+  <data name="Light" xml:space="preserve">
+    <value>Aydınlık</value>
+  </data>
+  <data name="Dark" xml:space="preserve">
+    <value>Karanlık</value>
+  </data>
+  <data name="Acrylic" xml:space="preserve">
+    <value>Akrilik</value>
+  </data>
+  <data name="LanguageChangedInfoBarMsg" xml:space="preserve">
+    <value>Dil {0} olarak değiştirildi</value>
+  </data>
+  <data name="File.Text" xml:space="preserve">
+    <value>Dosya</value>
+  </data>
+  <data name="FilenameSettings.Header" xml:space="preserve">
+    <value>Dosya ismi şablonu</value>
+  </data>
+  <data name="FilenameHyperLink.Content" xml:space="preserve">
+    <value>YT-DLP çıktı şablonu örnekleri</value>
+  </data>
+  <data name="FilenameTextBox.PlaceholderText" xml:space="preserve">
+    <value>Dosya ismi şablonu belirle</value>
+  </data>
+  <data name="SaveToSetting.Header" xml:space="preserve">
+    <value>Kaydetme klasörü</value>
+  </data>
+  <data name="SaveToSetting.Description" xml:space="preserve">
+    <value>İndirilen medya hangi dizine kaydedilmeli</value>
+  </data>
+  <data name="SaveToTextBox.PlaceholderText" xml:space="preserve">
+    <value>Dizin belirle</value>
+  </data>
+  <data name="EmbedThumbnailSetting.Header" xml:space="preserve">
+    <value>Küçük resmi ekle</value>
+  </data>
+  <data name="EmbedThumbnailSetting.Description" xml:space="preserve">
+    <value>Medyanın küçük resmini poster resmi olarak ekle</value>
+  </data>
+  <data name="EmbedSubsSetting.Header" xml:space="preserve">
+    <value>Altyazıları ekle</value>
+  </data>
+  <data name="EmbedSubsSetting.Description" xml:space="preserve">
+    <value>Medyadaki altyazıları ekle (sadece bunlarda geçerli: mp4, webm ve mkv)</value>
+  </data>
+  <data name="Account.Text" xml:space="preserve">
+    <value>Hesap</value>
+  </data>
+  <data name="CookiesSetting.Header" xml:space="preserve">
+    <value>Çerezler dosyası</value>
+  </data>
+  <data name="CookiesFileHyperLink.Content" xml:space="preserve">
+    <value>Hey! Neden çerezlerimi buraya koymam gerekiyor? Burda görün.</value>
+  </data>
+  <data name="CookiesFileTextBox.PlaceholderText" xml:space="preserve">
+    <value>Çerezler dosyasının dizini (.txt)</value>
+  </data>
+  <data name="Logs.Text" xml:space="preserve">
+    <value>Çıktılar</value>
+  </data>
+  <data name="Copy.Text" xml:space="preserve">
+    <value>Kopyala</value>
+  </data>
+  <data name="Downloads.Text" xml:space="preserve">
+    <value>İndirilenler</value>
+  </data>
+  <data name="NoQueue.Text" xml:space="preserve">
+    <value>Sırada hiç indirme yok, biraz video eklemek için aramaya göz at</value>
+  </data>
+  <data name="InQueue.Text" xml:space="preserve">
+    <value>Sıradakiler</value>
+  </data>
+  <data name="History.Text" xml:space="preserve">
+    <value>Geçmiş</value>
+  </data>
+  <data name="Clear.Content" xml:space="preserve">
+    <value>Temizle</value>
+  </data>
+  <data name="DownloadAgain.Text" xml:space="preserve">
+    <value>Tekrar indir</value>
+  </data>
+  <data name="OpenInExplorer.Text" xml:space="preserve">
+    <value>Dosya gezgininde aç</value>
+  </data>
+  <data name="CopyTitle.Text" xml:space="preserve">
+    <value>Başlığı kopyala</value>
+  </data>
+  <data name="CopyLink.Text" xml:space="preserve">
+    <value>Bağlantıyı kopyala</value>
+  </data>
+  <data name="CopyFilePath.Text" xml:space="preserve">
+    <value>Dosya yolunu kopyala</value>
+  </data>
+  <data name="Delete.Text" xml:space="preserve">
+    <value>Sil</value>
+  </data>
+  <data name="UnknownTitle" xml:space="preserve">
+    <value>Bilinmeyen başlık</value>
+  </data>
+  <data name="UnknownUploader" xml:space="preserve">
+    <value>Bilinmeyen yükleyici</value>
+  </data>
+  <data name="SavingTo" xml:space="preserve">
+    <value>Kaydediliyor: {0}</value>
+  </data>
+  <data name="DownloadFailed" xml:space="preserve">
+    <value>İndirme başarısız oldu</value>
+  </data>
+  <data name="FileCantBeOpened" xml:space="preserve">
+    <value>Dosya açılamadı</value>
+  </data>
+  <data name="FileCantBeOpenedMsg" xml:space="preserve">
+    <value>Dosyayı kontrol edin, taşınmış, yeniden adlandırılmış veya silinmiş olabilir</value>
+  </data>
+  <data name="NoYTdlpExecutable" xml:space="preserve">
+    <value>yt-dlp.exe bulunamadı</value>
+  </data>
+  <data name="NoFFmpegExecutable" xml:space="preserve">
+    <value>ffmpeg.exe bulunamadı</value>
+  </data>
+  <data name="NoYTdlpExecutableLog" xml:space="preserve">
+    <value>yt-dlp.exe bulunamadı! Ayarları kontrol edin çünkü biz bir çalıştırılabilir bulamadık. Detaylar: {0}</value>
+  </data>
+  <data name="ERROR" xml:space="preserve">
+    <value>HATA</value>
+  </data>
+  <data name="NoYTdlpExecutableMsg" xml:space="preserve">
+    <value>yt-dlp'nin yolunu Ayarlar'dan kontrol edin çünkü biz bir çalıştırılabilir bulamadık</value>
+  </data>
+  <data name="NoFFmpegExecutableMsg" xml:space="preserve">
+    <value>FFmpeg'nin yolunu Ayarlar'dan kontrol edin çünkü biz bir çalıştırılabilir bulamadık</value>
+  </data>
+  <data name="NoFFmpegExecutableLog" xml:space="preserve">
+    <value>ffmpeg.exe bulunamadı! Ayarları kontrol edin çünkü biz bir çalıştırılabilir bulamadık. Detaylar: {0}</value>
+  </data>
+  <data name="InvalidLink" xml:space="preserve">
+    <value>Geçersiz bağlantı</value>
+  </data>
+  <data name="InvalidLinkMsg" xml:space="preserve">
+    <value>Girilen bağlantı geçersiz. Lütfen kontrol edin ve tekrar deneyin.</value>
+  </data>
+  <data name="InvalidLinkLog" xml:space="preserve">
+    <value>Girilen bağlantı geçersiz. Detaylar: {0}</value>
+  </data>
+  <data name="UnhandledError" xml:space="preserve">
+    <value>Tanımlanmamış hata</value>
+  </data>
+  <data name="CopiedToClipboard" xml:space="preserve">
+    <value>Panoya kopyalandı</value>
+  </data>
+  <data name="DeletedFromHistory" xml:space="preserve">
+    <value>Geçmişten silindi</value>
+  </data>
+  <data name="DeleteFailed" xml:space="preserve">
+    <value>Silme başarız oldu</value>
+  </data>
+  <data name="SavedTo" xml:space="preserve">
+    <value>Kaydedildi: {0}</value>
+  </data>
+  <data name="BrowserExtWontWork" xml:space="preserve">
+    <value>Tarayıcı Eklentisi çalışmayacak • Tarayıcı Eklentisinin HTTP dinleyicisi başlatılamadı: {0}</value>
+  </data>
+  <data name="StartingYTdlpWithLog" xml:space="preserve">
+    <value>YT-DLP bununla başlatılıyor</value>
+  </data>
+  <data name="GettingVideoInfoLog" xml:space="preserve">
+    <value>Video bilgisi alınıyor</value>
+  </data>
+  <data name="DownloadingVideoLog" xml:space="preserve">
+    <value>Video indiriliyor</value>
+  </data>
+  <data name="DontIncludeVideo" xml:space="preserve">
+    <value>Videoyu dahil etme</value>
+  </data>
+  <data name="DontIncludeAudio" xml:space="preserve">
+    <value>Sesi dahil etme</value>
+  </data>
+  <data name="NoCodecInfo" xml:space="preserve">
+    <value>Kodlayıcı bilgisi yok</value>
+  </data>
+  <data name="SelectedVideoLog" xml:space="preserve">
+    <value>Seçilen video format numarası-kodlayıcısı</value>
+  </data>
+  <data name="SelectedAudioLog" xml:space="preserve">
+    <value>Seçilen ses format numarası-kodlayıcısı</value>
+  </data>
+  <data name="OnlyOneCodec" xml:space="preserve">
+    <value>Sadece bir kodlayıcı</value>
+  </data>
+  <data name="NotSuggested" xml:space="preserve">
+    <value>Önerilmez</value>
+  </data>
+  <data name="Saving" xml:space="preserve">
+    <value>Kaydediliyor</value>
+  </data>
+  <data name="SelectFormat" xml:space="preserve">
+    <value>Format seçin</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Kaydet</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>İptal</value>
+  </data>
+  <data name="Resolution.Header" xml:space="preserve">
+    <value>Çözünürlük</value>
+  </data>
+  <data name="Codec.Header" xml:space="preserve">
+    <value>Kodlayıcı</value>
+  </data>
+  <data name="Audio.Header" xml:space="preserve">
+    <value>Ses</value>
+  </data>
+  <data name="SuggestAVC1" xml:space="preserve">
+    <value>En uyumlu • Yüksek dosya boyutu</value>
+  </data>
+  <data name="SuggestVP9" xml:space="preserve">
+    <value>Orta uyumlu • Normal dosya boyutu</value>
+  </data>
+  <data name="SuggestAV1" xml:space="preserve">
+    <value>Az uyumlu • Düşük dosya boyutu</value>
+  </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>Bilinmeyen</value>
+  </data>
+  <data name="UnknownFilesize" xml:space="preserve">
+    <value>Bilinmeyen dosya boyutu</value>
+  </data>
+  <data name="Placeholder0" xml:space="preserve">
+    <value>Video bağlantısını buraya yapıştır...</value>
+  </data>
+  <data name="Placeholder1" xml:space="preserve">
+    <value>Dene beni Beyonce... ✨</value>
+  </data>
+  <data name="Placeholder2" xml:space="preserve">
+    <value>O tatlı kedi videosunu indirmek istiyorum...</value>
+  </data>
+  <data name="Placeholder3" xml:space="preserve">
+    <value>Bahse girerim indireceğin havalı videolar vardır...</value>
+  </data>
+  <data name="Placeholder4" xml:space="preserve">
+    <value>Utanma, bağlantı yapıştır...</value>
+  </data>
+  <data name="Placeholder5" xml:space="preserve">
+    <value>Video bağlantın buraya gidiyor...</value>
+  </data>
+  <data name="Placeholder6" xml:space="preserve">
+    <value>Aklında video mu var? Buraya yapıştır...</value>
+  </data>
+  <data name="Placeholder7" xml:space="preserve">
+    <value>İndirmeye hazır mısın? Bağlantıyı yapıştır...</value>
+  </data>
+  <data name="Placeholder8" xml:space="preserve">
+    <value>1000'den fazla siteden video indirebiliyorum...</value>
+  </data>
+  <data name="Placeholder9" xml:space="preserve">
+    <value>Bir şey mi arıyordun?..</value>
+  </data>
+</root>

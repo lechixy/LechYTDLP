@@ -44,7 +44,7 @@ namespace LechYTDLP.Classes
             {
                 // Handle the case where the listener fails to start, e.g., due to insufficient permissions
                 Console.WriteLine($"Browser extension will not work • Failed to start Browser Extension HTTP listener: {ex.Message}");
-                LogService.Add($"Browser extension will not work • Failed to start Browser Extension HTTP listener: {ex.Message}", LogTag.ApiServer);
+                LogService.Add(App.LocalizationService.GetString("BrowserExtWontWork", ex.Message), LogTag.ApiServer);
                 return;
             }
         }

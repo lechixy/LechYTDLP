@@ -257,9 +257,9 @@ namespace LechYTDLP.Services
 
                 Debug.WriteLine("Resuming download...");
                 //App.InfoBarService.Show(new InfoBarMessage(
-                //    "Resuming download",
-                //    $"Resuming download for {CurrentMedia.Info.Title}",
-                //    InfoBarSeverity.Informational
+                //    Title = "Resuming download",
+                //    Message = $"Resuming download for {CurrentMedia.Info.Title}",
+                //    Severity = InfoBarSeverity.Informational
                 //));
             }
 

@@ -1,0 +1,525 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="DownloadsC.Content" xml:space="preserve">
+    <value>Downloads</value>
+  </data>
+  <data name="ExtensionAddedMediaInfoBarMsg" xml:space="preserve">
+    <value>{0} extension added media</value>
+  </data>
+  <data name="ExtensionAddedMediaLog" xml:space="preserve">
+    <value>{0} extension added media: {1}</value>
+  </data>
+  <data name="FirstLog" xml:space="preserve">
+    <value>✨ The logs will be appear here, mate &lt;3</value>
+  </data>
+  <data name="LechYTdlpSubtitle.Text" xml:space="preserve">
+    <value>❝Download any video, you like.❞</value>
+  </data>
+  <data name="LechYTdlpTitle" xml:space="preserve">
+    <value>LechYTDLP</value>
+  </data>
+  <data name="LogsC.Content" xml:space="preserve">
+    <value>Logs</value>
+  </data>
+  <data name="MainNav.Content" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="OptionsC.Content" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="Options.Text" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="ThemeChanged" xml:space="preserve">
+    <value>Theme changed to {0}</value>
+  </data>
+  <data name="BackdropChanged" xml:space="preserve">
+    <value>Backdrop changed to {0}</value>
+  </data>
+  <data name="BackdropChangedFailed" xml:space="preserve">
+    <value>Failed to change backdrop, {0} may not be supported on this system.</value>
+  </data>
+  <data name="Settings.Text" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="CustomizeYTDLP.Header" xml:space="preserve">
+    <value>Customize YT-DLP</value>
+  </data>
+  <data name="CustomizeYTDLP.Description" xml:space="preserve">
+    <value>How yt-dlp should treat you?</value>
+  </data>
+  <data name="YTdlpPathSetting.Header" xml:space="preserve">
+    <value>YT-DLP path</value>
+  </data>
+  <data name="YTdlpPathSetting.Description" xml:space="preserve">
+    <value>Path to yt-dlp executable (yt-dlp.exe)</value>
+  </data>
+  <data name="FFmpegPathSetting.Header" xml:space="preserve">
+    <value>FFmpeg path</value>
+  </data>
+  <data name="FFmpegPathSetting.Description" xml:space="preserve">
+    <value>Path to FFmpeg executable (ffmpeg.exe)</value>
+  </data>
+  <data name="CheckDepends.Description" xml:space="preserve">
+    <value>Check your dependencies is working correctly</value>
+  </data>
+  <data name="CheckDependsButton.Content" xml:space="preserve">
+    <value>Check Dependencies</value>
+  </data>
+  <data name="JsRuntimeSetting.Header" xml:space="preserve">
+    <value>JavaScript runtime</value>
+  </data>
+  <data name="JsRuntimeSetting.Description" xml:space="preserve">
+    <value>Additional JavaScript runtime to enable</value>
+  </data>
+  <data name="JsRuntimeSettingCombo.PlaceholderText" xml:space="preserve">
+    <value>Select runtime</value>
+  </data>
+  <data name="Customization.Text" xml:space="preserve">
+    <value>Customization</value>
+  </data>
+  <data name="AppLanguageSetting.Header" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="AppLanguageSetting.Description" xml:space="preserve">
+    <value>Change app language</value>
+  </data>
+  <data name="AppLanguageSettingCombo.PlaceholderText" xml:space="preserve">
+    <value>Select language</value>
+  </data>
+  <data name="AppThemeSetting.Header" xml:space="preserve">
+    <value>Theme</value>
+  </data>
+  <data name="AppThemeSetting.Description" xml:space="preserve">
+    <value>What should app look like</value>
+  </data>
+  <data name="AppThemeSettingCombo.PlaceholderText" xml:space="preserve">
+    <value>Select theme</value>
+  </data>
+  <data name="AppBackdropSetting.Description" xml:space="preserve">
+    <value>What should app background look like (some options not available on every pc)</value>
+  </data>
+  <data name="AppBackdropSettingCombo.PlaceholderText" xml:space="preserve">
+    <value>Select backdrop</value>
+  </data>
+  <data name="DeveloperOptions.Text" xml:space="preserve">
+    <value>Developer Options</value>
+  </data>
+  <data name="BlobDataSetting.Header" xml:space="preserve">
+    <value>Use blob data</value>
+  </data>
+  <data name="BlobDataSetting.Description" xml:space="preserve">
+    <value>You can use blob data for testing, fill Desktop\a.json with yt-dlp --dump-json data</value>
+  </data>
+  <data name="WriteVideoInfoSetting.Header" xml:space="preserve">
+    <value>Write video info</value>
+  </data>
+  <data name="WriteVideoInfoSetting.Description" xml:space="preserve">
+    <value>Write yt-dlp --dump-json data to Desktop\b.json</value>
+  </data>
+  <data name="About.Text" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="GithubLink.Content" xml:space="preserve">
+    <value>Source code - GitHub</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="MadeBy" xml:space="preserve">
+    <value>🤍 Made by @lechixy</value>
+  </data>
+  <data name="AppBackdropSetting.Header" xml:space="preserve">
+    <value>Backdrop</value>
+  </data>
+  <data name="ApplicationStatusCheck" xml:space="preserve">
+    <value>Checking YT-DLP and FFmpeg versions...</value>
+  </data>
+  <data name="ApplicationStatusCheckCheckingFFmpeg" xml:space="preserve">
+    <value>Checking FFmpeg version...</value>
+  </data>
+  <data name="ApplicationStatusCheckNotWorking" xml:space="preserve">
+    <value>is not working, check executable path.</value>
+  </data>
+  <data name="None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="System" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="Light" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="Dark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="Acrylic" xml:space="preserve">
+    <value>Acrylic</value>
+  </data>
+  <data name="LanguageChangedInfoBarMsg" xml:space="preserve">
+    <value>Language has been changed to {0}</value>
+  </data>
+  <data name="File.Text" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="FilenameSettings.Header" xml:space="preserve">
+    <value>Filename Template</value>
+  </data>
+  <data name="FilenameHyperLink.Content" xml:space="preserve">
+    <value>YT-DLP output template examples</value>
+  </data>
+  <data name="FilenameTextBox.PlaceholderText" xml:space="preserve">
+    <value>Define filename template</value>
+  </data>
+  <data name="SaveToSetting.Header" xml:space="preserve">
+    <value>Save directory</value>
+  </data>
+  <data name="SaveToSetting.Description" xml:space="preserve">
+    <value>Which directory should your downloaded media save</value>
+  </data>
+  <data name="SaveToTextBox.PlaceholderText" xml:space="preserve">
+    <value>Define directory</value>
+  </data>
+  <data name="EmbedThumbnailSetting.Header" xml:space="preserve">
+    <value>Embed thumbnail</value>
+  </data>
+  <data name="EmbedThumbnailSetting.Description" xml:space="preserve">
+    <value>Embed thumbnail in the media as the cover art</value>
+  </data>
+  <data name="EmbedSubsSetting.Header" xml:space="preserve">
+    <value>Embed subtitles</value>
+  </data>
+  <data name="EmbedSubsSetting.Description" xml:space="preserve">
+    <value>Embed subtitles in the media (only valid: mp4, webm and mkv)</value>
+  </data>
+  <data name="Account.Text" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="CookiesSetting.Header" xml:space="preserve">
+    <value>Cookies file</value>
+  </data>
+  <data name="CookiesFileHyperLink.Content" xml:space="preserve">
+    <value>Hey! Why I need to pass my cookies to here? See here.</value>
+  </data>
+  <data name="CookiesFileTextBox.PlaceholderText" xml:space="preserve">
+    <value>Path to cookie file (.txt)</value>
+  </data>
+  <data name="Logs.Text" xml:space="preserve">
+    <value>Logs</value>
+  </data>
+  <data name="Copy.Text" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="Downloads.Text" xml:space="preserve">
+    <value>Downloads</value>
+  </data>
+  <data name="NoQueue.Text" xml:space="preserve">
+    <value>There is no downloads on queue, hop to search to gather some videos</value>
+  </data>
+  <data name="InQueue.Text" xml:space="preserve">
+    <value>In queue</value>
+  </data>
+  <data name="History.Text" xml:space="preserve">
+    <value>History</value>
+  </data>
+  <data name="Clear.Content" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="DownloadAgain.Text" xml:space="preserve">
+    <value>Download again</value>
+  </data>
+  <data name="OpenInExplorer.Text" xml:space="preserve">
+    <value>Open in explorer</value>
+  </data>
+  <data name="CopyTitle.Text" xml:space="preserve">
+    <value>Copy title</value>
+  </data>
+  <data name="CopyLink.Text" xml:space="preserve">
+    <value>Copy link</value>
+  </data>
+  <data name="CopyFilePath.Text" xml:space="preserve">
+    <value>Copy file path</value>
+  </data>
+  <data name="Delete.Text" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="UnknownTitle" xml:space="preserve">
+    <value>Unknown title</value>
+  </data>
+  <data name="UnknownUploader" xml:space="preserve">
+    <value>Unknown uploader</value>
+  </data>
+  <data name="SavingTo" xml:space="preserve">
+    <value>Saving to {0}</value>
+  </data>
+  <data name="DownloadFailed" xml:space="preserve">
+    <value>Download failed</value>
+  </data>
+  <data name="FileCantBeOpened" xml:space="preserve">
+    <value>File can't be opened</value>
+  </data>
+  <data name="FileCantBeOpenedMsg" xml:space="preserve">
+    <value>Check the file, it may have been moved, renamed or deleted</value>
+  </data>
+  <data name="NoYTdlpExecutable" xml:space="preserve">
+    <value>There is no yt-dlp.exe</value>
+  </data>
+  <data name="NoFFmpegExecutable" xml:space="preserve">
+    <value>There is no ffmpeg.exe</value>
+  </data>
+  <data name="NoYTdlpExecutableLog" xml:space="preserve">
+    <value>There is no yt-dlp.exe! Check the settings because we can't find any executable. Details: {0}</value>
+  </data>
+  <data name="ERROR" xml:space="preserve">
+    <value>ERROR</value>
+  </data>
+  <data name="NoYTdlpExecutableMsg" xml:space="preserve">
+    <value>Check yt-dlp path from Settings because we can't find any executable</value>
+  </data>
+  <data name="NoFFmpegExecutableMsg" xml:space="preserve">
+    <value>Check FFmpeg path from Settings because we can't find any executable</value>
+  </data>
+  <data name="NoFFmpegExecutableLog" xml:space="preserve">
+    <value>There is no ffmpeg.exe! Check the Settings because we can't find any executable. Details: {0}</value>
+  </data>
+  <data name="InvalidLink" xml:space="preserve">
+    <value>Invalid link</value>
+  </data>
+  <data name="InvalidLinkMsg" xml:space="preserve">
+    <value>The provided link is invalid. Please check and try again.</value>
+  </data>
+  <data name="InvalidLinkLog" xml:space="preserve">
+    <value>The provided link is invalid. Details: {0}</value>
+  </data>
+  <data name="UnhandledError" xml:space="preserve">
+    <value>Unhandled error</value>
+  </data>
+  <data name="CopiedToClipboard" xml:space="preserve">
+    <value>Copied to clipboard</value>
+  </data>
+  <data name="DeletedFromHistory" xml:space="preserve">
+    <value>Deleted from history</value>
+  </data>
+  <data name="DeleteFailed" xml:space="preserve">
+    <value>Delete failed</value>
+  </data>
+  <data name="SavedTo" xml:space="preserve">
+    <value>Saved to {0}</value>
+  </data>
+  <data name="BrowserExtWontWork" xml:space="preserve">
+    <value>Browser extension will not work • Failed to start Browser Extension HTTP listener: {0}</value>
+  </data>
+  <data name="StartingYTdlpWithLog" xml:space="preserve">
+    <value>Starting YT-DLP with</value>
+  </data>
+  <data name="GettingVideoInfoLog" xml:space="preserve">
+    <value>Getting video info</value>
+  </data>
+  <data name="DownloadingVideoLog" xml:space="preserve">
+    <value>Downloading video</value>
+  </data>
+  <data name="DontIncludeVideo" xml:space="preserve">
+    <value>Don't include video</value>
+  </data>
+  <data name="DontIncludeAudio" xml:space="preserve">
+    <value>Don't include audio</value>
+  </data>
+  <data name="NoCodecInfo" xml:space="preserve">
+    <value>No codec info</value>
+  </data>
+  <data name="SelectedVideoLog" xml:space="preserve">
+    <value>Selected video formatId-codec</value>
+  </data>
+  <data name="SelectedAudioLog" xml:space="preserve">
+    <value>Selected audio formatId-codec</value>
+  </data>
+  <data name="OnlyOneCodec" xml:space="preserve">
+    <value>Only one codec</value>
+  </data>
+  <data name="NotSuggested" xml:space="preserve">
+    <value>Not suggested</value>
+  </data>
+  <data name="Saving" xml:space="preserve">
+    <value>Saving</value>
+  </data>
+  <data name="SelectFormat" xml:space="preserve">
+    <value>Select format</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Resolution.Header" xml:space="preserve">
+    <value>Resolution</value>
+  </data>
+  <data name="Codec.Header" xml:space="preserve">
+    <value>Codec</value>
+  </data>
+  <data name="Audio.Header" xml:space="preserve">
+    <value>Audio</value>
+  </data>
+  <data name="SuggestAVC1" xml:space="preserve">
+    <value>Most compatible • Larger file size</value>
+  </data>
+  <data name="SuggestVP9" xml:space="preserve">
+    <value>Moderately compatible • Medium file size</value>
+  </data>
+  <data name="SuggestAV1" xml:space="preserve">
+    <value>Less compatible • Smaller file size</value>
+  </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
+  <data name="UnknownFilesize" xml:space="preserve">
+    <value>Unknown filesize</value>
+  </data>
+  <data name="Placeholder0" xml:space="preserve">
+    <value>Paste video link here...</value>
+  </data>
+  <data name="Placeholder1" xml:space="preserve">
+    <value>Try me Beyonce... ✨</value>
+  </data>
+  <data name="Placeholder2" xml:space="preserve">
+    <value>I want to download that cute cat video...</value>
+  </data>
+  <data name="Placeholder3" xml:space="preserve">
+    <value>I bet you have some cool videos to download...</value>
+  </data>
+  <data name="Placeholder4" xml:space="preserve">
+    <value>Don't be shy, paste a link...</value>
+  </data>
+  <data name="Placeholder5" xml:space="preserve">
+    <value>Your video link goes here...</value>
+  </data>
+  <data name="Placeholder6" xml:space="preserve">
+    <value>Got a video in mind? Paste it here...</value>
+  </data>
+  <data name="Placeholder7" xml:space="preserve">
+    <value>Ready to download? Paste the link...</value>
+  </data>
+  <data name="Placeholder8" xml:space="preserve">
+    <value>I can download videos from over 1000 sites...</value>
+  </data>
+  <data name="Placeholder9" xml:space="preserve">
+    <value>Looking for something?..</value>
+  </data>
+</root>

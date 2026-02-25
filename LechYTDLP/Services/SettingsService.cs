@@ -5,13 +5,21 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
 using LechYTDLP.Util;
+using System.IO;
+using static LechYTDLP.Views.SettingsPage;
 
 namespace LechYTDLP.Services
 {
-    internal class SettingsService
+    public class SettingsService
     {
+
+        public Action<ThemeItem>? AppThemeChanged;
+        public Action<ThemeItem>? AppBackdropChanged;
+
         private static ApplicationDataContainer Settings =>
             ApplicationData.Current.LocalSettings;
+
+        private static string BasePath = Windows.ApplicationModel.Package.Current.InstalledLocation.Path;
 
         // # Options
         // File
@@ -55,14 +63,14 @@ namespace LechYTDLP.Services
         public static string YTDLPPath
         {
             get => (string?)Settings.Values[nameof(YTDLPPath)]
-                   ?? "ytdlp";
+                   ?? Path.Combine(BasePath, "Tools", "ytdlp.exe");
 
             set => Settings.Values[nameof(YTDLPPath)] = value;
         }
         public static string FFmpegPath
         {
             get => (string?)Settings.Values[nameof(FFmpegPath)]
-                   ?? "ffmpeg";
+                   ?? Path.Combine(BasePath, "Tools", "ffmpeg.exe");
 
             set => Settings.Values[nameof(FFmpegPath)] = value;
         }
@@ -71,6 +79,60 @@ namespace LechYTDLP.Services
             get => (string?)Settings.Values[nameof(JavaScriptRuntime)]
                 ?? "";
             set => Settings.Values[nameof(JavaScriptRuntime)] = value;
+        }
+        // Customization
+        public static LanguageItem AppLanguage
+        {
+            get
+            {
+                var value = Settings.Values[nameof(AppLanguage)] as string ?? "en-US";
+                return value switch
+                {
+                    "tr-TR" => new LanguageItem { DisplayName = "Türkçe", Code = "tr-TR" },
+                    _ => new LanguageItem { DisplayName = "English", Code = "en-US" }
+                };
+            }
+            set
+            {
+                Settings.Values[nameof(AppLanguage)] = value.Code;
+            }
+        }
+        public static ThemeItem AppTheme
+        {
+            get
+            {
+                var value = Settings.Values[nameof(AppTheme)] as string ?? "system";
+
+                return value switch
+                {
+                    "light" => new ThemeItem { DisplayName = "Light", Value = "light" },
+                    "dark" => new ThemeItem { DisplayName = "Dark", Value = "dark" },
+                    _ => new ThemeItem { DisplayName = "System", Value = "system" }
+                };
+            }
+            set
+            {
+                Settings.Values[nameof(AppTheme)] = value.Value;
+            }
+        }
+        public static ThemeItem AppBackdrop
+        {
+            get
+            {
+                var value = Settings.Values[nameof(AppBackdrop)] as string ?? "micaalt";
+                return value switch
+                {
+                    "none" => new ThemeItem { DisplayName = "None", Value = "none" },
+                    "mica" => new ThemeItem { DisplayName = "Mica", Value = "mica" },
+                    "micaalt" => new ThemeItem { DisplayName = "MicaAlt", Value = "micaalt" },
+                    "acrylic" => new ThemeItem { DisplayName = "Acrylic", Value = "acrylic" },
+                    _ => new ThemeItem { DisplayName = "MicaAlt", Value = "micaalt" }
+                };
+            }
+            set
+            {
+                Settings.Values[nameof(AppBackdrop)] = value.Value;
+            }
         }
         // Developer options
         public static bool IsUsingBlobData

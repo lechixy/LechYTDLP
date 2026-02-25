@@ -16,6 +16,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.ApplicationModel.Resources;
 using Windows.Foundation;
 using Windows.System;
 using Windows.UI;
@@ -30,8 +31,6 @@ namespace LechYTDLP.Views;
 /// </summary>
 public sealed partial class MainPage : Page
 {
-    private string _subtitleText = "❝Download any video, you like.❞";
-
     private string _textboxText = "";
     public string Text => _textboxText;
 
@@ -42,7 +41,6 @@ public sealed partial class MainPage : Page
     public MainPage()
     {
         InitializeComponent();
-        Subtitle.Text = _subtitleText;
         LinkTextBox.PlaceholderText = Main.GetDynamicSearchBoxPlaceholder();
 
         if (App.DownloadController.IsBusy)
@@ -63,8 +61,6 @@ public sealed partial class MainPage : Page
         }
 
         UpdateTextDependingOnLink(Text);
-
-        Debug.WriteLine("Rendered one time: MainPage");
 
         App.DownloadController.BusyChanged += OnBusyChanged;
         // App.DownloadController.VideoInfoReady += OnVideoInfoReady;
@@ -102,7 +98,14 @@ public sealed partial class MainPage : Page
     {
         DispatcherQueue.TryEnqueue(() =>
         {
-            App.InfoBarService.Show(new InfoBarMessage("Unhandled Error", errorMessage, InfoBarSeverity.Error, 5000, true));
+            App.InfoBarService.Show(new InfoBarMessage
+            {
+                Title = "Error",
+                Message = errorMessage,
+                Severity = InfoBarSeverity.Error,
+                DurationMs = 5000,
+                IsCancelable = true
+            });
         });
     }
 
@@ -136,63 +139,6 @@ public sealed partial class MainPage : Page
     //    }
     //}
 
-    private async void ShowFormatsDialog(string Url, VideoInfo videoInfo)
-    {
-        try
-        {
-            var content = new SelectFormat();
-            content.SetData(videoInfo);
-
-            var dialog = new ContentDialog
-            {
-                Title = "Select format to download",
-                Content = content,
-                PrimaryButtonText = "Save",
-                PrimaryButtonStyle = (Style)Resources["AccentButtonStyle"],
-                CloseButtonText = "Cancel",
-                IsPrimaryButtonEnabled = false,
-                XamlRoot = Content.XamlRoot,
-                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style
-            };
-
-            content.IsUserCanSave += canSave =>
-            {
-                dialog.IsPrimaryButtonEnabled = canSave;
-            };
-
-            var result = await dialog.ShowAsync();
-            //var result = ContentDialogResult.Primary; // For testing without dialog
-
-            if (result == ContentDialogResult.Primary)
-            {
-                App.DownloadService.Enqueue(Url, videoInfo, content.SelectedFormat);
-
-                Debug.WriteLine("Download added to queue.");
-
-                AppNotification notification = new AppNotificationBuilder()
-                .AddText("Download Queued")
-                .AddText(videoInfo.Title ?? "Unknown Title")
-                .SetInlineImage(new Uri(WebUtility.HtmlEncode(videoInfo.Thumbnail!)))
-                .BuildNotification();
-
-                //.SetAppLogoOverride(new Uri(WebUtility.HtmlEncode(videoInfo.thumbnail!)), AppNotificationImageCrop.Default)
-
-                AppNotificationManager.Default.Show(notification);
-            }
-            else
-            {
-                Debug.WriteLine("Download cancelled.");
-            }
-
-            content.IsUserCanSave -= null;
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex);
-            KnownErrors.Check(ex);
-        }
-    }
-
     private void UpdateTextDependingOnLink(string link)
     {
         if (link.Contains("youtube", StringComparison.OrdinalIgnoreCase))
@@ -214,7 +160,6 @@ public sealed partial class MainPage : Page
     {
         if (sender is TextBox textBox)
         {
-            Debug.WriteLine("TextBox text changed: " + textBox.Text);
             SetText(textBox.Text);
             UpdateTextDependingOnLink(textBox.Text);
 

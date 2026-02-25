@@ -51,7 +51,7 @@ namespace LechYTDLP.Components
         {
             if (item?.Info == null) return;
 
-            QueueMediaItemTitle.Text = item.Info.Title ?? "Unknown Title";
+            QueueMediaItemTitle.Text = item.Info.Title ?? App.LocalizationService.Get("UnknownTitle");
 
             string thumbUrl = item.Info.Thumbnail ?? "https://placehold.co/320x180.png?text=No+Thumbnail";
             if (QueueMediaItemThumbnail.Source is not BitmapImage bmp || bmp.UriSource?.ToString() != thumbUrl)
@@ -59,10 +59,10 @@ namespace LechYTDLP.Components
                 QueueMediaItemThumbnail.Source = new BitmapImage(new Uri(thumbUrl));
             }
 
-            string uploader = item.Info.Uploader ?? "Unknown Uploader";
+            string uploader = item.Info.Uploader ?? App.LocalizationService.Get("UnknownUploader");
             string saveStatus = item.State == DownloadState.Completed || item.State == DownloadState.Failed
-                ? $"Saved to {item.FilePath}"
-                : $"Saving to {SettingsService.DownloadPath}";
+                ? App.LocalizationService.GetString("SavedTo", item.FilePath)
+                : App.LocalizationService.GetString("SavingTo", SettingsService.DownloadPath);
 
             QueueMediaItemUploaderAndSavingTo.Text = $"{uploader} • {saveStatus}";
 
