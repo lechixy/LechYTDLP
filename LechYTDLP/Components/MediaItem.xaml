@@ -60,9 +60,9 @@
                            TextWrapping="NoWrap" />
 
                 <!-- Uploader: TextTrimming EKLENDİ -->
-                <TextBlock Grid.Row="1"
+                <RichTextBlock Grid.Row="1"
                            x:Name="QueueMediaItemUploaderAndSavingTo"
-                           Style="{ThemeResource CaptionTextBlockStyle}"
+                           Style="{ThemeResource BodyRichTextBlockStyle}"
                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                            TextTrimming="CharacterEllipsis"
                            MaxLines="1"

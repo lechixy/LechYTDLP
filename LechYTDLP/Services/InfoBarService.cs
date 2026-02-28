@@ -13,14 +13,20 @@ using System.Threading.Tasks;
 namespace LechYTDLP.Services
 {
 
-    public class InfoBarMessage 
+    public class InfoBarHyperlinkButton
+    {
+        public required string Content { get; init; }
+        public required Uri NavigateUri { get; init; }
+    }
+
+    public class InfoBarMessage
     {
         // Required properties
         public required string Title { get; init; }
         public required string Message { get; init; }
         public required InfoBarSeverity Severity { get; init; }
         // Optional action button
-        public ButtonBase? ActionButton { get; init; } = null;
+        public InfoBarHyperlinkButton? HyperlinkButton { get; init; } = null;
         // Optional properties with default values
         public int DurationMs { get; init; } = 5000;
         public bool IsCancelable { get; init; } = false;
@@ -77,7 +83,14 @@ namespace LechYTDLP.Services
             //    _infoBar.Background = blabla
             //}
 
-            _infoBar.ActionButton = msg.ActionButton;
+            if (msg.HyperlinkButton != null)
+            {
+                _infoBar.ActionButton = new HyperlinkButton
+                {
+                    Content = msg.HyperlinkButton.Content,
+                    NavigateUri = msg.HyperlinkButton.NavigateUri
+                };
+            }
 
             _infoBar.IsClosable = msg.IsCancelable || msg.DurationMs <= 0;
 

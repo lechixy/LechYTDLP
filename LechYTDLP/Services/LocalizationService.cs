@@ -15,7 +15,7 @@ namespace LechYTDLP.Services
     {
         private readonly ResourceLoader _loader;
 
-        private string _defaultValue = "No local";
+        private string _defaultValue = "No translation";
 
         public LocalizationService()
         {

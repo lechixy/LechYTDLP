@@ -86,15 +86,15 @@
                            TextWrapping="Wrap" />
 
                 <!-- Uploader -->
-                <TextBlock Grid.Row="1"
-                           x:Name="VideoUploader"
-                           Style="{ThemeResource CaptionTextBlockStyle}"
+                <RichTextBlock Grid.Row="1"
+                           x:Name="VideoUploaderAndExtractor"
+                           Style="{ThemeResource BodyRichTextBlockStyle}"
                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                            TextTrimming="CharacterEllipsis"
                            MaxLines="1"
                            TextWrapping="NoWrap" />
 
-                <!-- Uploader -->
+                <!--Video Alt Info (Saving to bla bla)-->
                 <TextBlock Grid.Row="2"
                            x:Name="VideoAltInfo"
                            Style="{ThemeResource CaptionTextBlockStyle}"

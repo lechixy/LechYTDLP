@@ -21,12 +21,20 @@ namespace LechYTDLP.Services
 
         private static string BasePath = Windows.ApplicationModel.Package.Current.InstalledLocation.Path;
 
+        // # Logs Page
+        public static bool AutoScrollLogs
+        {
+            get => (bool?)Settings.Values[nameof(AutoScrollLogs)]
+                   ?? true;
+            set => Settings.Values[nameof(AutoScrollLogs)] = value;
+        }
+
         // # Options
         // File
         public static string FilenameTemplate
         {
             get => (string?)Settings.Values[nameof(FilenameTemplate)]
-                   ?? "%(channel)s_%(id)s.%(ext)s";
+                   ?? "%(uploader)s_%(id)s.%(ext)s";
 
             set => Settings.Values[nameof(FilenameTemplate)] = value;
         }
@@ -134,7 +142,13 @@ namespace LechYTDLP.Services
                 Settings.Values[nameof(AppBackdrop)] = value.Value;
             }
         }
-        // Developer options
+        // # Developer options
+        public static bool UseVerboseLoggingOnYTDLP
+        {
+            get => (bool?)Settings.Values[nameof(UseVerboseLoggingOnYTDLP)]
+                   ?? false;
+            set => Settings.Values[nameof(UseVerboseLoggingOnYTDLP)] = value;
+        }
         public static bool IsUsingBlobData
         {
             get => (bool?)Settings.Values[nameof(IsUsingBlobData)]

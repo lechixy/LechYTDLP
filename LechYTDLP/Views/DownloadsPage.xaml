@@ -124,6 +124,7 @@
                             <RichTextBlock Grid.Row="1"
                                            x:Name="CurrentVideoUploaderAndSavingTo"
                                            Style="{ThemeResource BodyRichTextBlockStyle}"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                            TextWrapping="NoWrap" />
 
                             <Grid Grid.Row="2"

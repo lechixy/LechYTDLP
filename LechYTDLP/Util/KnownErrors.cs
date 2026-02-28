@@ -86,6 +86,38 @@ namespace LechYTDLP.Util
                     IsCancelable = true
                 });
             }
+            // Video is DRM protected.
+            else if (ex.Message.Contains("use DRM protection") || ex.Message.Contains("video is not DRM protected"))
+            {
+                if (ex.Message.Contains("Please DO NOT open an issue")) return;
+
+                LogService.Add($"{App.LocalizationService.Get("DrmProtectedLog")} {ex.Message}", LogTag.Warning);
+                App.InfoBarService.Show(new InfoBarMessage
+                {
+                    Title = App.LocalizationService.Get("DrmProtected"),
+                    Message = App.LocalizationService.Get("DrmProtectedMsg"),
+                    Severity = InfoBarSeverity.Warning
+                });
+            }
+            else if (ex.Message.Contains("No supported JavaScript runtime could be found"))
+            {
+                LogService.Add(App.LocalizationService.GetString("NoJsRuntimeLog", ex.Message), LogTag.Warning);
+
+                // Add hyperlink to the info bar message to open the lechytdlp wiki page about this issue.
+                App.InfoBarService.Show(new InfoBarMessage
+                {
+                    Title = App.LocalizationService.Get("NoJsRuntime"),
+                    Message = App.LocalizationService.Get("NoJsRuntimeMsg"),
+                    Severity = InfoBarSeverity.Warning,
+                    HyperlinkButton = new InfoBarHyperlinkButton
+                    {
+                        Content = App.LocalizationService.Get("LearnMore"),
+                        NavigateUri = new Uri(Main.GetLink(Links.NoJsRuntime))
+                    },
+                    DurationMs = 0,
+                    IsCancelable = true
+                });
+            }
             else
             {
                 LogService.Add(ex.Message, LogTag.Error);

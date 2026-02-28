@@ -191,22 +191,55 @@ namespace LechYTDLP.Classes
     {
     }
 
+    public class UpdateResult
+    {
+        public UpdateStatus Status { get; set; }
+        public string? Message { get; set; }
+    }
+
+    public enum UpdateStatus
+    {
+        UpToDate,
+        Updated,
+        Failed
+    }
+
     public sealed class YTDLPDownloadArgs
     {
+        // Required for most operations
+        public string? Url { get; set; } = null;
         public SelectedFormat? SelectedFormat { get; set; }
-        public string? CookiesPath { get; set; }
-        public string? OutputPath { get; set; }
-        public string? FFmpegLocation { get; set; }
-        public string? JavaScriptRuntime { get; set; }
+
+        // Output
         public bool DumpJson { get; set; } = false;
 
+        // File
+        public string? OutputPath { get; set; }
+        public string? FFmpegLocation { get; set; }
+
+        // Account
+        public string? CookiesPath { get; set; }
+
+        // Options
         public bool EmbedMetadata { get; set; } = false;
         public bool EmbedThumbnail { get; set; } = false;
         public bool EmbedSubs { get; set; } = false;
 
+        // YT-DLP
+        public bool Update { get; set; } = false;
+        public string? JavaScriptRuntime { get; set; }
+
+        // Debug, logging etc.
+        public bool Verbose { get; set; } = false;
+
         public string BuildArgs()
         {
             var args = new List<string>();
+
+            if (Url != null)
+            {
+                args.Add($"\"{Url}\"");
+            }
 
             if (SelectedFormat != null)
             {
@@ -247,6 +280,12 @@ namespace LechYTDLP.Classes
             if (EmbedSubs)
                 args.Add("--embed-subs");
 
+            if (Update)
+                args.Add("-U");
+
+            if (Verbose)
+                args.Add("--verbose");
+
             return string.Join(" ", args);
         }
     }
@@ -260,7 +299,7 @@ namespace LechYTDLP.Classes
 
         private Process? _process;
 
-        public async Task<int> StartYTDLP(string url, YTDLPDownloadArgs args)
+        public async Task<int> StartYTDLP(YTDLPDownloadArgs args)
         {
             var tcs = new TaskCompletionSource<int>();
 
@@ -274,10 +313,11 @@ namespace LechYTDLP.Classes
             {
                 CookiesPath = SettingsService.CookiesfilePath,
                 JavaScriptRuntime = string.IsNullOrEmpty(SettingsService.JavaScriptRuntime) ? "" : SettingsService.JavaScriptRuntime,
+                Verbose = SettingsService.UseVerboseLoggingOnYTDLP
             }.BuildArgs();
 
             var ytdlpArgs = args.BuildArgs();
-            string Arguments = $"\"{url}\" {ytdlpArgs} {mustHaveArgs}";
+            string Arguments = $"{ytdlpArgs} {mustHaveArgs}";
             LogService.Add($"🚩 {App.LocalizationService.Get("StartingYTdlpWithLog")}:", LogTag.LechYTDLP);
             LogService.Add($"{SettingsService.YTDLPPath} {Arguments}", LogTag.Normal);
 
@@ -318,6 +358,10 @@ namespace LechYTDLP.Classes
             {
                 if (!string.IsNullOrEmpty(e.Data))
                 {
+                    if (e.Data.StartsWith("[debug]")) return;
+
+                    Debug.WriteLine("This error received from yt-dlp process:");
+                    Debug.WriteLine(e.Data);
                     KnownErrors.Check(new Exception(e.Data));
                     ErrorReceived?.Invoke(e.Data);
                 }
@@ -327,8 +371,13 @@ namespace LechYTDLP.Classes
             {
                 var p = (Process)s!;
 
-                // if (p.ExitCode != 0)
+                Debug.WriteLine("Process is exited.");
+                LogService.Add($"🏁 {App.LocalizationService.Get("YTdlpProcessExitedLog")} ({App.LocalizationService.Get("ExitCode")}: {p.ExitCode})", LogTag.LechYTDLP);
 
+                if (p.ExitCode != 0)
+                {
+                    LogService.Add($"⤷ {App.LocalizationService.Get("YTdlpProcessNonZeroLog")}", LogTag.Error);
+                }
                 tcs.TrySetResult(p.ExitCode);
 
                 ProcessExited?.Invoke(p.ExitCode);
@@ -344,8 +393,11 @@ namespace LechYTDLP.Classes
             }
             catch (Exception ex)
             {
+                LogService.Add($"❌ {App.LocalizationService.Get("FailedToStartYTdlpLog")}: {ex.Message}", LogTag.Error);
+
+                _process = null;
                 KnownErrors.Check(ex);
-                tcs.TrySetException(ex);
+                tcs.SetResult(-1);
             }
 
             return await tcs.Task;
@@ -365,6 +417,7 @@ namespace LechYTDLP.Classes
 
             var ytdlpArgs = new YTDLPDownloadArgs
             {
+                Url = url,
                 DumpJson = true,
                 OutputPath = $"{SettingsService.DownloadPath}\\{SettingsService.FilenameTemplate}"
             };
@@ -430,13 +483,21 @@ namespace LechYTDLP.Classes
                 }
             }
 
+            void OnProcessExited(int exitCode)
+            {
+                ProcessExited -= OnProcessExited;
+                OutputReceived -= OnOutput;
+                tcs.TrySetResult(null);
+            }
+
             OutputReceived += OnOutput;
+            ProcessExited += OnProcessExited;
 
             _ = Task.Run(async () =>
             {
                 try
                 {
-                    await StartYTDLP(url, ytdlpArgs);
+                    await StartYTDLP(ytdlpArgs);
                 }
                 catch (Exception ex)
                 {
@@ -449,11 +510,11 @@ namespace LechYTDLP.Classes
             return tcs.Task;
         }
 
-        public Task<int> DownloadVideo(string url, YTDLPDownloadArgs args)
+        public Task<int> DownloadVideo(YTDLPDownloadArgs args)
         {
             var tcs = new TaskCompletionSource<int>();
 
-            LogService.Add($"⬇️ {App.LocalizationService.Get("DownloadingVideoLog")}: {url}", LogTag.LechYTDLP);
+            LogService.Add($"⬇️ {App.LocalizationService.Get("DownloadingVideoLog")}: {args.Url}", LogTag.LechYTDLP);
 
             void OnOutput(string data)
             {
@@ -485,7 +546,7 @@ namespace LechYTDLP.Classes
             {
                 try
                 {
-                    await StartYTDLP(url, args);
+                    await StartYTDLP(args);
                 }
                 catch (Exception ex)
                 {
@@ -493,6 +554,71 @@ namespace LechYTDLP.Classes
                     KnownErrors.Check(ex);
                     tcs.TrySetException(ex);
                 }
+            });
+
+            return tcs.Task;
+        }
+
+        public Task<UpdateResult> CheckForUpdates()
+        {
+            var tcs = new TaskCompletionSource<UpdateResult>();
+            LogService.Add($"🔍 {App.LocalizationService.Get("CheckingForUpdatesLog")}...", LogTag.LechYTDLP);
+
+            var args = new YTDLPDownloadArgs
+            {
+                Update = true
+            };
+
+            void OnOutput(string data)
+            {
+                if (string.IsNullOrWhiteSpace(data))
+                    return;
+
+                try
+                {
+                    if (data.Contains("yt-dlp is up to date")) tcs.SetResult(new UpdateResult
+                    {
+                        Status = UpdateStatus.UpToDate,
+                        Message = data.Split('(')[1].Split(')')[0] // Extract new version
+                    });
+                    else if (data.Contains("Updated yt-dlp to")) tcs.SetResult(new UpdateResult
+                    {
+                        Status = UpdateStatus.Updated,
+                        Message = data.Split("to ")[1].Trim() // Extract new version
+                    });
+
+                    Debug.WriteLine(data);
+                }
+                catch (JsonException)
+                {
+                    // dump-json dışında bir satır gelirse ignore
+                }
+            }
+            ;
+
+            void OnExited(int exitCode)
+            {
+                ProcessExited -= OnExited;
+                OutputReceived -= OnOutput;
+                if (exitCode != 0)
+                    tcs.TrySetResult(new UpdateResult
+                    {
+                        Status = UpdateStatus.Failed,
+                        Message = null
+                    });
+            }
+
+            OutputReceived += OnOutput;
+            ProcessExited += OnExited;
+
+            _ = Task.Run(async () =>
+            {
+                int success = await StartYTDLP(args);
+                if (success != 0) tcs.SetResult(new UpdateResult
+                {
+                    Status = UpdateStatus.Failed,
+                    Message = null
+                });
             });
 
             return tcs.Task;

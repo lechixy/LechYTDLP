@@ -42,27 +42,30 @@ namespace LechYTDLP.Controllers
                 }
                 else info = videoInfo;
 
-                if (info != null)
+                // If info is null, it means the video information couldn't be retrieved, so we exit the method.
+                if (info == null)
                 {
-                    VideoInfoReady?.Invoke(url, info);
+                    return;
+                }
 
-                    var result = await App.FormatDialogService.ShowAsync(url, info);
+                VideoInfoReady?.Invoke(url, info);
 
-                    if (result != null)
-                    {
-                        App.DownloadService.Enqueue(
-                            result.Url,
-                            result.VideoInfo,
-                            result.SelectedFormat);
+                var result = await App.FormatDialogService.ShowAsync(url, info);
 
-                        AppNotification notification = new AppNotificationBuilder()
-                            .AddText("Download Queued")
-                            .AddText(result.VideoInfo.Title ?? "Unknown Title")
-                            .SetInlineImage(new Uri(WebUtility.HtmlEncode(result.VideoInfo.Thumbnail!)))
-                            .BuildNotification();
+                if (result != null)
+                {
+                    App.DownloadService.Enqueue(
+                        result.Url,
+                        result.VideoInfo,
+                        result.SelectedFormat);
 
-                        AppNotificationManager.Default.Show(notification);
-                    }
+                    AppNotification notification = new AppNotificationBuilder()
+                        .AddText("Download Queued")
+                        .AddText(result.VideoInfo.Title ?? "Unknown Title")
+                        .SetInlineImage(new Uri(WebUtility.HtmlEncode(result.VideoInfo.Thumbnail!)))
+                        .BuildNotification();
+
+                    AppNotificationManager.Default.Show(notification);
                 }
             }
             catch (Exception ex)

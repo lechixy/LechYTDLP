@@ -48,6 +48,7 @@
                 <controls:SettingsExpander x:Uid="CustomizeYTDLP"
                                            HeaderIcon="{ui:FontIcon Glyph=&#xE713;}">
                     <controls:SettingsExpander.Items>
+                        <!--YT-DLP Path Setting-->
                         <controls:SettingsCard x:Uid="YTdlpPathSetting">
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -67,6 +68,19 @@
                                 </Button>
                             </Grid>
                         </controls:SettingsCard>
+                        <!--YT-DLP Update Check-->
+                        <controls:SettingsCard x:Name="YTdlpUpdateCheck"
+                                               x:Uid="CheckYTdlpUpdate">
+                            <controls:SettingsCard.Resources>
+                                <x:Double x:Key="SettingsCardLeftIndention">0</x:Double>
+                            </controls:SettingsCard.Resources>
+
+                            <Button x:Uid="CheckYTdlpUpdateButton"
+                                    Style="{StaticResource AccentButtonStyle}"
+                                    x:Name="CheckYTdlpUpdateButton"
+                                    Click="Button_Click" />
+                        </controls:SettingsCard>
+                        <!--FFmpeg Path Setting-->
                         <controls:SettingsCard x:Uid="FFmpegPathSetting">
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -85,6 +99,7 @@
                                 </Button>
                             </Grid>
                         </controls:SettingsCard>
+                        <!--Application dependencies check-->
                         <controls:SettingsCard x:Name="ApplicationStatusCheck"
                                                x:Uid="CheckDepends">
                             <controls:SettingsCard.Resources>
@@ -93,9 +108,10 @@
 
                             <Button x:Uid="CheckDependsButton"
                                     Style="{StaticResource AccentButtonStyle}"
-                                    x:Name="CheckDependencies"
-                                    Click="CheckDependencies_Click" />
+                                    x:Name="CheckDependsButton"
+                                    Click="Button_Click" />
                         </controls:SettingsCard>
+                        <!--JavaScript Runtime Setting-->
                         <controls:SettingsCard x:Uid="JsRuntimeSetting">
                             <ComboBox SelectionChanged="SelectionChanged"
                                       x:Uid="JsRuntimeSettingCombo"
@@ -114,6 +130,7 @@
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
                            x:Uid="Customization" />
 
+                <!--Language Setting-->
                 <controls:SettingsCard x:Uid="AppLanguageSetting"
                                        x:Name="AppLanguageSetting"
                                        HeaderIcon="{ui:FontIcon Glyph=&#xF2B7;}">
@@ -123,7 +140,7 @@
                               x:Name="AppLanguageComboBox">
                     </ComboBox>
                 </controls:SettingsCard>
-
+                <!--Theme Setting-->
                 <controls:SettingsCard x:Uid="AppThemeSetting"
                                        x:Name="AppThemeSetting"
                                        HeaderIcon="{ui:FontIcon Glyph=&#xE790;}">
@@ -133,7 +150,7 @@
                               x:Name="AppThemeComboBox">
                     </ComboBox>
                 </controls:SettingsCard>
-
+                <!--Backdrop Setting-->
                 <controls:SettingsCard x:Uid="AppBackdropSetting"
                                        x:Name="AppBackdropSetting"
                                        HeaderIcon="{ui:FontIcon Glyph=&#xE771;}">
@@ -147,7 +164,15 @@
                 <!--Developer Options-->
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
                            x:Uid="DeveloperOptions" />
-
+                <!--Verbose logging-->
+                <controls:SettingsCard x:Uid="YTdlpVerboseSetting"
+                                       x:Name="YTdlpVerboseSetting"
+                                       IsEnabled="False"
+                                       HeaderIcon="{ui:FontIcon Glyph=&#xE8BC;}">
+                    <ToggleSwitch x:Name="YTdlpVerboseSettingSwitch"
+                                  Toggled="Switch_Toggled" />
+                </controls:SettingsCard>
+                <!--Blob Data Setting-->
                 <controls:SettingsCard x:Uid="BlobDataSetting"
                                        x:Name="BlobDataSetting"
                                        HeaderIcon="{ui:FontIcon Glyph=&#xE8FF;}">
@@ -155,6 +180,7 @@
                                   Toggled="Switch_Toggled" />
                 </controls:SettingsCard>
 
+                <!--Write video info JSON setting (for debugging)-->
                 <controls:SettingsCard x:Uid="WriteVideoInfoSetting"
                                        x:Name="WriteVideoInfoSetting"
                                        HeaderIcon="{ui:FontIcon Glyph=&#xE78C;}">

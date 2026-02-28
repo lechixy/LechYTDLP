@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
@@ -86,8 +87,13 @@ namespace LechYTDLP.Components
 
             ThumbnailImage.Source = new BitmapImage(new Uri(info.Thumbnail ?? "https://placehold.co/320x180.png?text=No+Thumbnail"));
             VideoTitle.Text = info.Title ?? App.LocalizationService.Get("UnknownTitle");
-            VideoUploader.Text = $"@{info.Uploader}" ?? App.LocalizationService.Get("UnknownUploader");
-            VideoUploader.Text += $" • {info.ExtractorKey}";
+
+            VideoUploaderAndExtractor.Blocks.Clear();
+            var p = new Paragraph();
+            p.Inlines.Add(new Run { Text = $"@{info.Uploader}" ?? App.LocalizationService.Get("UnknownUploader"), FontWeight = Microsoft.UI.Text.FontWeights.Bold });
+            p.Inlines.Add(new Run { Text = $" • {info.ExtractorKey}" });
+            VideoUploaderAndExtractor.Blocks.Add(p);
+
             VideoAltInfo.Text = $"{App.LocalizationService.Get("Saving")}: {info.Filename!.Split('.')[0]}.?";
 
             var VideoFormats = info.Formats!;

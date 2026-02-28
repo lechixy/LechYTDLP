@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -59,17 +60,31 @@ namespace LechYTDLP.Components
                 QueueMediaItemThumbnail.Source = new BitmapImage(new Uri(thumbUrl));
             }
 
-            string uploader = item.Info.Uploader ?? App.LocalizationService.Get("UnknownUploader");
-            string saveStatus = item.State == DownloadState.Completed || item.State == DownloadState.Failed
+            string saveStatus = item.State == 
+                DownloadState.Completed || item.State == DownloadState.Failed
                 ? App.LocalizationService.GetString("SavedTo", item.FilePath)
                 : App.LocalizationService.GetString("SavingTo", SettingsService.DownloadPath);
 
-            QueueMediaItemUploaderAndSavingTo.Text = $"{uploader} • {saveStatus}";
+            QueueMediaItemUploaderAndSavingTo.Blocks.Clear();
+            var p = new Paragraph();
+            p.Inlines.Add(new Run { Text = $"@{item.Info.Uploader}" ?? App.LocalizationService.Get("UnknownUploader"), FontWeight = Microsoft.UI.Text.FontWeights.Bold });
+            p.Inlines.Add(new Run { Text = $" • {saveStatus}" });
+            QueueMediaItemUploaderAndSavingTo.Blocks.Add(p);
 
-            QueueMediaItemStatus.Text = item.State.ToString();
+            QueueMediaItemStatus.Text = item.State switch
+            {
+                DownloadState.Queued => App.LocalizationService.Get("StatusQueued"),
+                DownloadState.Downloading => App.LocalizationService.Get("StatusDownloading"),
+                DownloadState.Completed => App.LocalizationService.Get("StatusCompleted"),
+                DownloadState.Failed => App.LocalizationService.Get("StatusFailed"),
+                DownloadState.Paused => App.LocalizationService.Get("StatusPaused"),
+                DownloadState.Resuming => App.LocalizationService.Get("StatusResuming"),
+                DownloadState.TestingFormat => App.LocalizationService.Get("StatusTestingFormat"),
+                _ => App.LocalizationService.Get("StatusQueued")
+            };
 
 
-            if (item.State == DownloadState.Paused)
+            if (item.State == DownloadState.Paused || item.State == DownloadState.TestingFormat)
             {
                 QueueMediaItemStatus.Foreground = Application.Current.Resources["SystemFillColorCautionBrush"] as Brush;
             }
@@ -97,7 +112,7 @@ namespace LechYTDLP.Components
                         UseShellExecute = true
                     });
                 }
-                catch (FileNotFoundException)
+                catch (Exception)
                 {
                     KnownErrors.ShowGenericError(KnownErrors.GenericError.NoFileOrDirectory);
                 }

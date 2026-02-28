@@ -11,9 +11,24 @@
     <StackPanel Orientation="Vertical"
                 Margin="36,40,36,0">
 
-        <TextBlock x:Uid="Logs"
-                   Style="{StaticResource TitleLargeTextBlockStyle}"
-                   Margin="0,0,0,24" />
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Uid="Logs"
+                       Style="{StaticResource TitleLargeTextBlockStyle}"
+                       Grid.Column="0"
+                       Margin="0,0,0,24" />
+            <Button Grid.Column="1"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource SubtleButtonStyle}"
+                    x:Name="ScrollToBottomButton"
+                    Click="OnClick">
+            </Button>
+
+        </Grid>
 
         <Grid RowSpacing="16">
             <Grid.RowDefinitions>
@@ -34,7 +49,7 @@
                                 <MenuFlyout>
                                     <MenuFlyoutItem x:Name="Copy"
                                                     x:Uid="Copy"
-                                                    Click="MenuFlyoutItem_Click" />
+                                                    Click="OnClick" />
                                 </MenuFlyout>
                             </Grid.ContextFlyout>
                             <TextBlock Text="{x:Bind Message}"

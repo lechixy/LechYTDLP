@@ -9,8 +9,33 @@ using Windows.UI;
 
 namespace LechYTDLP.Util
 {
+    public enum Links
+    {
+        GitHubRepository,
+        NoJsRuntime,
+        OutputTemplate,
+        WhyINeedToMyPassCookiesHere
+    }
+
     public class Main
     {
+        public static string GetLink(Links title)
+        {
+            string[] links = [
+                // GitHub Repository
+                "https://github.com/lechixy/LechYTDLP",
+                // NoJsRuntime
+                "https://github.com/lechixy/LechYTDLP#why-i-am-getting-no-javascript-runtime-warning",
+                // Output Template
+                "https://github.com/yt-dlp/yt-dlp#output-template",
+                // Why I Need To Pass Cookies Here
+                "https://github.com/lechixy/LechYTDLP#why-i-need-to-pass-my-cookies-here"
+
+            ];
+
+            return links[(int)title];
+        }
+
         public static string GetDynamicSearchBoxPlaceholder()
         {
             string[] placeholders = [

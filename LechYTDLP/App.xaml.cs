@@ -40,8 +40,6 @@ namespace LechYTDLP
             var v = Package.Current.Id.Version;
             return $"{v.Major}.{v.Minor}.{v.Build}";
         }
-        public static string GithubLink => "https://github.com/lechixy/LechYTDLP";
-
         // Api Server for browser extension
         public static LocalApiServer ApiServer { get; private set; } = null!;
 
@@ -99,7 +97,7 @@ namespace LechYTDLP
                 InfoBarService.Show(new InfoBarMessage
                 {
                     Title = LocalizationService.GetString("ExtensionAddedMediaInfoBarMsg", data.ExtensionBrowser),
-                    Message = "",
+                    Message = data.Url,
                     Severity = InfoBarSeverity.Success,
                 });
 

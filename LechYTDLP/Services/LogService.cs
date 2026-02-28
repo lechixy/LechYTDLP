@@ -71,7 +71,9 @@ namespace LechYTDLP.Services
 
         public static void Add(string text, LogTag tag = LogTag.Normal)
         {
-            if (tag == LogTag.Error) text = $"[{App.LocalizationService.Get("ERROR")}] {text}";
+            if (tag == LogTag.Error) text = $"❗ {App.LocalizationService.Get("ERROR")} » {text}";
+            if (tag == LogTag.Warning) text = $"⚠️ {App.LocalizationService.Get("WARNING")} » {text}";
+            if (tag == LogTag.Lechixy) text = $"🩵 lechixy » {text}";
 
             var item = new LogItem
             {

@@ -95,12 +95,14 @@ public sealed partial class SettingsPage : Page
         _isInitializingTheme = false;
 
         // # Developer Options
+        YTdlpVerboseSettingSwitch.IsOn = SettingsService.UseVerboseLoggingOnYTDLP;
         BlobDataSettingSwitch.IsOn = SettingsService.IsUsingBlobData;
+        WriteVideoInfoSettingSwitch.IsOn = SettingsService.WriteVideoInfoJson;
 
         // # About
         AboutExpander.Description = App.LocalizationService.Get("MadeBy");
         AboutExpanderContent.Text = $"{App.LocalizationService.Get("Version")} {App.GetAppVersion()}";
-        GithubLink.NavigateUri = new Uri(App.GithubLink);
+        GithubLink.NavigateUri = new Uri(Util.Main.GetLink(Util.Links.GitHubRepository));
     }
 
     private void ChangeSetting(SettingType Setting)
@@ -150,6 +152,15 @@ public sealed partial class SettingsPage : Page
     private async void CheckVersion()
     {
         ApplicationStatusCheck.Description = App.LocalizationService.Get("ApplicationStatusCheck");
+        CheckDependsButton.IsEnabled = false;
+        CheckDependsButton.Content = new ProgressRing
+        {
+            IsActive = true,
+            Width = 20,
+            Height = 20,
+            VerticalAlignment = VerticalAlignment.Center,
+            HorizontalAlignment = HorizontalAlignment.Center
+        };
         try
         {
             var YTdlpVersion = await YTDLP.CheckExecutable(YTDLP.CheckExecutableApp.YTDLP);
@@ -162,8 +173,10 @@ public sealed partial class SettingsPage : Page
             Debug.WriteLine(ex.Message);
             var ErroredApp = ex.Message.Split('"')[1] == SettingsService.YTDLPPath ? "YT-DLP" : "FFmpeg";
             ApplicationStatusCheck.Description = $"⚠️ {ErroredApp} {App.LocalizationService.Get("ApplicationStatusCheckNotWorking")}";
-            return;
         }
+
+        CheckDependsButton.Content = App.LocalizationService.Get("Check");
+        CheckDependsButton.IsEnabled = true;
     }
 
     private void Switch_Toggled(object sender, RoutedEventArgs e)
@@ -178,12 +191,11 @@ public sealed partial class SettingsPage : Page
             {
                 SettingsService.WriteVideoInfoJson = toggleSwitch.IsOn;
             }
+            else if (toggleSwitch.Name == "YTdlpVerboseSettingSwitch")
+            {
+                SettingsService.UseVerboseLoggingOnYTDLP = toggleSwitch.IsOn;
+            }
         }
-    }
-
-    private void CheckDependencies_Click(object sender, RoutedEventArgs e)
-    {
-        CheckVersion();
     }
 
     private async void PickFile(SettingType Which)
@@ -206,6 +218,43 @@ public sealed partial class SettingsPage : Page
                 PickFile(SettingType.PathYTDLP);
             else if (btn.Name == "PickFFmpegButton")
                 PickFile(SettingType.PathFFMPEG);
+            else if (btn.Name == "CheckDependsButton")
+                DispatcherQueue.TryEnqueue(CheckVersion);
+            else if (btn.Name == "CheckYTdlpUpdateButton")
+            {
+                DispatcherQueue.TryEnqueue(async () =>
+                {
+                    CheckYTdlpUpdateButton.IsEnabled = false;
+                    CheckYTdlpUpdateButton.Content = new ProgressRing
+                    {
+                        IsActive = true,
+                        Width = 20,
+                        Height = 20,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        HorizontalAlignment = HorizontalAlignment.Center
+                    };
+
+                    var ytdlp = new YTDLP();
+                    UpdateResult updateInfo = await ytdlp.CheckForUpdates();
+
+                    if (updateInfo.Status == UpdateStatus.UpToDate)
+                    {
+                        YTdlpUpdateCheck.Description = $"✅ {App.LocalizationService.Get("YTdlpIsUpToDate")} ({updateInfo.Message})";
+                    }
+                    else if (updateInfo.Status == UpdateStatus.Updated)
+                    {
+                        YTdlpUpdateCheck.Description = $"✅ {App.LocalizationService.Get("YTdlpUpdatedSuccessfully")} ({updateInfo.Message})";
+                    }
+                    else
+                    {
+                        YTdlpUpdateCheck.Description = $"⚠️ {App.LocalizationService.Get("YTdlpUpdateCheckFailed")}";
+                    }
+
+                    CheckYTdlpUpdateButton.IsEnabled = true;
+                    CheckYTdlpUpdateButton.Content = App.LocalizationService.Get("Check");
+                });
+            }
+
         }
     }
 

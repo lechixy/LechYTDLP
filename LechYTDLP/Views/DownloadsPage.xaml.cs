@@ -196,6 +196,11 @@ namespace LechYTDLP.Views
                     PauseOrResumeButton.IsEnabled = true;
                     PauseOrResumeButton.Content = new SymbolIcon(Symbol.Pause);
                 }
+                else if (currentDownload.State == DownloadState.TestingFormat)
+                {
+                    CurrentVideoProgress.ShowPaused = true;
+                    CurrentVideoStatus.Foreground = Application.Current.Resources["SystemFillColorCautionBrush"] as SolidColorBrush;
+                }
                 else if (currentDownload.State == DownloadState.Paused || (CurrentVideoProgress.ShowPaused && currentDownload.State == DownloadState.Queued))
                 {
                     CurrentVideoProgress.ShowPaused = true;
@@ -221,13 +226,23 @@ namespace LechYTDLP.Views
 
                 CurrentVideoUploaderAndSavingTo.Blocks.Clear();
                 var p = new Paragraph();
-                p.Inlines.Add(new Run { Text = info.Uploader ?? App.LocalizationService.Get("UnknownUploader"), FontWeight = Microsoft.UI.Text.FontWeights.Bold });
+                p.Inlines.Add(new Run { Text = $"@{info.Uploader}" ?? App.LocalizationService.Get("UnknownUploader"), FontWeight = Microsoft.UI.Text.FontWeights.Bold });
                 p.Inlines.Add(new Run { Text = $" • {App.LocalizationService.GetString("SavingTo", SettingsService.DownloadPath)}" });
                 CurrentVideoUploaderAndSavingTo.Blocks.Add(p);
 
                 //CurrentVideoUploaderAndSavingTo.Text = $"{info.uploader ?? "Unknown Uploader"} - Saving to {SettingsService.DownloadPath}";
 
-                CurrentVideoStatus.Text = currentDownload.State.ToString();
+                CurrentVideoStatus.Text = currentDownload.State switch
+                {
+                    DownloadState.Queued => App.LocalizationService.Get("StatusQueued"),
+                    DownloadState.Downloading => App.LocalizationService.Get("StatusDownloading"),
+                    DownloadState.Completed => App.LocalizationService.Get("StatusCompleted"),
+                    DownloadState.Failed => App.LocalizationService.Get("StatusFailed"),
+                    DownloadState.Paused => App.LocalizationService.Get("StatusPaused"),
+                    DownloadState.Resuming => App.LocalizationService.Get("StatusResuming"),
+                    DownloadState.TestingFormat => App.LocalizationService.Get("StatusTestingFormat"),
+                    _ => App.LocalizationService.Get("StatusQueued")
+                };
                 CurrentVideoProgress.Value = currentDownload.Progress;
             }
             else
@@ -329,7 +344,6 @@ namespace LechYTDLP.Views
             {
                 if (btn.Name == "PauseOrResumeButton")
                 {
-
                     await App.DownloadService.PauseOrResume();
                 }
                 else if (btn.Name == "ClearHistoryButton")

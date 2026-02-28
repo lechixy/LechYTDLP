@@ -24,7 +24,8 @@ namespace LechYTDLP.Services
         Completed,
         Failed,
         Paused,
-        Resuming
+        Resuming,
+        TestingFormat
     }
 
     public class DownloadItem
@@ -141,6 +142,7 @@ namespace LechYTDLP.Services
             var args = new YTDLPDownloadArgs
             {
                 // # Required arguments
+                Url = item.Url,
                 SelectedFormat = item.SelectedFormat,
                 OutputPath = $"{SettingsService.DownloadPath}\\{SettingsService.FilenameTemplate}",
                 FFmpegLocation = $"{SettingsService.FFmpegPath}",
@@ -150,7 +152,7 @@ namespace LechYTDLP.Services
                 EmbedSubs = SettingsService.EmbedSubs
             };
 
-            var processCode = await _ytdlp.DownloadVideo(item.Url, args);
+            var processCode = await _ytdlp.DownloadVideo(args);
             LogService.Add($"Download finished with code: {processCode}", LogTag.LechYTDLP);
             Debug.WriteLine($"Download finished with code: {processCode}");
 
@@ -261,6 +263,11 @@ namespace LechYTDLP.Services
                 //    Message = $"Resuming download for {CurrentMedia.Info.Title}",
                 //    Severity = InfoBarSeverity.Informational
                 //));
+            }
+
+            if (textLine.Contains("Testing format"))
+            {
+                CurrentMedia!.State = DownloadState.TestingFormat;
             }
 
             CurrentMediaUpdated?.Invoke();

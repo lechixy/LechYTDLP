@@ -69,6 +69,7 @@ public sealed partial class MainPage : Page
 
     private void OnBusyChanged(bool isBusy, string Url)
     {
+        Debug.WriteLine("Busy changed: " + isBusy + ", Url: " + Url);
         DispatcherQueue.TryEnqueue(() =>
         {
             DownloadButton.IsEnabled = !isBusy;

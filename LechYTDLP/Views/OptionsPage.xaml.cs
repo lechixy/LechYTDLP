@@ -42,8 +42,8 @@ public sealed partial class OptionsPage : Page {
         CookiesFileTextBox.Text = SettingsService.CookiesfilePath;
 
         // Hyperlinks
-        FilenameHyperLink.NavigateUri = new Uri("https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#output-template");
-        CookiesFileHyperLink.NavigateUri = new Uri("https://github.com/lechixy/LechYTDLP?tab=readme-ov-file#why-i-need-to-pass-my-cookies-here");
+        FilenameHyperLink.NavigateUri = new Uri(Util.Main.GetLink(Util.Links.OutputTemplate));
+        CookiesFileHyperLink.NavigateUri = new Uri(Util.Main.GetLink(Util.Links.WhyINeedToMyPassCookiesHere));
     }
 
     private void SwitchToggled(object sender, RoutedEventArgs e)

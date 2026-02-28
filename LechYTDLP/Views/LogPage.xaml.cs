@@ -44,6 +44,13 @@ namespace LechYTDLP.Views
 
             LogService.LogAdded += OnLogAdded;
             LogService.LogUpdated += OnLogUpdated;
+
+            if (SettingsService.AutoScrollLogs)
+            {
+                ScrollToBottomButton.Content = App.LocalizationService.Get("ScrollingToBottom");
+                if (UiLogs.Count > 0) LogListView.ScrollIntoView(UiLogs.Last());
+            }
+            else ScrollToBottomButton.Content = App.LocalizationService.Get("ScrollingToBottomNot");
         }
 
         private async void OnLogAdded(LogItem item)
@@ -51,7 +58,7 @@ namespace LechYTDLP.Views
             DispatcherQueue.TryEnqueue(() =>
             {
                 UiLogs.Add(item);
-                LogListView.ScrollIntoView(item);
+                if (SettingsService.AutoScrollLogs) LogListView.ScrollIntoView(item);
             });
         }
 
@@ -61,19 +68,6 @@ namespace LechYTDLP.Views
             {
                 LogListView.ScrollIntoView(item);
             });
-        }
-
-        private void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is MenuFlyoutItem menuItem && menuItem.DataContext is LogItem logItem)
-            {
-                if (menuItem.Name == "Copy")
-                {
-                    var package = new DataPackage();
-                    package.SetText(logItem.Message);
-                    Clipboard.SetContent(package);
-                }
-            }
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -87,6 +81,32 @@ namespace LechYTDLP.Views
         {
             LogService.LogAdded -= OnLogAdded;
             LogService.LogUpdated -= OnLogUpdated;
+        }
+
+        private void OnClick(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button)
+            {
+                if (button.Name == "ScrollToBottomButton")
+                {
+                    SettingsService.AutoScrollLogs = !SettingsService.AutoScrollLogs;
+
+                    if (SettingsService.AutoScrollLogs)
+                    {
+                        ScrollToBottomButton.Content = App.LocalizationService.Get("ScrollingToBottom");
+                        if (UiLogs.Count > 0) LogListView.ScrollIntoView(UiLogs.Last());
+                    }
+                    else ScrollToBottomButton.Content = App.LocalizationService.Get("ScrollingToBottomNot");
+                }
+            } else if (sender is MenuFlyoutItem menuItem && menuItem.DataContext is LogItem logItem)
+            {
+                if (menuItem.Name == "Copy")
+                {
+                    var package = new DataPackage();
+                    package.SetText(logItem.Message);
+                    Clipboard.SetContent(package);
+                }
+            }
         }
     }
 }

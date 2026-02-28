@@ -181,7 +181,7 @@
     <value>Check your dependencies is working correctly</value>
   </data>
   <data name="CheckDependsButton.Content" xml:space="preserve">
-    <value>Check Dependencies</value>
+    <value>Check</value>
   </data>
   <data name="JsRuntimeSetting.Header" xml:space="preserve">
     <value>JavaScript runtime</value>
@@ -451,7 +451,7 @@
     <value>Selected audio formatId-codec</value>
   </data>
   <data name="OnlyOneCodec" xml:space="preserve">
-    <value>Only one codec</value>
+    <value>Only one codec available</value>
   </data>
   <data name="NotSuggested" xml:space="preserve">
     <value>Not suggested</value>
@@ -521,5 +521,92 @@
   </data>
   <data name="Placeholder9" xml:space="preserve">
     <value>Looking for something?..</value>
+  </data>
+  <data name="DrmProtectedLog" xml:space="preserve">
+    <value>Media is DRM protected. Details:</value>
+  </data>
+  <data name="DrmProtected" xml:space="preserve">
+    <value>DRM protected</value>
+  </data>
+  <data name="DrmProtectedMsg" xml:space="preserve">
+    <value>Media is DRM protected. You can't download it.</value>
+  </data>
+  <data name="YTdlpProcessExitedLog" xml:space="preserve">
+    <value>YT-DLP process exited.</value>
+  </data>
+  <data name="ExitCode" xml:space="preserve">
+    <value>Exit code</value>
+  </data>
+  <data name="YTdlpProcessNonZeroLog" xml:space="preserve">
+    <value>YT-DLP is exited with non-zero exit code, something may not be right.</value>
+  </data>
+  <data name="NoJsRuntime" xml:space="preserve">
+    <value>No supported JavaScript</value>
+  </data>
+  <data name="NoJsRuntimeMsg" xml:space="preserve">
+    <value>No supported JavaScript runtime could be found. Some formats can be not on the list. Check at wiki.</value>
+  </data>
+  <data name="NoJsRuntimeLog" xml:space="preserve">
+    <value>No supported JavaScript runtime could be found. This is required for some extractors to work. Please visit the page for more information.</value>
+  </data>
+  <data name="LearnMore" xml:space="preserve">
+    <value>Learn more</value>
+  </data>
+  <data name="CheckYTdlpUpdateButton.Content" xml:space="preserve">
+    <value>Check</value>
+  </data>
+  <data name="CheckYTdlpUpdate.Description" xml:space="preserve">
+    <value>Check is update available for YT-DLP if available it will update</value>
+  </data>
+  <data name="CheckingForUpdatesLog" xml:space="preserve">
+    <value>Checking updates for YT-DLP</value>
+  </data>
+  <data name="YTdlpIsUpToDate" xml:space="preserve">
+    <value>YT-DLP is up to date</value>
+  </data>
+  <data name="YTdlpUpdateCheckFailed" xml:space="preserve">
+    <value>Can't check the YT-DLP update</value>
+  </data>
+  <data name="FailedToStartYTdlpLog" xml:space="preserve">
+    <value>Failed to start YT-DLP</value>
+  </data>
+  <data name="StatusQueued" xml:space="preserve">
+    <value>Queued</value>
+  </data>
+  <data name="StatusDownloading" xml:space="preserve">
+    <value>Downloading</value>
+  </data>
+  <data name="StatusCompleted" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="StatusFailed" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="StatusPaused" xml:space="preserve">
+    <value>Paused</value>
+  </data>
+  <data name="StatusResuming" xml:space="preserve">
+    <value>Resuming</value>
+  </data>
+  <data name="StatusTestingFormat" xml:space="preserve">
+    <value>Testing Format</value>
+  </data>
+  <data name="YTdlpVerboseSetting.Header" xml:space="preserve">
+    <value>Verbose logging</value>
+  </data>
+  <data name="YTdlpVerboseSetting.Description" xml:space="preserve">
+    <value>Print more detailed information on  logs (various debugging information)</value>
+  </data>
+  <data name="WARNING" xml:space="preserve">
+    <value>WARNING</value>
+  </data>
+  <data name="Check" xml:space="preserve">
+    <value>Check</value>
+  </data>
+  <data name="ScrollingToBottom" xml:space="preserve">
+    <value>Auto Scrolling</value>
+  </data>
+  <data name="ScrollingToBottomNot" xml:space="preserve">
+    <value>Not Auto Scrolling</value>
   </data>
 </root>

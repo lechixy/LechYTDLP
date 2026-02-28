@@ -181,7 +181,7 @@
     <value>Bağımlılıklar doğru çalışıyor mu kontrol edin</value>
   </data>
   <data name="CheckDependsButton.Content" xml:space="preserve">
-    <value>Bağımlılıkları kontrol et</value>
+    <value>Kontrol Et</value>
   </data>
   <data name="JsRuntimeSetting.Header" xml:space="preserve">
     <value>JavaScript çalışma ortamı</value>
@@ -244,7 +244,7 @@
     <value>Versiyon</value>
   </data>
   <data name="MadeBy" xml:space="preserve">
-    <value>🤍 @lechixy tarafından yapıldı</value>
+    <value>@lechixy tarafından yapıldı 🤍</value>
   </data>
   <data name="AppBackdropSetting.Header" xml:space="preserve">
     <value>Arkaplan yüzeyi</value>
@@ -451,7 +451,7 @@
     <value>Seçilen ses format numarası-kodlayıcısı</value>
   </data>
   <data name="OnlyOneCodec" xml:space="preserve">
-    <value>Sadece bir kodlayıcı</value>
+    <value>Sadece bir kodlayıcı mevcut</value>
   </data>
   <data name="NotSuggested" xml:space="preserve">
     <value>Önerilmez</value>
@@ -521,5 +521,92 @@
   </data>
   <data name="Placeholder9" xml:space="preserve">
     <value>Bir şey mi arıyordun?..</value>
+  </data>
+  <data name="DrmProtectedLog" xml:space="preserve">
+    <value>Medya DRM korumalı. Detaylar:</value>
+  </data>
+  <data name="DrmProtected" xml:space="preserve">
+    <value>DRM korumalı</value>
+  </data>
+  <data name="DrmProtectedMsg" xml:space="preserve">
+    <value>Medya DRM korumalı. Bunu indiremezsin.</value>
+  </data>
+  <data name="YTdlpProcessExitedLog" xml:space="preserve">
+    <value>YT-DLP sonlandı.</value>
+  </data>
+  <data name="ExitCode" xml:space="preserve">
+    <value>Çıkış kodu</value>
+  </data>
+  <data name="YTdlpProcessNonZeroLog" xml:space="preserve">
+    <value>YT-DLP sıfır (0) olmayan bir çıkış kodu ile sonlandı, bir şeyler doğru olmayabilir.</value>
+  </data>
+  <data name="NoJsRuntime" xml:space="preserve">
+    <value>Desteklenen JavaScript yok</value>
+  </data>
+  <data name="NoJsRuntimeMsg" xml:space="preserve">
+    <value>Desteklenen bir JavaScript çalışma zamanı bulunamadı. Bazı formatlar listede olmayabilir. Wiki'ye bakın.</value>
+  </data>
+  <data name="NoJsRuntimeLog" xml:space="preserve">
+    <value>Desteklenen bir JavaScript çalışma zamanı bulunamadı. Bazı çıkarıcıların çalışması için gereklidir. Daha fazla bilgi için sayfayı ziyaret edin.</value>
+  </data>
+  <data name="LearnMore" xml:space="preserve">
+    <value>Daha fazla öğren</value>
+  </data>
+  <data name="CheckYTdlpUpdateButton.Content" xml:space="preserve">
+    <value>Kontrol Et</value>
+  </data>
+  <data name="CheckYTdlpUpdate.Description" xml:space="preserve">
+    <value>YT-DLP için bir güncelleme mevcut mu kontrol edin eğer mevcut ise güncellenecek</value>
+  </data>
+  <data name="CheckingForUpdatesLog" xml:space="preserve">
+    <value>YT-DLP için güncellemeler kontrol ediliyor</value>
+  </data>
+  <data name="YTdlpIsUpToDate" xml:space="preserve">
+    <value>YT-DLP şuan güncel</value>
+  </data>
+  <data name="YTdlpUpdateCheckFailed" xml:space="preserve">
+    <value>YT-DLP güncellemesi kontrol edilemedi</value>
+  </data>
+  <data name="FailedToStartYTdlpLog" xml:space="preserve">
+    <value>YT-DLP başlatılamadı</value>
+  </data>
+  <data name="StatusQueued" xml:space="preserve">
+    <value>Sıraya Alındı</value>
+  </data>
+  <data name="StatusDownloading" xml:space="preserve">
+    <value>İndiriliyor</value>
+  </data>
+  <data name="StatusCompleted" xml:space="preserve">
+    <value>Tamamlandı</value>
+  </data>
+  <data name="StatusFailed" xml:space="preserve">
+    <value>Başarız Oldu</value>
+  </data>
+  <data name="StatusPaused" xml:space="preserve">
+    <value>Durduruldu</value>
+  </data>
+  <data name="StatusResuming" xml:space="preserve">
+    <value>Devam Ediyor</value>
+  </data>
+  <data name="StatusTestingFormat" xml:space="preserve">
+    <value>Format Deneniyor</value>
+  </data>
+  <data name="YTdlpVerboseSetting.Header" xml:space="preserve">
+    <value>Ayrıntılı çıktılar</value>
+  </data>
+  <data name="YTdlpVerboseSetting.Description" xml:space="preserve">
+    <value>Çıktılarda daha detaylı bilgiler yaz (çeşitli hata ayıklama bilgileri)</value>
+  </data>
+  <data name="WARNING" xml:space="preserve">
+    <value>UYARI</value>
+  </data>
+  <data name="Check" xml:space="preserve">
+    <value>Kontrol Et</value>
+  </data>
+  <data name="ScrollingToBottom" xml:space="preserve">
+    <value>Otomatik Kaydırılıyor</value>
+  </data>
+  <data name="ScrollingToBottomNot" xml:space="preserve">
+    <value>Otomatik Kaydırılmıyor</value>
   </data>
 </root>
