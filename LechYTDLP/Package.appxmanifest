@@ -10,7 +10,7 @@
   <Identity
     Name="776b4425-bcec-4032-ae9c-27f2ad8fc145"
     Publisher="CN=lechi"
-    Version="1.1.2.0" />
+    Version="1.1.3.0" />
 
   <mp:PhoneIdentity PhoneProductId="776b4425-bcec-4032-ae9c-27f2ad8fc145" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 

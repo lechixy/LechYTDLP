@@ -16,6 +16,30 @@ This is my first project with Win UI 3 trying to do my best 💖
 <a font-size="50" href="https://www.notion.so/lechixy/2dc9ce1d06e580d0824fe51030fe51f9?v=2dc9ce1d06e580f38b45000ca867db36&source=copy_link">🗺 Here is the roadmap and to-do list for this project 📌</a>
 </h3>
 
+# Install
+
+Thanks for testing LechYTDLP ❤️
+
+Follow these simple steps to install:
+### 1) Install the Certificate
+
+- Double-click to **"LechYTDLP_1.1.3.0_x64.cer"**
+- Click **Install Certificate**
+- Choose **Local Machine**
+- Select **Trusted People**
+- Finish
+
+### 2) Install the App
+
+- Right-click to **Install.ps1**
+- Click to **Run with PowerShell**
+- If Windows blocks it, open PowerShell as Administrator and run:
+> Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass .\Install.ps1
+
+That’s it. The app should now be installed and ready to use. <3
+
+If something doesn’t work, make sure the certificate was installed correctly and try again.
+
 # Contributing
 There is a Türkçe saying for this, Google it:
 > _"Bir elin nesi var, iki elin sesi var."_
