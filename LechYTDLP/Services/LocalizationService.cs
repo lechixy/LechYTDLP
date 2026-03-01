@@ -13,11 +13,16 @@ namespace LechYTDLP.Services
 {
     public class LocalizationService
     {
-        private readonly ResourceLoader _loader;
+        private ResourceLoader _loader;
 
         private string _defaultValue = "No translation";
 
         public LocalizationService()
+        {
+            _loader = ResourceLoader.GetForViewIndependentUse();
+        }
+
+        public void Reload()
         {
             _loader = ResourceLoader.GetForViewIndependentUse();
         }
@@ -51,9 +56,11 @@ namespace LechYTDLP.Services
             if (language == null)
             {
                 SettingsService.ResetSetting(nameof(SettingsService.AppLanguage));
+                App.LocalizationService.Reload();
                 return "system";
             }
 
+            App.LocalizationService.Reload();
             App.InfoBarService.Show(new InfoBarMessage
             {
                 Title = App.LocalizationService.GetString("LanguageChangedInfoBarMsg", language.DisplayName),

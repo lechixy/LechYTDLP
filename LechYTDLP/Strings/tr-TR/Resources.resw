@@ -609,4 +609,7 @@
   <data name="ScrollingToBottomNot" xml:space="preserve">
     <value>Otomatik Kaydırılmıyor</value>
   </data>
+  <data name="YTdlpUpdatedSuccessfully" xml:space="preserve">
+    <value>YT-DLP güncellendi</value>
+  </data>
 </root>

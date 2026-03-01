@@ -19,7 +19,7 @@ namespace LechYTDLP.Services
         private static ApplicationDataContainer Settings =>
             ApplicationData.Current.LocalSettings;
 
-        private static string BasePath = Windows.ApplicationModel.Package.Current.InstalledLocation.Path;
+        private static string BasePath = ApplicationData.Current.LocalFolder.Path;
 
         // # Logs Page
         public static bool AutoScrollLogs
@@ -71,7 +71,7 @@ namespace LechYTDLP.Services
         public static string YTDLPPath
         {
             get => (string?)Settings.Values[nameof(YTDLPPath)]
-                   ?? Path.Combine(BasePath, "Tools", "ytdlp.exe");
+                   ?? Path.Combine(BasePath, "Tools", "yt-dlp.exe");
 
             set => Settings.Values[nameof(YTDLPPath)] = value;
         }

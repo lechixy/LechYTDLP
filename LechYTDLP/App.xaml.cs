@@ -50,7 +50,7 @@ namespace LechYTDLP
         public static InfoBarService InfoBarService { get; } = new();
         public static DatabaseService DatabaseService { get; } = new();
         public static FormatDialogService FormatDialogService { get; private set; } = null!;
-        public static LocalizationService LocalizationService { get; } = new LocalizationService();
+        public static LocalizationService LocalizationService { get; private set; } = null!;
 
         // Controllers
         public static DownloadController DownloadController { get; } = new();
@@ -62,6 +62,14 @@ namespace LechYTDLP
         /// </summary>
         public App()
         {
+            LocalizationService = new LocalizationService();
+            if (SettingsService.AppLanguage.Code != "system")
+            {
+                ApplicationLanguages.PrimaryLanguageOverride = SettingsService.AppLanguage.Code;
+                Debug.WriteLine($"App language set to {SettingsService.AppLanguage.Code}");
+                LocalizationService.Reload();
+            }
+
             InitializeComponent();
         }
 
@@ -73,14 +81,12 @@ namespace LechYTDLP
         {
             _ = DatabaseService.InitializeAsync();
 
+            // Ensure tools are available
+            ToolPathService.Ensure(ToolPathService.Tool.YtDlp);
+            ToolPathService.Ensure(ToolPathService.Tool.FFmpeg);
+
             ApiServer = new LocalApiServer();
             ApiServer.Start();
-
-            if (SettingsService.AppLanguage.Code != "system")
-            {
-                ApplicationLanguages.PrimaryLanguageOverride = SettingsService.AppLanguage.Code;
-                Debug.WriteLine($"App language set to {SettingsService.AppLanguage.Code}");
-            }
 
             Window = new MainWindow();
             Window.Activate();

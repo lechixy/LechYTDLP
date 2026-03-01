@@ -90,6 +90,9 @@ namespace LechYTDLP.Services
                     Content = msg.HyperlinkButton.Content,
                     NavigateUri = msg.HyperlinkButton.NavigateUri
                 };
+            } else
+            {
+                _infoBar.ActionButton = null;
             }
 
             _infoBar.IsClosable = msg.IsCancelable || msg.DurationMs <= 0;
