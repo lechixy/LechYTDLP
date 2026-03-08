@@ -27,10 +27,13 @@ namespace LechYTDLP
     public sealed partial class MainWindow : Window
     {
         public int InfoBadgeOpacity = 1;
+        public bool IsInitTheme = true;
 
         public MainWindow()
         {
             this.InitializeComponent();
+
+            App.NavigationService.Initialize(AppFrame, NavView);
 
             // Window sizing
             var hWnd = WindowNative.GetWindowHandle(this);
@@ -46,11 +49,12 @@ namespace LechYTDLP
             ExtendsContentIntoTitleBar = true;
             // Replace system title bar with the WinUI TitleBar.
             AppTitleBar.Subtitle = $"v{App.GetAppVersion()}";
+            #if DEBUG
+            AppTitleBar.Subtitle += $" ({App.LocalizationService.Get("DevelopmentVersion")} • {App.LocalizationService.Get("Debug")})";
+            #endif
             SetTitleBar(AppTitleBar);
 
             App.InfoBarService.Register(GlobalInfoBar);
-
-            App.NavigationService.Initialize(AppFrame, NavView);
             // App.NavigationService.Navigate<MainPage>();
 
             LogService.BadgeChanged += UpdateLogBadge;
@@ -136,7 +140,13 @@ namespace LechYTDLP
                 if (isChanged)
                 {
                     root.RequestedTheme = newThemeValue;
-                    // string format = LocalizationService.Get("DownloadCount.Text");
+
+                    // Show info bar only when theme is changed and not during initialization to avoid showing it on app launch.
+                    if (IsInitTheme)
+                    {
+                        IsInitTheme = false;
+                        return;
+                    }
 
                     App.InfoBarService.Show(new InfoBarMessage
                     {

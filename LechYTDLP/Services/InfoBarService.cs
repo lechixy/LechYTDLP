@@ -19,6 +19,12 @@ namespace LechYTDLP.Services
         public required Uri NavigateUri { get; init; }
     }
 
+    public class InfoBarButton
+    {
+        public required string Content { get; init; }
+        public required Action ClickAction { get; init; }
+    }
+
     public class InfoBarMessage
     {
         // Required properties
@@ -27,6 +33,8 @@ namespace LechYTDLP.Services
         public required InfoBarSeverity Severity { get; init; }
         // Optional action button
         public InfoBarHyperlinkButton? HyperlinkButton { get; init; } = null;
+        public InfoBarButton? ActionButton { get; init; } = null;
+        public bool CloseAfterAction { get; init; } = true;
         // Optional properties with default values
         public int DurationMs { get; init; } = 5000;
         public bool IsCancelable { get; init; } = false;
@@ -83,14 +91,33 @@ namespace LechYTDLP.Services
             //    _infoBar.Background = blabla
             //}
 
-            if (msg.HyperlinkButton != null)
+            void ActionButtonClickHandler(object s, RoutedEventArgs e)
             {
-                _infoBar.ActionButton = new HyperlinkButton
+                msg.ActionButton?.ClickAction();
+                if (msg.CloseAfterAction)
+                    CloseInfoBar();
+            }
+
+            // Set action button if provided
+            if (msg.ActionButton != null)
+            {
+                var button = new Button
+                {
+                    Content = msg.ActionButton.Content,
+                };
+                button.Click += ActionButtonClickHandler;
+                _infoBar.ActionButton = button;
+            }
+            else if (msg.HyperlinkButton != null)
+            {
+                var button = new HyperlinkButton
                 {
                     Content = msg.HyperlinkButton.Content,
                     NavigateUri = msg.HyperlinkButton.NavigateUri
                 };
-            } else
+            }
+            // Clear action button if not provided
+            else
             {
                 _infoBar.ActionButton = null;
             }
@@ -102,7 +129,11 @@ namespace LechYTDLP.Services
 
             AnimateOpacity(0, 1);
 
-            _infoBar.Closed += OnClosed;
+            _infoBar.Closed += (sender, args) =>
+            {
+                if (_infoBar.ActionButton != null) _infoBar.ActionButton.Click -= ActionButtonClickHandler;
+                OnClosed(sender, args);
+            };
 
             if (msg.DurationMs <= 0)
                 return;

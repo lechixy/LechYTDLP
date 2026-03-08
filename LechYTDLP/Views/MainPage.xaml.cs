@@ -64,7 +64,6 @@ public sealed partial class MainPage : Page
 
         App.DownloadController.BusyChanged += OnBusyChanged;
         // App.DownloadController.VideoInfoReady += OnVideoInfoReady;
-        App.DownloadController.ErrorOccured += OnError;
     }
 
     private void OnBusyChanged(bool isBusy, string Url)
@@ -94,27 +93,10 @@ public sealed partial class MainPage : Page
             }
         });
     }
-
-    private void OnError(string errorMessage)
-    {
-        DispatcherQueue.TryEnqueue(() =>
-        {
-            App.InfoBarService.Show(new InfoBarMessage
-            {
-                Title = "Error",
-                Message = errorMessage,
-                Severity = InfoBarSeverity.Error,
-                DurationMs = 5000,
-                IsCancelable = true
-            });
-        });
-    }
-
     private async void Download()
     {
         await App.DownloadController.SearchAsync(Text);
     }
-
     private void DownloadButton_Click(object sender, RoutedEventArgs e)
     {
         Download();
@@ -196,6 +178,5 @@ public sealed partial class MainPage : Page
         base.OnNavigatedFrom(e);
         App.DownloadController.BusyChanged -= OnBusyChanged;
         // App.DownloadController.VideoInfoReady -= OnVideoInfoReady;
-        App.DownloadController.ErrorOccured -= OnError;
     }
 }

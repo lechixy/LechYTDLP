@@ -69,7 +69,8 @@ namespace LechYTDLP.Services
                 }
                 catch (Exception ex)
                 {
-                    tcs.SetException(ex);
+                    Debug.WriteLine(ex);
+                    tcs.TrySetResult(null);
                 }
             });
 

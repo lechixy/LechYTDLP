@@ -1,4 +1,5 @@
 ﻿using LechYTDLP.Classes;
+using LechYTDLP.Util;
 using Microsoft.Windows.AppNotifications;
 using Microsoft.Windows.AppNotifications.Builder;
 using System;
@@ -15,7 +16,6 @@ namespace LechYTDLP.Controllers
     {
         public event Action<bool, string>? BusyChanged;
         public event Action<string, VideoInfo>? VideoInfoReady;
-        public event Action<string>? ErrorOccured;
 
         private bool _isBusy;
         private string _currentUrl = string.Empty;
@@ -58,19 +58,11 @@ namespace LechYTDLP.Controllers
                         result.Url,
                         result.VideoInfo,
                         result.SelectedFormat);
-
-                    AppNotification notification = new AppNotificationBuilder()
-                        .AddText("Download Queued")
-                        .AddText(result.VideoInfo.Title ?? "Unknown Title")
-                        .SetInlineImage(new Uri(WebUtility.HtmlEncode(result.VideoInfo.Thumbnail!)))
-                        .BuildNotification();
-
-                    AppNotificationManager.Default.Show(notification);
                 }
             }
             catch (Exception ex)
             {
-                ErrorOccured?.Invoke(ex.Message);
+                KnownErrors.Check(ex);
             }
             finally
             {

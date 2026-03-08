@@ -94,7 +94,7 @@ namespace LechYTDLP.Components
             p.Inlines.Add(new Run { Text = $" • {info.ExtractorKey}" });
             VideoUploaderAndExtractor.Blocks.Add(p);
 
-            VideoAltInfo.Text = $"{App.LocalizationService.Get("Saving")}: {info.Filename!.Split('.')[0]}.?";
+            VideoAltInfo.Text = $"{App.LocalizationService.Get("Saving")}: {info.Filename?.Split('.')[0]}.?";
 
             var VideoFormats = info.Formats!;
 
@@ -213,7 +213,7 @@ namespace LechYTDLP.Components
 
                         SelectedFormat.Codec = NewCodecs[0].VCodec;
                         SelectedFormat.FileExtension = SelectedVideo.Formats[0].Ext;
-                        LogService.Add($"{App.LocalizationService.Get("SelectedVideoLog")}: {SelectedFormat.VideoId} - {SelectedFormat.Codec}", LogTag.LechYTDLP);
+                        LogService.Add($"{App.LocalizationService.Get("SelectedVideoLog")}: {SelectedFormat.VideoId} - {SelectedFormat.Codec}", LogTag.YTDLP);
 
                         // Set default codec selection to the first codec because it's usually the best one
                         //if (AllFormatsHaveSameCodec) CodecSelect.SelectedIndex = NewCodecs.Count - 1;
@@ -256,7 +256,7 @@ namespace LechYTDLP.Components
                     SelectedFormat.SelectedVideo = SelectedVideo;
                     SelectedFormat.Codec = Selected.VCodec;
                     SelectedFormat.FileExtension = SelectedVideo.Ext;
-                    LogService.Add($"{App.LocalizationService.Get("SelectedVideoLog")}: {SelectedFormat.VideoId} - {SelectedFormat.Codec}", LogTag.LechYTDLP);
+                    LogService.Add($"{App.LocalizationService.Get("SelectedVideoLog")}: {SelectedFormat.VideoId} - {SelectedFormat.Codec}", LogTag.YTDLP);
 
                     var DecideFileSize = SelectedVideo.FileSize != null ?
                         SelectedVideo.FileSize : SelectedVideo.FileSizeApprox;
@@ -290,7 +290,7 @@ namespace LechYTDLP.Components
                     SelectedFormat.SelectedAudio = SelectedAudio;
                     SelectedFormat.AudioId = SelectedAudio.FormatId;
                     SelectedFormat.AudioFileExtension = SelectedAudio.Ext;
-                    LogService.Add($"{App.LocalizationService.Get("SelectedAudioLog")}: {SelectedFormat.AudioId} - {SelectedFormat.Audio}", LogTag.LechYTDLP);
+                    LogService.Add($"{App.LocalizationService.Get("SelectedAudioLog")}: {SelectedFormat.AudioId} - {SelectedFormat.Audio}", LogTag.YTDLP);
 
                     AudioInfo.Visibility = Visibility.Visible;
                     var DecideFileSize = SelectedAudio.FileSize != null ?

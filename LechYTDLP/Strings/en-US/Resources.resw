@@ -273,8 +273,11 @@
   <data name="Acrylic" xml:space="preserve">
     <value>Acrylic</value>
   </data>
-  <data name="LanguageChangedInfoBarMsg" xml:space="preserve">
+  <data name="LanguageChangedInfoBar" xml:space="preserve">
     <value>Language has been changed to {0}</value>
+  </data>
+  <data name="LanguageChangedInfoBarMsg" xml:space="preserve">
+    <value>Re-open app for changes</value>
   </data>
   <data name="File.Text" xml:space="preserve">
     <value>File</value>
@@ -611,5 +614,80 @@
   </data>
   <data name="YTdlpUpdatedSuccessfully" xml:space="preserve">
     <value>Updated YT-DLP</value>
+  </data>
+  <data name="OtherOptions.Text" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="ImportExportSetting.Description" xml:space="preserve">
+    <value>You can import/export your preferences</value>
+  </data>
+  <data name="ImportExportSetting.Header" xml:space="preserve">
+    <value>Import/Export Settings</value>
+  </data>
+  <data name="ImportSettingsButton.Content" xml:space="preserve">
+    <value>Import</value>
+  </data>
+  <data name="ExportSettingsButton.Content" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="SettingsImportSuccess" xml:space="preserve">
+    <value>Settings imported</value>
+  </data>
+  <data name="SettingsImportSuccessMsg" xml:space="preserve">
+    <value>{0} setting changed</value>
+  </data>
+  <data name="SettingsImportFailed" xml:space="preserve">
+    <value>Failed to import settings</value>
+  </data>
+  <data name="SettingsImportFailedMsg" xml:space="preserve">
+    <value>Check if the file's content valid</value>
+  </data>
+  <data name="SettingsExportFailed" xml:space="preserve">
+    <value>Settings export failed</value>
+  </data>
+  <data name="CheckLogs" xml:space="preserve">
+    <value>Check logs to see more</value>
+  </data>
+  <data name="SettingsExportSuccess" xml:space="preserve">
+    <value>Settings exported</value>
+  </data>
+  <data name="SettingImportSuccessNotice" xml:space="preserve">
+    <value>re-open for changes</value>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>Import</value>
+  </data>
+  <data name="ImportOldSettings" xml:space="preserve">
+    <value>Old settings file found</value>
+  </data>
+  <data name="ImportOldSettingsMsg" xml:space="preserve">
+    <value>Would you like to import your old preferences?</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="DownloadQueued" xml:space="preserve">
+    <value>Download Queued</value>
+  </data>
+  <data name="ProtocolActivation" xml:space="preserve">
+    <value>Opened app with protocol</value>
+  </data>
+  <data name="UnknownBrowser" xml:space="preserve">
+    <value>Unknown browser</value>
+  </data>
+  <data name="UnknownVersion" xml:space="preserve">
+    <value>Unknown version</value>
+  </data>
+  <data name="ImportOldSettingsNotice" xml:space="preserve">
+    <value>Old settings file found, asking for importing settings</value>
+  </data>
+  <data name="FirstRun" xml:space="preserve">
+    <value>First run detected, Hello You</value>
+  </data>
+  <data name="DevelopmentVersion" xml:space="preserve">
+    <value>Development version</value>
+  </data>
+  <data name="Debug" xml:space="preserve">
+    <value>Debug</value>
   </data>
 </root>

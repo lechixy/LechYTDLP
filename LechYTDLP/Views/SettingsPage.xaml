@@ -133,6 +133,7 @@
                 <!--Language Setting-->
                 <controls:SettingsCard x:Uid="AppLanguageSetting"
                                        x:Name="AppLanguageSetting"
+                                       IsEnabled="True"
                                        HeaderIcon="{ui:FontIcon Glyph=&#xF2B7;}">
                     <ComboBox SelectionChanged="SelectionChanged"
                               x:Uid="AppLanguageSettingCombo"
@@ -161,9 +162,38 @@
                     </ComboBox>
                 </controls:SettingsCard>
 
+                <!--Other-->
+                <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
+                           x:Uid="OtherOptions" />
+
+                <!--Import/Export settings and data-->
+                <controls:SettingsCard x:Uid="ImportExportSetting"
+                                       x:Name="ImportExportSetting"
+                                       HeaderIcon="{ui:FontIcon Glyph=&#xE8CB;}">
+                    <Grid ColumnSpacing="4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <Button Grid.Column="0"
+                                Margin="8,0,0,0"
+                                x:Name="ImportSettingsButton"
+                                x:Uid="ImportSettingsButton"
+                                Click="Button_Click" />
+
+                        <Button Grid.Column="1"
+                                Margin="8,0,0,0"
+                                x:Name="ExportSettingsButton"
+                                x:Uid="ExportSettingsButton"
+                                Click="Button_Click" />
+                    </Grid>
+                </controls:SettingsCard>
+
                 <!--Developer Options-->
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
                            x:Uid="DeveloperOptions" />
+
                 <!--Verbose logging-->
                 <controls:SettingsCard x:Uid="YTdlpVerboseSetting"
                                        x:Name="YTdlpVerboseSetting"

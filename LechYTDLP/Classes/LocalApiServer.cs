@@ -30,7 +30,7 @@ namespace LechYTDLP.Classes
         public LocalApiServer()
         {
             _listener = new HttpListener();
-            _listener.Prefixes.Add("http://localhost:4789/");
+            _listener.Prefixes.Add("http://localhost:3781/");
         }
 
         public void Start()
@@ -42,8 +42,7 @@ namespace LechYTDLP.Classes
             }
             catch (HttpListenerException ex)
             {
-                // Handle the case where the listener fails to start, e.g., due to insufficient permissions
-                Console.WriteLine($"Browser extension will not work • Failed to start Browser Extension HTTP listener: {ex.Message}");
+                // This often happens when the user doesn't have permission to listen on the specified port.
                 LogService.Add(App.LocalizationService.GetString("BrowserExtWontWork", ex.Message), LogTag.ApiServer);
                 return;
             }
@@ -72,6 +71,19 @@ namespace LechYTDLP.Classes
         {
             var req = context.Request;
             var res = context.Response;
+
+            // CORS headerları
+            res.Headers.Add("Access-Control-Allow-Origin", "*");
+            res.Headers.Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+            res.Headers.Add("Access-Control-Allow-Headers", "Content-Type, X-Extension-Version, X-Extension-Browser");
+
+            // Preflight request
+            if (req.HttpMethod == "OPTIONS")
+            {
+                res.StatusCode = 200;
+                res.Close();
+                return;
+            }
 
             if (req.HttpMethod == "GET" && req.Url!.AbsolutePath == "/ping")
             {

@@ -129,7 +129,7 @@ namespace LechYTDLP.Util
                 App.InfoBarService.Show(new InfoBarMessage
                 {
                     Title = App.LocalizationService.Get("UnhandledError"),
-                    Message = ex.Message,
+                    Message = ex.Message.Trim(),
                     Severity = InfoBarSeverity.Error,
                     DurationMs = 0,
                     IsCancelable = true

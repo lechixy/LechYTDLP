@@ -3,6 +3,8 @@ using LechYTDLP.Components;
 using LechYTDLP.Util;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.Windows.AppNotifications;
+using Microsoft.Windows.AppNotifications.Builder;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,6 +12,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Channels;
 using System.Threading.Tasks;
@@ -75,7 +78,7 @@ namespace LechYTDLP.Services
             {
                 // Resume
                 _isPaused = false;
-                LogService.Add("Resuming download.", LogTag.LechYTDLP);
+                LogService.Add("Resuming download.", LogTag.YTDLP);
                 TryStartNext();
                 tcs.SetResult(true);
             }
@@ -83,7 +86,7 @@ namespace LechYTDLP.Services
             {
                 // Pause
                 _isPaused = true;
-                LogService.Add("Pausing download.", LogTag.LechYTDLP);
+                LogService.Add("Pausing download.", LogTag.YTDLP);
                 await _ytdlp.StopYTDLPAsync();
                 CurrentMedia!.State = DownloadState.Paused;
                 CurrentMediaUpdated?.Invoke();
@@ -111,6 +114,14 @@ namespace LechYTDLP.Services
             };
 
             _queue.Enqueue(item);
+
+            AppNotification notification = new AppNotificationBuilder()
+            .AddText(App.LocalizationService.Get("DownloadQueued"))
+            .AddText(item.Info.Title ?? App.LocalizationService.Get("UnknownTitle"))
+            .SetInlineImage(new Uri(WebUtility.HtmlEncode(item.Info.Thumbnail!)))
+            .BuildNotification();
+
+            AppNotificationManager.Default.Show(notification);
 
             if (_queue.Count == 1) CurrentMediaUpdated?.Invoke();
             else QueueUpdated?.Invoke();
@@ -153,7 +164,7 @@ namespace LechYTDLP.Services
             };
 
             var processCode = await _ytdlp.DownloadVideo(args);
-            LogService.Add($"Download finished with code: {processCode}", LogTag.LechYTDLP);
+            LogService.Add($"Download finished with code: {processCode}", LogTag.YTDLP);
             Debug.WriteLine($"Download finished with code: {processCode}");
 
 

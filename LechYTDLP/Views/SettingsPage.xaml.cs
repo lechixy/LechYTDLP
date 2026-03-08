@@ -33,33 +33,11 @@ public sealed partial class SettingsPage : Page
         public required string DisplayName { get; set; }
         public required string Code { get; set; }
     }
-
-    public List<LanguageItem> Languages { get; } =
-    [
-        // new LanguageItem { DisplayName = App.LocalizationService.Get("System"), Code = "system" },
-        new LanguageItem { DisplayName = "English", Code = "en-US" },
-        new LanguageItem { DisplayName = "Türkçe", Code = "tr-TR" },
-    ];
-
     public class ThemeItem
     {
         public required string DisplayName { get; set; }
         public required string Value { get; set; }
     }
-    public List<ThemeItem> Themes { get; } =
-    [
-        new ThemeItem { DisplayName = App.LocalizationService.Get("System"), Value = "system" },
-        new ThemeItem { DisplayName = App.LocalizationService.Get("Light"), Value = "light" },
-        new ThemeItem { DisplayName = App.LocalizationService.Get("Dark"), Value = "dark" },
-    ];
-    public List<ThemeItem> Backdrops { get; } =
-    [
-        new ThemeItem { DisplayName = App.LocalizationService.Get("None"), Value = "none" },
-        new ThemeItem { DisplayName = "Mica", Value = "mica" },
-        new ThemeItem { DisplayName = App.LocalizationService.Get("Acrylic"), Value = "acrylic" },
-        new ThemeItem { DisplayName = "MicaAlt", Value = "micaalt" },
-    ];
-
     enum SettingType
     {
         PathYTDLP,
@@ -86,15 +64,18 @@ public sealed partial class SettingsPage : Page
 
         // # Customization
         _isInitializingTheme = true;
-        AppLanguageComboBox.ItemsSource = Languages;
-        AppLanguageComboBox.SelectedIndex = Languages.FindIndex(x => x.Code == SettingsService.AppLanguage.Code);
-        AppThemeComboBox.ItemsSource = Themes;
-        AppThemeComboBox.SelectedIndex = Themes.FindIndex(x => x.Value == SettingsService.AppTheme.Value);
-        AppBackdropComboBox.ItemsSource = Backdrops;
-        AppBackdropComboBox.SelectedIndex = Backdrops.FindIndex(x => x.Value == SettingsService.AppBackdrop.Value);
-        _isInitializingTheme = false;
+        AppThemeComboBox.ItemsSource = SettingsService.Themes;
+        AppThemeComboBox.SelectedIndex = SettingsService.Themes.FindIndex(x => x.Value == SettingsService.AppTheme.Value);
+        AppBackdropComboBox.ItemsSource = SettingsService.Backdrops;
+        AppBackdropComboBox.SelectedIndex = SettingsService.Backdrops.FindIndex(x => x.Value == SettingsService.AppBackdrop.Value);
 
         // # Developer Options
+        #if DEBUG
+        AppLanguageSetting.IsEnabled = true;
+        #endif
+        AppLanguageComboBox.ItemsSource = SettingsService.Languages;
+        AppLanguageComboBox.SelectedIndex = SettingsService.Languages.FindIndex(x => x.Code == SettingsService.AppLanguage.Code);
+        _isInitializingTheme = false;
         YTdlpVerboseSettingSwitch.IsOn = SettingsService.UseVerboseLoggingOnYTDLP;
         BlobDataSettingSwitch.IsOn = SettingsService.IsUsingBlobData;
         WriteVideoInfoSettingSwitch.IsOn = SettingsService.WriteVideoInfoJson;
@@ -102,6 +83,9 @@ public sealed partial class SettingsPage : Page
         // # About
         AboutExpander.Description = App.LocalizationService.Get("MadeBy");
         AboutExpanderContent.Text = $"{App.LocalizationService.Get("Version")} {App.GetAppVersion()}";
+        #if DEBUG
+        AboutExpanderContent.Text += $" ({App.LocalizationService.Get("DevelopmentVersion")} • {App.LocalizationService.Get("Debug")})";
+        #endif
         GithubLink.NavigateUri = new Uri(Util.Main.GetLink(Util.Links.GitHubRepository));
     }
 
@@ -120,8 +104,6 @@ public sealed partial class SettingsPage : Page
                 // Every time even if the letter changes , it can cause a lot of popups
                 // App.InfoBarService.Show(new InfoBarMessage("Setting updated", "", InfoBarSeverity.Success));
             }
-
-
         }
         else if (Setting == SettingType.PathFFMPEG)
         {
@@ -253,8 +235,12 @@ public sealed partial class SettingsPage : Page
                     CheckYTdlpUpdateButton.IsEnabled = true;
                     CheckYTdlpUpdateButton.Content = App.LocalizationService.Get("Check");
                 });
+            } else if (btn.Name == "ImportSettingsButton") {
+                SettingsService.ImportSettingsFromFile();
+            } else if (btn.Name == "ExportSettingsButton")
+            {
+                SettingsService.ExportSettings();
             }
-
         }
     }
 
@@ -287,7 +273,7 @@ public sealed partial class SettingsPage : Page
             else if (comboBox.Name == "AppLanguageComboBox")
             {
                 var selectedLanguage = (LanguageItem)comboBox.SelectedItem;
-                LocalizationService.SetLanguage(selectedLanguage.Code == "system" ? null : selectedLanguage);
+                LocalizationService.SetLanguage(selectedLanguage);
             }
         }
     }

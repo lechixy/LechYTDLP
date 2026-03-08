@@ -19,10 +19,11 @@ namespace LechYTDLP.Services
         Lechixy,
         // Tags
         Normal,
-        LechYTDLP,
+        YTDLP,
         Warning,
         Error,
-        ApiServer
+        ApiServer,
+        App
     }
 
     public class LogItem : INotifyPropertyChanged
@@ -49,7 +50,7 @@ namespace LechYTDLP.Services
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
-    public static class LogService
+    public class LogService
     {
         private static readonly object _lock = new();
 
@@ -69,7 +70,7 @@ namespace LechYTDLP.Services
                 return _logs.ToList();
         }
 
-        public static void Add(string text, LogTag tag = LogTag.Normal)
+        public static void Add(string text, LogTag tag = LogTag.Normal, bool UpdateBadge = true)
         {
             if (tag == LogTag.Error) text = $"❗ {App.LocalizationService.Get("ERROR")} » {text}";
             if (tag == LogTag.Warning) text = $"⚠️ {App.LocalizationService.Get("WARNING")} » {text}";
@@ -84,7 +85,7 @@ namespace LechYTDLP.Services
             lock (_lock)
             {
                 _logs.Add(item);
-                IncrementBadgeInternal();
+                if (UpdateBadge) IncrementBadgeInternal();
             }
 
             LogAdded?.Invoke(item);

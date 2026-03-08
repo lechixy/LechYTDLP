@@ -8,7 +8,7 @@ using Windows.Storage;
 
 namespace LechYTDLP.Services
 {
-    public static class ToolPathService
+    public class ToolPathService
     {
         private const string YtDlpFileName = "yt-dlp.exe";
         private const string FfmpegFileName = "ffmpeg.exe";

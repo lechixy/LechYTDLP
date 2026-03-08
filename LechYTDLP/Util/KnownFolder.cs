@@ -18,7 +18,8 @@ namespace LechYTDLP.Util
         Favorites,
         Links,
         SavedGames,
-        SavedSearches
+        SavedSearches,
+        Documents
     }
 
     internal class LechKnownFolders
@@ -30,7 +31,8 @@ namespace LechYTDLP.Util
             [LechKnownFolder.Favorites] = new("1777F761-68AD-4D8A-87BD-30B759FA33DD"),
             [LechKnownFolder.Links] = new("BFB9D5E0-C6A9-404C-B2B2-AE6DB6AF4968"),
             [LechKnownFolder.SavedGames] = new("4C5C32FF-BB9D-43B0-B5B4-2D72E54EAAA4"),
-            [LechKnownFolder.SavedSearches] = new("7D1D3A04-DEBB-4115-95CF-2F29DA2920DA")
+            [LechKnownFolder.SavedSearches] = new("7D1D3A04-DEBB-4115-95CF-2F29DA2920DA"),
+            [LechKnownFolder.Documents] = new("FDD39AD0-238F-46AF-ADB4-6C85480369C7")
         };
 
         public static string GetPath(LechKnownFolder knownFolder)

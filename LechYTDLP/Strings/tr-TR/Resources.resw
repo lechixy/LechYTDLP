@@ -273,8 +273,11 @@
   <data name="Acrylic" xml:space="preserve">
     <value>Akrilik</value>
   </data>
-  <data name="LanguageChangedInfoBarMsg" xml:space="preserve">
+  <data name="LanguageChangedInfoBar" xml:space="preserve">
     <value>Dil {0} olarak değiştirildi</value>
+  </data>
+  <data name="LanguageChangedInfoBarMsg" xml:space="preserve">
+    <value>Değişiklikleri görmek için uygulamayı yeniden açın</value>
   </data>
   <data name="File.Text" xml:space="preserve">
     <value>Dosya</value>
@@ -611,5 +614,80 @@
   </data>
   <data name="YTdlpUpdatedSuccessfully" xml:space="preserve">
     <value>YT-DLP güncellendi</value>
+  </data>
+  <data name="OtherOptions.Text" xml:space="preserve">
+    <value>Diğer</value>
+  </data>
+  <data name="ImportExportSetting.Description" xml:space="preserve">
+    <value>Tercihlerinizi içeri/dışarı aktarabilirsiniz</value>
+  </data>
+  <data name="ImportExportSetting.Header" xml:space="preserve">
+    <value>Ayarları İçe/Dışarı Aktar</value>
+  </data>
+  <data name="ImportSettingsButton.Content" xml:space="preserve">
+    <value>İçeri aktar</value>
+  </data>
+  <data name="ExportSettingsButton.Content" xml:space="preserve">
+    <value>Dışarı aktar</value>
+  </data>
+  <data name="SettingsImportSuccess" xml:space="preserve">
+    <value>Ayarlar içeri aktarıldı</value>
+  </data>
+  <data name="SettingsImportSuccessMsg" xml:space="preserve">
+    <value>{0} ayar değiştirildi</value>
+  </data>
+  <data name="SettingsImportFailed" xml:space="preserve">
+    <value>Ayarlar içeri aktarılamadı</value>
+  </data>
+  <data name="SettingsImportFailedMsg" xml:space="preserve">
+    <value>Dosyanın içeriği geçerli mi kontrol edin</value>
+  </data>
+  <data name="SettingsExportFailed" xml:space="preserve">
+    <value>Ayarlar dışarı aktarılamadı</value>
+  </data>
+  <data name="CheckLogs" xml:space="preserve">
+    <value>Daha fazlası için çıktılara bakın</value>
+  </data>
+  <data name="SettingsExportSuccess" xml:space="preserve">
+    <value>Ayarlar dışarı aktarıldı</value>
+  </data>
+  <data name="SettingImportSuccessNotice" xml:space="preserve">
+    <value>değişiklikleri görmek için uygulamayı yeniden açın</value>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>İçeri aktar</value>
+  </data>
+  <data name="ImportOldSettings" xml:space="preserve">
+    <value>Eski ayarlar dosyası bulundu</value>
+  </data>
+  <data name="ImportOldSettingsMsg" xml:space="preserve">
+    <value>Eski tercihlerinizi içeri aktarmak ister misiniz?</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Evet</value>
+  </data>
+  <data name="DownloadQueued" xml:space="preserve">
+    <value>İndirme sıraya alındı</value>
+  </data>
+  <data name="ProtocolActivation" xml:space="preserve">
+    <value>Uygulama protokol ile açıldı</value>
+  </data>
+  <data name="UnknownBrowser" xml:space="preserve">
+    <value>Bilinmeyen tarayıcı</value>
+  </data>
+  <data name="UnknownVersion" xml:space="preserve">
+    <value>Bilinmeyen versiyon</value>
+  </data>
+  <data name="ImportOldSettingsNotice" xml:space="preserve">
+    <value>Eski tercihler dosyası bulundu, içerik aktarmak ister misiniz diye soruluyor</value>
+  </data>
+  <data name="FirstRun" xml:space="preserve">
+    <value>İlk çalıştırma algılandı, Hello You</value>
+  </data>
+  <data name="DevelopmentVersion" xml:space="preserve">
+    <value>Geliştirici sürümü</value>
+  </data>
+  <data name="Debug" xml:space="preserve">
+    <value>Hata ayıklama</value>
   </data>
 </root>

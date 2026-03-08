@@ -318,7 +318,7 @@ namespace LechYTDLP.Classes
 
             var ytdlpArgs = args.BuildArgs();
             string Arguments = $"{ytdlpArgs} {mustHaveArgs}";
-            LogService.Add($"🚩 {App.LocalizationService.Get("StartingYTdlpWithLog")}:", LogTag.LechYTDLP);
+            LogService.Add($"🚩 {App.LocalizationService.Get("StartingYTdlpWithLog")}:", LogTag.YTDLP);
             LogService.Add($"{SettingsService.YTDLPPath} {Arguments}", LogTag.Normal);
 
             _process = new Process
@@ -372,7 +372,7 @@ namespace LechYTDLP.Classes
                 var p = (Process)s!;
 
                 Debug.WriteLine("Process is exited.");
-                LogService.Add($"🏁 {App.LocalizationService.Get("YTdlpProcessExitedLog")} ({App.LocalizationService.Get("ExitCode")}: {p.ExitCode})", LogTag.LechYTDLP);
+                LogService.Add($"🏁 {App.LocalizationService.Get("YTdlpProcessExitedLog")} ({App.LocalizationService.Get("ExitCode")}: {p.ExitCode})", LogTag.YTDLP);
 
                 if (p.ExitCode != 0)
                 {
@@ -421,7 +421,7 @@ namespace LechYTDLP.Classes
                 DumpJson = true,
                 OutputPath = $"{SettingsService.DownloadPath}\\{SettingsService.FilenameTemplate}"
             };
-            LogService.Add($"⏳ {App.LocalizationService.Get("GettingVideoInfoLog")}: {url}", LogTag.LechYTDLP);
+            LogService.Add($"⏳ {App.LocalizationService.Get("GettingVideoInfoLog")}: {url}", LogTag.YTDLP);
 
             // If using blob data, read from local file instead
             if (SettingsService.IsUsingBlobData)
@@ -514,7 +514,7 @@ namespace LechYTDLP.Classes
         {
             var tcs = new TaskCompletionSource<int>();
 
-            LogService.Add($"⬇️ {App.LocalizationService.Get("DownloadingVideoLog")}: {args.Url}", LogTag.LechYTDLP);
+            LogService.Add($"⬇️ {App.LocalizationService.Get("DownloadingVideoLog")}: {args.Url}", LogTag.YTDLP);
 
             void OnOutput(string data)
             {
@@ -562,7 +562,7 @@ namespace LechYTDLP.Classes
         public Task<UpdateResult> CheckForUpdates()
         {
             var tcs = new TaskCompletionSource<UpdateResult>();
-            LogService.Add($"🔍 {App.LocalizationService.Get("CheckingForUpdatesLog")}...", LogTag.LechYTDLP);
+            LogService.Add($"🔍 {App.LocalizationService.Get("CheckingForUpdatesLog")}...", LogTag.YTDLP);
 
             var args = new YTDLPDownloadArgs
             {

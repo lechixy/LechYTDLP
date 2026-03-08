@@ -8,37 +8,36 @@
 ---
 Another **[YT-DLP](https://github.com/yt-dlp/yt-dlp)** Gui application for **Windows** but it built with **Windows 11 Style (Win UI 3)**
 
-This is my first project with Win UI 3 trying to do my best 💖
+<a href="https://apps.microsoft.com/detail/9N28HRK3320G?referrer=appbadge&cid=GitHub_README&mode=direct">
+	<img src="https://get.microsoft.com/images/en-us%20dark.svg" width="200"/>
+</a>
+<img alt="AppShowcase" src="https://raw.githubusercontent.com/lechixy/LechYTDLP/refs/heads/main/Assets/lechytdlp_showcase.png" />
 
-⚠️ This project is in **active development** - Please feel free to report any issues you encounter. Thank you.
+This is my first project with Win UI 3 trying to do my best 💖
 
 <h3 align="center">
 <a font-size="50" href="https://www.notion.so/lechixy/2dc9ce1d06e580d0824fe51030fe51f9?v=2dc9ce1d06e580f38b45000ca867db36&source=copy_link">🗺 Here is the roadmap and to-do list for this project 📌</a>
 </h3>
 
-# Install
+## How to install 📥
+### Which version should you choose? 
+- **Microsoft Store version** provides automatic updates. **(Suggested)**
+- **GitHub version** is free and open-source, but requires manual updates. Installing the GitHub version is a bit more complicated than the Microsoft Store version.
 
-Thanks for testing LechYTDLP ❤️
+### Using Microsoft Store
+<a href="https://apps.microsoft.com/detail/9N28HRK3320G?referrer=appbadge&cid=GitHub_README&mode=direct">
+	<img src="https://get.microsoft.com/images/en-us%20dark.svg" width="300"/>
+</a>
 
-Follow these simple steps to install:
-### 1) Install the Certificate
-
-- Double-click to **"LechYTDLP_1.1.3.0_x64.cer"**
-- Click **Install Certificate**
-- Choose **Local Machine**
-- Select **Trusted People**
-- Finish
-
-### 2) Install the App
-
-- Right-click to **Install.ps1**
-- Click to **Run with PowerShell**
-- If Windows blocks it, open PowerShell as Administrator and run:
-> Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass .\Install.ps1
-
-That’s it. The app should now be installed and ready to use. <3
-
-If something doesn’t work, make sure the certificate was installed correctly and try again.
+### Using .msixbundle installer
+1. Go to the [latest release](https://github.com/lechixy/LechYTDLP/releases/latest) page
+2. Download the **"*.cer"** file *(real certificates cost a lot of money)*
+3. Open the certificate and press **"Install Certificate..."**
+4. On the Certificate Import Wizard, select **"Local Machine"**, press **"Next"** and grant Admin Access
+5. Select **"Place all certificates in the following store"**, then **"Browse..."**, choose **"Trusted Root Certification Authorities"** and **"OK"**
+6. Finally, press **"Next"** and then **"Finish"**. It might ask you to confirm, press **Yes**
+7. Download the **"*.msixbundle"** file (depending to your architecture: x64, x86, arm etc.)
+8. The App Installer will pop up, press **"Install"**, or **"Update"** if you've installed Lech YT-DLP before
 
 # Contributing
 There is a Türkçe saying for this, Google it:
