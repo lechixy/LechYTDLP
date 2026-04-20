@@ -41,6 +41,43 @@
                 <TextBlock x:Uid="Settings"
                            Style="{StaticResource TitleLargeTextBlockStyle}" />
 
+                <!--Customization-->
+                <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
+                           x:Uid="Customization" />
+
+                <!--Language Setting-->
+                <controls:SettingsCard x:Uid="AppLanguageSetting"
+                                       x:Name="AppLanguageSetting"
+                                       IsEnabled="True"
+                                       HeaderIcon="{ui:FontIcon Glyph=&#xF2B7;}">
+                    <ComboBox SelectionChanged="SelectionChanged"
+                              x:Uid="AppLanguageSettingCombo"
+                              DisplayMemberPath="DisplayName"
+                              x:Name="AppLanguageComboBox">
+                    </ComboBox>
+                </controls:SettingsCard>
+                <!--Theme Setting-->
+                <controls:SettingsCard x:Uid="AppThemeSetting"
+                                       x:Name="AppThemeSetting"
+                                       HeaderIcon="{ui:FontIcon Glyph=&#xE790;}">
+                    <ComboBox SelectionChanged="SelectionChanged"
+                              x:Uid="AppThemeSettingCombo"
+                              DisplayMemberPath="DisplayName"
+                              x:Name="AppThemeComboBox">
+                    </ComboBox>
+                </controls:SettingsCard>
+                <!--Backdrop Setting-->
+                <controls:SettingsCard x:Uid="AppBackdropSetting"
+                                       x:Name="AppBackdropSetting"
+                                       HeaderIcon="{ui:FontIcon Glyph=&#xE771;}">
+                    <ComboBox SelectionChanged="SelectionChanged"
+                              x:Uid="AppBackdropSettingCombo"
+                              DisplayMemberPath="DisplayName"
+                              x:Name="AppBackdropComboBox">
+                    </ComboBox>
+                </controls:SettingsCard>
+
+
                 <!--YT-DLP-->
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
                            Text="YT-DLP" />
@@ -67,6 +104,17 @@
                                     <SymbolIcon Symbol="OpenFile" />
                                 </Button>
                             </Grid>
+                        </controls:SettingsCard>
+                        <!--Auto-update YT-DLP toggle-->
+                        <controls:SettingsCard x:Name="YTdlpAutoUpdate"
+                                               IsEnabled="False"
+                                               x:Uid="YTdlpAutoUpdate">
+                            <controls:SettingsCard.Resources>
+                                <x:Double x:Key="SettingsCardLeftIndention">0</x:Double>
+                            </controls:SettingsCard.Resources>
+
+                            <ToggleSwitch x:Name="YTdlpAutoUpdateSwitch"
+                                          Toggled="Switch_Toggled" />
                         </controls:SettingsCard>
                         <!--YT-DLP Update Check-->
                         <controls:SettingsCard x:Name="YTdlpUpdateCheck"
@@ -126,40 +174,35 @@
                     </controls:SettingsExpander.Items>
                 </controls:SettingsExpander>
 
-                <!--Customization-->
+                <!--Browser extension-->
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
-                           x:Uid="Customization" />
+                           x:Uid="BrowserExtension" />
 
-                <!--Language Setting-->
-                <controls:SettingsCard x:Uid="AppLanguageSetting"
-                                       x:Name="AppLanguageSetting"
-                                       IsEnabled="True"
-                                       HeaderIcon="{ui:FontIcon Glyph=&#xF2B7;}">
-                    <ComboBox SelectionChanged="SelectionChanged"
-                              x:Uid="AppLanguageSettingCombo"
-                              DisplayMemberPath="DisplayName"
-                              x:Name="AppLanguageComboBox">
-                    </ComboBox>
-                </controls:SettingsCard>
-                <!--Theme Setting-->
-                <controls:SettingsCard x:Uid="AppThemeSetting"
-                                       x:Name="AppThemeSetting"
-                                       HeaderIcon="{ui:FontIcon Glyph=&#xE790;}">
-                    <ComboBox SelectionChanged="SelectionChanged"
-                              x:Uid="AppThemeSettingCombo"
-                              DisplayMemberPath="DisplayName"
-                              x:Name="AppThemeComboBox">
-                    </ComboBox>
-                </controls:SettingsCard>
-                <!--Backdrop Setting-->
-                <controls:SettingsCard x:Uid="AppBackdropSetting"
-                                       x:Name="AppBackdropSetting"
-                                       HeaderIcon="{ui:FontIcon Glyph=&#xE771;}">
-                    <ComboBox SelectionChanged="SelectionChanged"
-                              x:Uid="AppBackdropSettingCombo"
-                              DisplayMemberPath="DisplayName"
-                              x:Name="AppBackdropComboBox">
-                    </ComboBox>
+                <controls:SettingsExpander x:Uid="CustomizeBrowserExtension"
+                                           HeaderIcon="{ui:FontIcon Glyph=&#xF6FA;}"
+                                           IsEnabled="False">
+                    <controls:SettingsExpander.Items>
+                        <!--Extension server status-->
+                        <controls:SettingsCard x:Uid="ExtensionServerStatus" IsEnabled="False">
+                            <Button x:Name="ExtensionServerStatusButton"
+                                    x:Uid="ExtensionServerStatusButton"
+                                    IsEnabled="False"
+                                    Style="{StaticResource AccentButtonStyle}"
+                                    Click="Button_Click" />
+                        </controls:SettingsCard>
+                    </controls:SettingsExpander.Items>
+                </controls:SettingsExpander>
+
+
+                <!--Behavior-->
+                <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
+                           x:Uid="Behavior" />
+
+                <controls:SettingsCard x:Uid="OpenFilesInExternalPlayer"
+                                       HeaderIcon="{ui:FontIcon Glyph=&#xEA69;}"
+                                       IsEnabled="False">
+                    <ToggleSwitch x:Name="OpenFilesInExternalPlayerSwitch"
+                                  Toggled="Switch_Toggled" />
                 </controls:SettingsCard>
 
                 <!--Other-->
@@ -216,6 +259,15 @@
                                        HeaderIcon="{ui:FontIcon Glyph=&#xE78C;}">
                     <ToggleSwitch x:Name="WriteVideoInfoSettingSwitch"
                                   Toggled="Switch_Toggled" />
+                </controls:SettingsCard>
+                <!--Delete download history database (for debugging)-->
+                <controls:SettingsCard x:Uid="DeleteDownloadHistorySetting"
+                                       x:Name="DeleteDownloadHistorySetting"
+                                       HeaderIcon="{ui:FontIcon Glyph=&#xE74D;}">
+                    <Button x:Uid="DeleteDownloadHistoryButton"
+                            Style="{StaticResource AccentButtonStyle}"
+                            x:Name="DeleteDownloadHistoryButton"
+                            Click="Button_Click" />
                 </controls:SettingsCard>
 
                 <!--About-->

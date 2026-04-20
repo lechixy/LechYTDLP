@@ -25,12 +25,16 @@ namespace LechYTDLP.Classes
         private readonly HttpListener _listener;
         private readonly CancellationTokenSource _cts = new();
 
+        public static string Adress => $"http://localhost:{Port}/";
+        public static int Port => 3781;
+
         public event Action<RequestData>? DownloadRequested;
+        public event Action<string>? ServerStatusChanged;
 
         public LocalApiServer()
         {
             _listener = new HttpListener();
-            _listener.Prefixes.Add("http://localhost:3781/");
+            _listener.Prefixes.Add(Adress);
         }
 
         public void Start()
@@ -39,11 +43,14 @@ namespace LechYTDLP.Classes
             {
                 _listener.Start();
                 Task.Run(ListenLoop);
+                LogService.Add(App.LocalizationService.Get("BrowserExtWorkingAt", Adress), LogTag.ApiServer);
+                // ServerStatusChanged?.Invoke("Working");
             }
             catch (HttpListenerException ex)
             {
                 // This often happens when the user doesn't have permission to listen on the specified port.
-                LogService.Add(App.LocalizationService.GetString("BrowserExtWontWork", ex.Message), LogTag.ApiServer);
+                LogService.Add(App.LocalizationService.Get("BrowserExtWontWork", ex.Message), LogTag.ApiServer);
+                // ServerStatusChanged?.Invoke("Error");
                 return;
             }
         }
@@ -77,6 +84,8 @@ namespace LechYTDLP.Classes
             res.Headers.Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
             res.Headers.Add("Access-Control-Allow-Headers", "Content-Type, X-Extension-Version, X-Extension-Browser");
 
+            LogService.Add($"Received {req.HttpMethod} request for {req.Url}", LogTag.ApiServer);
+
             // Preflight request
             if (req.HttpMethod == "OPTIONS")
             {
@@ -97,14 +106,9 @@ namespace LechYTDLP.Classes
                 using var reader = new StreamReader(req.InputStream);
                 var body = await reader.ReadToEndAsync();
 
-                var json = JsonSerializer.Deserialize<Dictionary<string, string>>(body);
-
+                var json = JsonSerializer.Deserialize<Dictionary<string, string>>(body, App.JsonSerializerOptions);
                 if (json != null && json.TryGetValue("url", out var url))
                 {
-                    //"X-Extension-Version": chrome.runtime.getManifest().version,
-                    //"X-Extension-Browser": navigator.userAgent.includes("Firefox") ? "Firefox" : "Chrome"
-
-
                     DownloadRequested?.Invoke(new RequestData
                     {
                         Url = url,

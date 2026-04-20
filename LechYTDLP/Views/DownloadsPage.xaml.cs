@@ -227,7 +227,7 @@ namespace LechYTDLP.Views
                 CurrentVideoUploaderAndSavingTo.Blocks.Clear();
                 var p = new Paragraph();
                 p.Inlines.Add(new Run { Text = $"@{info.Uploader}" ?? App.LocalizationService.Get("UnknownUploader"), FontWeight = Microsoft.UI.Text.FontWeights.Bold });
-                p.Inlines.Add(new Run { Text = $" • {App.LocalizationService.GetString("SavingTo", SettingsService.DownloadPath)}" });
+                p.Inlines.Add(new Run { Text = $" • {App.LocalizationService.Get("SavingTo", SettingsService.DownloadPath)}" });
                 CurrentVideoUploaderAndSavingTo.Blocks.Add(p);
 
                 //CurrentVideoUploaderAndSavingTo.Text = $"{info.uploader ?? "Unknown Uploader"} - Saving to {SettingsService.DownloadPath}";
@@ -370,6 +370,13 @@ namespace LechYTDLP.Views
         {
             await App.DatabaseService.ClearAllAsync();
             await UpdateHistoryQueue(true);
+            App.InfoBarService.Show(new InfoBarMessage
+            {
+                Title = App.LocalizationService.Get("HistoryCleared"),
+                Message = "",
+                Severity = InfoBarSeverity.Informational,
+                DurationMs = 3000
+            });
         }
 
         private void DownloadsPage_Unloaded(object sender, RoutedEventArgs e)

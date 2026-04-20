@@ -27,13 +27,7 @@ namespace LechYTDLP.Views;
 /// </summary>
 public sealed partial class SettingsPage : Page
 {
-
-    public class LanguageItem
-    {
-        public required string DisplayName { get; set; }
-        public required string Code { get; set; }
-    }
-    public class ThemeItem
+    public class Setting
     {
         public required string DisplayName { get; set; }
         public required string Value { get; set; }
@@ -50,9 +44,13 @@ public sealed partial class SettingsPage : Page
     {
         InitializeComponent();
 
+        // # Behavior
+        OpenFilesInExternalPlayerSwitch.IsOn = SettingsService.OpenFilesInExternalPlayer;
+
         // # Customize YT-DLP
         YTDLPPathSetting.PlaceholderText = SettingsService.YTDLPPath;
         YTDLPPathSetting.Text = SettingsService.YTDLPPath;
+        YTdlpAutoUpdateSwitch.IsOn = SettingsService.YTdlpAutoUpdate;
 
         FFmpegPathSetting.PlaceholderText = SettingsService.FFmpegPath;
         FFmpegPathSetting.Text = SettingsService.FFmpegPath;
@@ -70,11 +68,11 @@ public sealed partial class SettingsPage : Page
         AppBackdropComboBox.SelectedIndex = SettingsService.Backdrops.FindIndex(x => x.Value == SettingsService.AppBackdrop.Value);
 
         // # Developer Options
-        #if DEBUG
+#if DEBUG
         AppLanguageSetting.IsEnabled = true;
-        #endif
+#endif
         AppLanguageComboBox.ItemsSource = SettingsService.Languages;
-        AppLanguageComboBox.SelectedIndex = SettingsService.Languages.FindIndex(x => x.Code == SettingsService.AppLanguage.Code);
+        AppLanguageComboBox.SelectedIndex = SettingsService.Languages.FindIndex(x => x.Value == SettingsService.AppLanguage.Value);
         _isInitializingTheme = false;
         YTdlpVerboseSettingSwitch.IsOn = SettingsService.UseVerboseLoggingOnYTDLP;
         BlobDataSettingSwitch.IsOn = SettingsService.IsUsingBlobData;
@@ -83,9 +81,9 @@ public sealed partial class SettingsPage : Page
         // # About
         AboutExpander.Description = App.LocalizationService.Get("MadeBy");
         AboutExpanderContent.Text = $"{App.LocalizationService.Get("Version")} {App.GetAppVersion()}";
-        #if DEBUG
+#if DEBUG
         AboutExpanderContent.Text += $" ({App.LocalizationService.Get("DevelopmentVersion")} • {App.LocalizationService.Get("Debug")})";
-        #endif
+#endif
         GithubLink.NavigateUri = new Uri(Util.Main.GetLink(Util.Links.GitHubRepository));
     }
 
@@ -163,20 +161,27 @@ public sealed partial class SettingsPage : Page
 
     private void Switch_Toggled(object sender, RoutedEventArgs e)
     {
-        if (sender is ToggleSwitch toggleSwitch)
+        if (sender is not ToggleSwitch toggleSwitch) return;
+
+        if (toggleSwitch.Name == "BlobDataSettingSwitch")
         {
-            if (toggleSwitch.Name == "BlobDataSettingSwitch")
-            {
-                SettingsService.IsUsingBlobData = toggleSwitch.IsOn;
-            }
-            else if (toggleSwitch.Name == "WriteVideoInfoSettingSwitch")
-            {
-                SettingsService.WriteVideoInfoJson = toggleSwitch.IsOn;
-            }
-            else if (toggleSwitch.Name == "YTdlpVerboseSettingSwitch")
-            {
-                SettingsService.UseVerboseLoggingOnYTDLP = toggleSwitch.IsOn;
-            }
+            SettingsService.IsUsingBlobData = toggleSwitch.IsOn;
+        }
+        else if (toggleSwitch.Name == "WriteVideoInfoSettingSwitch")
+        {
+            SettingsService.WriteVideoInfoJson = toggleSwitch.IsOn;
+        }
+        else if (toggleSwitch.Name == "YTdlpVerboseSettingSwitch")
+        {
+            SettingsService.UseVerboseLoggingOnYTDLP = toggleSwitch.IsOn;
+        }
+        else if (toggleSwitch.Name == "YTdlpAutoUpdateSwitch")
+        {
+            SettingsService.YTdlpAutoUpdate = toggleSwitch.IsOn;
+        }
+        else if (toggleSwitch.Name == "OpenFilesInExternalPlayerSwitch")
+        {
+            SettingsService.OpenFilesInExternalPlayer = toggleSwitch.IsOn;
         }
     }
 
@@ -194,87 +199,91 @@ public sealed partial class SettingsPage : Page
 
     private void Button_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is Button btn)
+        if (sender is not Button btn) return;
+
+        if (btn.Name == "PickYTdlpButton")
+            PickFile(SettingType.PathYTDLP);
+        else if (btn.Name == "PickFFmpegButton")
+            PickFile(SettingType.PathFFMPEG);
+        else if (btn.Name == "CheckDependsButton")
+            DispatcherQueue.TryEnqueue(CheckVersion);
+        else if (btn.Name == "CheckYTdlpUpdateButton")
         {
-            if (btn.Name == "PickYTdlpButton")
-                PickFile(SettingType.PathYTDLP);
-            else if (btn.Name == "PickFFmpegButton")
-                PickFile(SettingType.PathFFMPEG);
-            else if (btn.Name == "CheckDependsButton")
-                DispatcherQueue.TryEnqueue(CheckVersion);
-            else if (btn.Name == "CheckYTdlpUpdateButton")
+            DispatcherQueue.TryEnqueue(async () =>
             {
-                DispatcherQueue.TryEnqueue(async () =>
+                CheckYTdlpUpdateButton.IsEnabled = false;
+                CheckYTdlpUpdateButton.Content = new ProgressRing
                 {
-                    CheckYTdlpUpdateButton.IsEnabled = false;
-                    CheckYTdlpUpdateButton.Content = new ProgressRing
-                    {
-                        IsActive = true,
-                        Width = 20,
-                        Height = 20,
-                        VerticalAlignment = VerticalAlignment.Center,
-                        HorizontalAlignment = HorizontalAlignment.Center
-                    };
+                    IsActive = true,
+                    Width = 20,
+                    Height = 20,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    HorizontalAlignment = HorizontalAlignment.Center
+                };
 
-                    var ytdlp = new YTDLP();
-                    UpdateResult updateInfo = await ytdlp.CheckForUpdates();
+                var ytdlp = new YTDLP();
+                UpdateResult updateInfo = await ytdlp.CheckAndDownloadUpdate();
 
-                    if (updateInfo.Status == UpdateStatus.UpToDate)
-                    {
-                        YTdlpUpdateCheck.Description = $"✅ {App.LocalizationService.Get("YTdlpIsUpToDate")} ({updateInfo.Message})";
-                    }
-                    else if (updateInfo.Status == UpdateStatus.Updated)
-                    {
-                        YTdlpUpdateCheck.Description = $"✅ {App.LocalizationService.Get("YTdlpUpdatedSuccessfully")} ({updateInfo.Message})";
-                    }
-                    else
-                    {
-                        YTdlpUpdateCheck.Description = $"⚠️ {App.LocalizationService.Get("YTdlpUpdateCheckFailed")}";
-                    }
+                if (updateInfo.Status == UpdateStatus.UpToDate)
+                {
+                    YTdlpUpdateCheck.Description = $"✅ {App.LocalizationService.Get("YTdlpIsUpToDate")} ({updateInfo.Message})";
+                }
+                else if (updateInfo.Status == UpdateStatus.Updated)
+                {
+                    YTdlpUpdateCheck.Description = $"✅ {App.LocalizationService.Get("YTdlpUpdatedSuccessfully")} ({updateInfo.Message})";
+                }
+                else
+                {
+                    YTdlpUpdateCheck.Description = $"⚠️ {App.LocalizationService.Get("YTdlpUpdateCheckFailed")}";
+                }
 
-                    CheckYTdlpUpdateButton.IsEnabled = true;
-                    CheckYTdlpUpdateButton.Content = App.LocalizationService.Get("Check");
-                });
-            } else if (btn.Name == "ImportSettingsButton") {
-                SettingsService.ImportSettingsFromFile();
-            } else if (btn.Name == "ExportSettingsButton")
-            {
-                SettingsService.ExportSettings();
-            }
+                CheckYTdlpUpdateButton.IsEnabled = true;
+                CheckYTdlpUpdateButton.Content = App.LocalizationService.Get("Check");
+            });
+        }
+        else if (btn.Name == "ImportSettingsButton")
+        {
+            SettingsService.ImportSettingsFromFile();
+        }
+        else if (btn.Name == "ExportSettingsButton")
+        {
+            SettingsService.ExportSettings();
+        }
+        else if (btn.Name == "DeleteDownloadHistoryButton")
+        {
+            _ = App.DatabaseService.ClearAllAsync();
         }
     }
 
     private void SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (sender is ComboBox comboBox)
+        if (sender is not ComboBox comboBox) return;
+        if (_isInitializingTheme) return;
+
+        if (comboBox.Name == "JsRuntimeComboBox")
         {
-            if (_isInitializingTheme) return;
+            string selected = (string)comboBox.SelectedItem;
 
-            if (comboBox.Name == "JsRuntimeComboBox")
-            {
-                string selected = (string)comboBox.SelectedItem;
-
-                // Use "None" as a display value for an empty string, but store an empty string in settings
-                if (selected == "None") selected = "";
-                SettingsService.JavaScriptRuntime = selected.ToLower();
-            }
-            else if (comboBox.Name == "AppThemeComboBox")
-            {
-                var selectedTheme = (ThemeItem)comboBox.SelectedItem;
-                SettingsService.AppTheme = selectedTheme;
-                App.SettingsService.AppThemeChanged?.Invoke(selectedTheme);
-            }
-            else if (comboBox.Name == "AppBackdropComboBox")
-            {
-                var selectedBackdrop = (ThemeItem)comboBox.SelectedItem;
-                SettingsService.AppBackdrop = selectedBackdrop;
-                App.SettingsService.AppBackdropChanged?.Invoke(selectedBackdrop);
-            }
-            else if (comboBox.Name == "AppLanguageComboBox")
-            {
-                var selectedLanguage = (LanguageItem)comboBox.SelectedItem;
-                LocalizationService.SetLanguage(selectedLanguage);
-            }
+            // Use "None" as a display value for an empty string, but store an empty string in settings
+            if (selected == "None") selected = "";
+            SettingsService.JavaScriptRuntime = selected.ToLower();
+        }
+        else if (comboBox.Name == "AppThemeComboBox")
+        {
+            var selectedTheme = (Setting)comboBox.SelectedItem;
+            SettingsService.AppTheme = selectedTheme;
+            App.SettingsService.AppThemeChanged?.Invoke(selectedTheme);
+        }
+        else if (comboBox.Name == "AppBackdropComboBox")
+        {
+            var selectedBackdrop = (Setting)comboBox.SelectedItem;
+            SettingsService.AppBackdrop = selectedBackdrop;
+            App.SettingsService.AppBackdropChanged?.Invoke(selectedBackdrop);
+        }
+        else if (comboBox.Name == "AppLanguageComboBox")
+        {
+            var selectedLanguage = (Setting)comboBox.SelectedItem;
+            LocalizationService.SetLanguage(selectedLanguage);
         }
     }
 }

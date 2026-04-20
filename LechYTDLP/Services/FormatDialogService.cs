@@ -31,8 +31,7 @@ namespace LechYTDLP.Services
             {
                 try
                 {
-                    var content = new SelectFormat();
-                    content.SetData(videoInfo);
+                    var content = new SelectFormat(videoInfo);
 
                     var dialog = new ContentDialog
                     {

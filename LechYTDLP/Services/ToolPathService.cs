@@ -44,7 +44,7 @@ namespace LechYTDLP.Services
             FFmpeg
         }
 
-        public static void Ensure(Tool tool)
+        public static bool Ensure(Tool tool)
         {
             EnsureToolsDirectory();
 
@@ -56,7 +56,7 @@ namespace LechYTDLP.Services
             };
 
             if (File.Exists(targetPath))
-                return;
+                return true;
 
             var fileName = tool switch
             {
@@ -82,6 +82,8 @@ namespace LechYTDLP.Services
                 File.Delete(targetPath);
 
             File.Move(tempPath, targetPath);
+
+            return true;
         }
     }
 }

@@ -13,13 +13,16 @@ using Microsoft.Windows.AppNotifications.Builder;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.ApplicationModel.Resources;
 using Windows.Foundation;
 using Windows.System;
 using Windows.UI;
+using static LechYTDLP.Views.SettingsPage;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -31,9 +34,11 @@ namespace LechYTDLP.Views;
 /// </summary>
 public sealed partial class MainPage : Page
 {
+    // Base
+    private bool _initialized = false;
+    // Text
     private string _textboxText = "";
     public string Text => _textboxText;
-
     public string SetText(string text) => _textboxText = text;
 
     public ObservableCollection<string> QueueCollection { get; } = [];
@@ -43,16 +48,22 @@ public sealed partial class MainPage : Page
         InitializeComponent();
         LinkTextBox.PlaceholderText = Main.GetDynamicSearchBoxPlaceholder();
 
+        PresetComboBox.ItemsSource = SettingsService.Presets;
+        PresetComboBox.SelectedItem = SettingsService.SelectedPreset;
+        _initialized = true;
+
         if (App.DownloadController.IsBusy)
         {
             DownloadButton.IsEnabled = false;
             LinkTextBox.Text = App.DownloadController.CurrentUrl;
             LinkTextBox.IsEnabled = false;
             PasteTextButton.IsEnabled = false;
+            PresetComboBox.IsEnabled = false;
         }
         else
         {
             LinkTextBox.Text = Text;
+            PresetComboBox.IsEnabled = true;
 
             if (Text.Length == 0)
                 DownloadButton.IsEnabled = false;
@@ -75,6 +86,7 @@ public sealed partial class MainPage : Page
             LinkTextBox.IsEnabled = !isBusy;
             LinkTextBox.Text = Url;
             PasteTextButton.IsEnabled = !isBusy;
+            PresetComboBox.IsEnabled = !isBusy;
 
             if (isBusy)
             {
@@ -93,13 +105,33 @@ public sealed partial class MainPage : Page
             }
         });
     }
-    private async void Download()
+
+    private async void OnClick(object sender, RoutedEventArgs e)
     {
-        await App.DownloadController.SearchAsync(Text);
-    }
-    private void DownloadButton_Click(object sender, RoutedEventArgs e)
-    {
-        Download();
+        if (sender is not Button button)
+            return;
+
+        if (button.Name == "DownloadButton")
+        {
+            await App.DownloadController.SearchAsync(Text);
+        }
+        else if (button.Name == "PasteTextButton")
+        {
+            try
+            {
+                var package = Clipboard.GetContent();
+
+                if (package.Contains(StandardDataFormats.Text))
+                {
+                    var text = await package.GetTextAsync();
+                    LinkTextBox.Text = text;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Error pasting text: " + ex.Message);
+            }
+        }
     }
 
     //enum DownloadButtonStatus
@@ -155,24 +187,23 @@ public sealed partial class MainPage : Page
         }
     }
 
-    //private void TextBox_KeyDown(object sender, KeyRoutedEventArgs e)
-    //{
-    //    if (e.Key == VirtualKey.Enter)
-    //    {
-    //        Download();
-    //    }
-    //}
 
-    private async void PasteTextButton_Click(object sender, RoutedEventArgs e)
+    private void SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        var package = Clipboard.GetContent();
-        if (package.Contains(StandardDataFormats.Text))
+        if (sender is not ComboBox combo || !_initialized) return;
+
+        if (combo.Name == "PresetComboBox")
         {
-            var text = await package.GetTextAsync();
-            LinkTextBox.Text = text;
+            var selection = (Setting)e.AddedItems[0];
+            var preset = SettingsService.Presets.FirstOrDefault(p => p.Value.Equals(selection.Value));
+            if (preset == null)
+            {
+                Debug.WriteLine("There is no preset like that");
+                return;
+            }
+            SettingsService.SelectedPreset = preset;
         }
     }
-
     protected override void OnNavigatedFrom(NavigationEventArgs e)
     {
         base.OnNavigatedFrom(e);

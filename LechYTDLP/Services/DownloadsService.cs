@@ -14,6 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -42,7 +43,7 @@ namespace LechYTDLP.Services
         public string FilePath { get; set; } = string.Empty;
     }
 
-    public class DownloadsService
+    public partial class DownloadsService
     {
         private readonly Queue<DownloadItem> _queue = new();
         private static readonly List<DownloadItem> downloadItems = [];
@@ -143,11 +144,18 @@ namespace LechYTDLP.Services
             _isPaused = false;
 
             var item = _queue.Peek();
+            var info = item.Info;
             item.State = DownloadState.Queued;
             CurrentMediaUpdated?.Invoke();
             OnBadgeChanged?.Invoke(DownloadsCount, "Downloads");
 
             _ytdlp.OutputReceived += HandleYTDLPOutput;
+
+            //// Create file name and path
+            //var ext = info.Ext ?? "mp4";
+            //var fileName = ApplyTemplate(SettingsService.FilenameTemplate, info, ext);
+            //var fullPath = Path.Combine(SettingsService.DownloadPath, fileName);
+            //item.FilePath = fullPath;
 
             // İndirme işlemini başlat
             var args = new YTDLPDownloadArgs
@@ -155,15 +163,19 @@ namespace LechYTDLP.Services
                 // # Required arguments
                 Url = item.Url,
                 SelectedFormat = item.SelectedFormat,
-                OutputPath = $"{SettingsService.DownloadPath}\\{SettingsService.FilenameTemplate}",
-                FFmpegLocation = $"{SettingsService.FFmpegPath}",
+                OutputPath = Path.Combine(SettingsService.DownloadPath, SettingsService.FilenameTemplate),
+                FFmpegLocation = SettingsService.FFmpegPath,
+
+                Newline = true,
+                NoColor = true,
+                ProgressTemplate = "P|%(progress._percent_str)s",
 
                 // Optional arguments
                 EmbedThumbnail = SettingsService.EmbedThumbnail,
                 EmbedSubs = SettingsService.EmbedSubs
             };
 
-            var processCode = await _ytdlp.DownloadVideo(args);
+            var processCode = await _ytdlp.DownloadVideo(args, info);
             LogService.Add($"Download finished with code: {processCode}", LogTag.YTDLP);
             Debug.WriteLine($"Download finished with code: {processCode}");
 
@@ -204,84 +216,102 @@ namespace LechYTDLP.Services
             TryStartNext();
         }
 
-        private void HandleYTDLPOutput(string textLine)
+        //static string StripAnsi(string input)
+        //{
+        //    return Regex.Replace(input, @"\x1B\[[0-9;]*[mK]", "");
+        //}
+
+        private void HandleYTDLPOutput(string data)
         {
-            if (textLine.Contains("Extracting URL"))
-            {
-                //DownloadBusyChanged?.Invoke(true);
+            if (string.IsNullOrWhiteSpace(data))
                 return;
-            }
 
-            if (textLine.Contains("is not a valid URL"))
+            // Progress
+            if (data.StartsWith("P|"))
             {
-                //DownloadBusyChanged?.Invoke(false);
-                return;
-            }
+                var percentText = data.Substring(2).Replace("%", "").Trim();
 
-            if (textLine.Contains("[download]") &&
-                textLine.Contains("of") &&
-                textLine.Contains("at"))
-            {
-                CurrentMedia!.State = DownloadState.Downloading;
-
-                var parts = textLine.Split(' ');
-                var percentPart = Array.Find(parts, p => p.EndsWith("%"));
-
-                if (percentPart != null &&
-                    double.TryParse(
-                        percentPart.TrimEnd('%'),
-                        NumberStyles.Any,
-                        CultureInfo.InvariantCulture,
-                        out var value))
+                if (double.TryParse(percentText,
+                    NumberStyles.Any,
+                    CultureInfo.InvariantCulture,
+                    out var percent))
                 {
-                    _queue.First().Progress = (int)value;
+                    CurrentMedia!.State = DownloadState.Downloading;
+                    CurrentMedia.Progress = (int)percent;
+                    CurrentMediaUpdated?.Invoke();
                 }
+
+                return;
             }
 
-            if (textLine.Contains("100%") ||
-                textLine.Contains("has already been downloaded"))
+            //// Dosya gerçekten oluştuysa tamam
+            //if (CurrentMedia?.FilePath != null &&
+            //    File.Exists(CurrentMedia.FilePath))
+            //{
+            //    CurrentMedia.State = DownloadState.Completed;
+            //    CurrentMediaUpdated?.Invoke();
+            //}
+        }
+
+        private static string ApplyTemplate(string template, VideoInfo info, string ext)
+        {
+            var map = new Dictionary<string, string?>
             {
-                CurrentMedia!.State = DownloadState.Completed;
-            }
+                ["id"] = info.Id,
+                ["title"] = info.Title,
+                ["ext"] = ext
+            };
 
-            if (textLine.Contains("[download] Destination:"))
+            // I doing this because some extractors use 'uploader' and some use 'channel' for the same thing, so I want to support both
+            if (info.Extractor != null && info.Extractor.Equals("youtube", StringComparison.OrdinalIgnoreCase))
             {
-                // If both audio and video are being downloaded, don't set the file path yet
-                // Because it will be merged later and the final file path will be different.
-                if (CurrentMedia!.SelectedFormat.AudioId != null && CurrentMedia.SelectedFormat.VideoId != null) return;
-                CurrentMedia.FilePath = textLine.Split(["[download] Destination:"], StringSplitOptions.None)[1].Trim();
-                Debug.WriteLine($"Set file path to: {CurrentMedia.FilePath}");
+                map.Add("uploader", info.UploaderId ?? info.Uploader ?? info.Channel);
             }
-
-            if (textLine.Contains("[Merger] Merging formats into"))
+            else if (info.Extractor != null && info.Extractor.Equals("instagram", StringComparison.OrdinalIgnoreCase))
             {
-                CurrentMedia!.FilePath = textLine.Split(["[Merger] Merging formats into"], StringSplitOptions.None)[1].Replace('"', ' ').Trim();
-                Debug.WriteLine($"Set file path to: {CurrentMedia.FilePath}");
+                map.Add("uploader", info.Channel ?? info.Uploader ?? info.UploaderId);
             }
-
-            if (textLine.Contains("has already been downloaded"))
+            else if (info.Extractor != null && info.Extractor.Equals("tiktok", StringComparison.OrdinalIgnoreCase))
             {
-                CurrentMedia!.FilePath = textLine.Split(["[download]"], StringSplitOptions.None)[1].Split(["has already been downloaded"], StringSplitOptions.None)[0].Trim();
+                map.Add("uploader", info.Channel ?? info.Uploader ?? info.UploaderId);
             }
-
-            if (textLine.Contains("[download] Resuming download"))
+            else
             {
-                CurrentMedia!.State = DownloadState.Resuming;
-
-                Debug.WriteLine("Resuming download...");
-                //App.InfoBarService.Show(new InfoBarMessage(
-                //    Title = "Resuming download",
-                //    Message = $"Resuming download for {CurrentMedia.Info.Title}",
-                //    Severity = InfoBarSeverity.Informational
-                //));
+                map.Add("uploader", info.UploaderId ?? info.Uploader ?? info.Channel);
             }
 
-            if (textLine.Contains("Testing format"))
+            // Remove @ from uploader/channel names to avoid issues with file systems
+            map["uploader"] = map["uploader"]?.Replace('@', ' ').Trim();
+
+            return FilenameTemplateRegex().Replace(template, match =>
             {
-                CurrentMedia!.State = DownloadState.TestingFormat;
-            }
+                var key = match.Groups[1].Value;
+                var limitStr = match.Groups[2].Value;
 
-            CurrentMediaUpdated?.Invoke();
+                var value = map.ContainsKey(key) ? map[key] : "unknown";
+                value = NormalizeFileName(value ?? "unknown");
+
+                if (int.TryParse(limitStr, out var limit) && value.Length > limit)
+                    value = value.Substring(0, limit);
+
+                return value;
+            });
+        }
+
+        [GeneratedRegex(@"%\(([^)]+)\)(?:\.(\d+)B)?s")]
+        private static partial Regex FilenameTemplateRegex();
+
+        private static string NormalizeFileName(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return "unknown";
+
+            input = input.Trim();
+
+            foreach (var c in Path.GetInvalidFileNameChars())
+                input = input.Replace(c, '_');
+
+            return input;
         }
     }
 }

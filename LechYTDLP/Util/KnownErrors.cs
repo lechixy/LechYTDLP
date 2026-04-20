@@ -37,7 +37,7 @@ namespace LechYTDLP.Util
             // There is no yt-dlp executable.
             if (ex.Message.Contains("An error occurred trying to start process"))
             {
-                LogService.Add(App.LocalizationService.GetString("NoYTdlpExecutableLog", ex.Message), LogTag.Error);
+                LogService.Add(App.LocalizationService.Get("NoYTdlpExecutableLog", ex.Message), LogTag.Error);
                 App.InfoBarService.Show(new InfoBarMessage
                 {
                     Title = App.LocalizationService.Get("NoYTdlpExecutable"),
@@ -50,7 +50,7 @@ namespace LechYTDLP.Util
             // There is no ffmpeg executable.
             else if (ex.Message.Contains("ffmpeg not found") || ex.Message.Contains("ffmpeg-location"))
             {
-                LogService.Add(App.LocalizationService.GetString("NoFFmpegExecutableLog", ex.Message), LogTag.Error);
+                LogService.Add(App.LocalizationService.Get("NoFFmpegExecutableLog", ex.Message), LogTag.Error);
                 App.InfoBarService.Show(new InfoBarMessage
                 {
                     Title = App.LocalizationService.Get("NoFFmpegExecutable"),
@@ -63,7 +63,7 @@ namespace LechYTDLP.Util
             // Link is invalid.
             else if (ex.Message.Contains("is not a valid URL"))
             {
-                LogService.Add(App.LocalizationService.GetString("InvalidLinkLog", ex.Message), LogTag.Error);
+                LogService.Add(App.LocalizationService.Get("InvalidLinkLog", ex.Message), LogTag.Error);
                 App.InfoBarService.Show(new InfoBarMessage
                 {
                     Title = App.LocalizationService.Get("InvalidLink"),
@@ -101,7 +101,7 @@ namespace LechYTDLP.Util
             }
             else if (ex.Message.Contains("No supported JavaScript runtime could be found"))
             {
-                LogService.Add(App.LocalizationService.GetString("NoJsRuntimeLog", ex.Message), LogTag.Warning);
+                LogService.Add(App.LocalizationService.Get("NoJsRuntimeLog", ex.Message), LogTag.Warning);
 
                 // Add hyperlink to the info bar message to open the lechytdlp wiki page about this issue.
                 App.InfoBarService.Show(new InfoBarMessage
@@ -117,6 +117,12 @@ namespace LechYTDLP.Util
                     DurationMs = 0,
                     IsCancelable = true
                 });
+            }
+            else if (ex.Message.Contains("JS Challenge Provider") && ex.Message.Contains("returned an invalid response"))
+            {
+                //// JsChallengeProviderInvalidResponseLog = "JS Challenge Provider returned an invalid response: {0}";
+                //LogService.Add(App.LocalizationService.Get("JsChallengeProviderInvalidResponseLog", ex.Message), LogTag.Warning);
+                return;
             }
             else
             {

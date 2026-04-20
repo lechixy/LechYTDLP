@@ -1,4 +1,5 @@
-﻿using LechYTDLP.Services;
+﻿using LechYTDLP.Controllers;
+using LechYTDLP.Services;
 using LechYTDLP.Util;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -18,6 +19,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Media.Core;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -62,8 +64,8 @@ namespace LechYTDLP.Components
 
             string saveStatus = item.State == 
                 DownloadState.Completed || item.State == DownloadState.Failed
-                ? App.LocalizationService.GetString("SavedTo", item.FilePath)
-                : App.LocalizationService.GetString("SavingTo", SettingsService.DownloadPath);
+                ? App.LocalizationService.Get("SavedTo", item.FilePath)
+                : App.LocalizationService.Get("SavingTo", SettingsService.DownloadPath);
 
             QueueMediaItemUploaderAndSavingTo.Blocks.Clear();
             var p = new Paragraph();
@@ -105,16 +107,29 @@ namespace LechYTDLP.Components
             var path = Item.FilePath;
             if (string.IsNullOrEmpty(path) == false)
             {
-                try
-                {
-                    Process.Start(new ProcessStartInfo(path)
-                    {
-                        UseShellExecute = true
-                    });
-                }
-                catch (Exception)
+                if (File.Exists(path) == false && Directory.Exists(path) == false)
                 {
                     KnownErrors.ShowGenericError(KnownErrors.GenericError.NoFileOrDirectory);
+                    return;
+                }
+
+                if (SettingsService.OpenFilesInExternalPlayer)
+                {
+                    try
+                    {
+                        Process.Start(new ProcessStartInfo(path)
+                        {
+                            UseShellExecute = true
+                        });
+                    }
+                    catch (Exception)
+                    {
+                        KnownErrors.ShowGenericError(KnownErrors.GenericError.NoFileOrDirectory);
+                    }
+                    return;
+                } else
+                {
+                    PlayerController.PlayMediaItem(Item);
                 }
             }
         }

@@ -13,13 +13,17 @@ using Microsoft.Windows.AppLifecycle;
 using Microsoft.Windows.Globalization;
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
+using static LechYTDLP.Views.SettingsPage;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -42,8 +46,10 @@ namespace LechYTDLP
             var v = Package.Current.Id.Version;
             return $"{v.Major}.{v.Minor}.{v.Build}";
         }
-        // Api Server for browser extension
-        public static LocalApiServer ApiServer { get; private set; } = null!;
+		public Action? WindowInitialized;
+
+		// Api Server for browser extension
+		public static LocalApiServer ApiServer { get; private set; } = null!;
 
         // Services
         public static SettingsService SettingsService => ServiceContainer.Get<SettingsService>();
@@ -52,11 +58,23 @@ namespace LechYTDLP
         public static InfoBarService InfoBarService => ServiceContainer.Get<InfoBarService>();
         public static DatabaseService DatabaseService => ServiceContainer.Get<DatabaseService>();
         public static FormatDialogService FormatDialogService { get; private set; } = null!;
+        public static DialogService DialogService { get; set; } = null!;
+        public static LogService LogService => ServiceContainer.Get<LogService>();
         public static LocalizationService LocalizationService => ServiceContainer.Get<LocalizationService>();
 
         // Controllers
         public static DownloadController DownloadController { get; } = new();
 
+        // Helpers
+        public static JsonElement SampleJson { get; private set; }
+
+        [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "<Pending>")]
+        public static JsonSerializerOptions JsonSerializerOptions = new()
+        {
+            WriteIndented = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            TypeInfoResolver = new DefaultJsonTypeInfoResolver()
+        };
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -68,17 +86,6 @@ namespace LechYTDLP
             ServiceContainer.Configure();
         }
 
-        private async void BrowserAddedMediaHandler(RequestData data)
-        {
-            LogService.Add(LocalizationService.GetString("ExtensionAddedMediaLog", data.ExtensionBrowser, data.Url), LogTag.ApiServer);
-            InfoBarService.Show(new InfoBarMessage
-            {
-                Title = LocalizationService.GetString("ExtensionAddedMediaInfoBarMsg", data.ExtensionBrowser),
-                Message = data.Url,
-                Severity = InfoBarSeverity.Success,
-            });
-            await DownloadController.SearchAsync(data.Url);
-        }
 
         /// <summary>
         /// Invoked when the application is launched.
@@ -88,7 +95,7 @@ namespace LechYTDLP
         {
             Window = new MainWindow();
 
-            var activatedArgs = Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().GetActivatedEventArgs();
+			var activatedArgs = Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().GetActivatedEventArgs();
             var activationKind = activatedArgs.Kind;
             if (activationKind == ExtendedActivationKind.Protocol)
             {
@@ -115,16 +122,25 @@ namespace LechYTDLP
                 }
             }
 
+			FormatDialogService = new FormatDialogService(Window);
+
             Window.Activate();
 
-            FormatDialogService = new FormatDialogService(Window);
-            _ = DatabaseService.InitializeAsync();
+            WindowInitialized?.Invoke();
+
+			_ = DatabaseService.InitializeAsync();
 
             LocalizationService.SetDefaultLanguageBasedOnSystem();
 
             // Ensure tools are available
-            ToolPathService.Ensure(ToolPathService.Tool.YtDlp);
+            // We don't need to ensure yt-dlp here because will check in MainWindow CheckForUpdatesOnStartupAsync();
+            // ToolPathService.Ensure(ToolPathService.Tool.YtDlp);
             ToolPathService.Ensure(ToolPathService.Tool.FFmpeg);
+
+            // Load filename_dumpdata.json for filename template preview in options page
+            var path = Path.Combine(AppContext.BaseDirectory, "Assets", "filename_dumpdata.json");
+            var jsonString = File.ReadAllText(path);
+            SampleJson = JsonDocument.Parse(jsonString).RootElement;
 
             ApiServer = new LocalApiServer();
             ApiServer.Start();
@@ -134,8 +150,8 @@ namespace LechYTDLP
             // Listen for download requests from the browser extension
             ApiServer.DownloadRequested += (data) => BrowserAddedMediaHandler(data);
 
-            // If it's the first run, show a welcome message and ask if the user wants to import settings from the old settings file.
-            if (SettingsService._IsFirstRun)
+			// If it's the first run, show a welcome message and ask if the user wants to import settings from the old settings file.
+			if (SettingsService._IsFirstRun)
             {
                 // YOU reference because of Joe Goldberg ofc.
                 LogService.Add(LocalizationService.Get("FirstRun"), LogTag.Lechixy, false);
@@ -169,6 +185,17 @@ namespace LechYTDLP
             }
         }
 
+        private async void BrowserAddedMediaHandler(RequestData data)
+        {
+            LogService.Add(LocalizationService.Get("ExtensionAddedMediaLog", data.ExtensionBrowser, data.Url), LogTag.ApiServer);
+            InfoBarService.Show(new InfoBarMessage
+            {
+                Title = LocalizationService.Get("ExtensionAddedMediaInfoBarMsg", data.ExtensionBrowser),
+                Message = data.Url,
+                Severity = InfoBarSeverity.Success,
+            });
+            await DownloadController.SearchAsync(data.Url);
+        }
         public static async Task<string?> PickFileAsync(string[] FilterExtensions, Window window)
         {
             var picker = new FileOpenPicker();

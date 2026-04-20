@@ -1,4 +1,7 @@
-﻿using Microsoft.UI.Xaml.Controls;
+﻿using LechYTDLP.Views;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.Windows.AppLifecycle;
 using Microsoft.Windows.Globalization;
 using System;
 using System.Collections.Generic;
@@ -32,7 +35,7 @@ namespace LechYTDLP.Services
             return string.IsNullOrEmpty(value) ? _defaultValue : value;
         }
 
-        public string GetString(string key, params object[] args)
+        public string Get(string key, params object[] args)
         {
             if (string.IsNullOrWhiteSpace(key))
                 return _defaultValue;
@@ -58,48 +61,68 @@ namespace LechYTDLP.Services
             }
         }
 
-        public static string SetLanguage(LanguageItem language)
+        public static string SetLanguage(Setting language)
         {
-            if (language.Code == "system")
+            if (language.Value == "system")
             {
                 var defaultSystemLanguageCode = SettingsService._DefaultSystemLanguageCode;
                 App.InfoBarService.Show(new InfoBarMessage
                 {
-                    Title = App.LocalizationService.GetString("LanguageChangedInfoBar", App.LocalizationService.Get("System")),
+                    Title = App.LocalizationService.Get("LanguageChangedInfoBar", App.LocalizationService.Get("System")),
                     Message = App.LocalizationService.Get("LanguageChangedInfoBarMsg"),
                     Severity = InfoBarSeverity.Success,
                     DurationMs = 3000,
                     IsCancelable = false
                 });
 
-                var languageAvailable = SettingsService.Languages.FirstOrDefault(l => l.Code == defaultSystemLanguageCode);
+                var languageAvailable = SettingsService.Languages.FirstOrDefault(l => l.Value == defaultSystemLanguageCode);
                 // If the current language is not in the available languages, fallback to system default
                 if (languageAvailable == null)
                 {
                     Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = string.Empty;
                     SettingsService.ResetSetting(nameof(SettingsService.AppLanguage));
                     Debug.WriteLine($"Current language '{defaultSystemLanguageCode}' is not in the available languages. Falling back to system default.");
+                    OnLanguageChanged();
                     return "system";
                 }
 
                 // If the current language is in the available languages, set it as the primary language override
-                Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = languageAvailable.Code;
+                Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = languageAvailable.Value;
                 SettingsService.AppLanguage = languageAvailable;
                 Debug.WriteLine($"Current language '{defaultSystemLanguageCode}' is set as the primary language override.");
-                return languageAvailable.Code;
+				OnLanguageChanged();
+				return languageAvailable.Value;
             }
 
             App.InfoBarService.Show(new InfoBarMessage
             {
-                Title = App.LocalizationService.GetString("LanguageChangedInfoBar", language.DisplayName),
+                Title = App.LocalizationService.Get("LanguageChangedInfoBar", language.DisplayName),
                 Message = App.LocalizationService.Get("LanguageChangedInfoBarMsg"),
                 Severity = InfoBarSeverity.Success,
                 DurationMs = 3000,
                 IsCancelable = false
             });
-            Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = language.Code;
+            Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = language.Value;
             SettingsService.AppLanguage = language;
-            return language.Code;
+            OnLanguageChanged();
+			return language.Value;
         }
-    }
+
+		private static async void OnLanguageChanged()
+		{
+			var result = await App.DialogService.ShowAsync(new DialogOptions
+			{
+				Title = App.LocalizationService.Get("DialogLanguageChanged"),
+				Message = App.LocalizationService.Get("DialogLanguageChangedNotice"),
+				PrimaryButtonText = App.LocalizationService.Get("Restart"),
+                PrimaryButtonStyle = Application.Current.Resources["AccentButtonStyle"] as Style,
+				CloseButtonText = App.LocalizationService.Get("Later")
+			});
+
+			if (result == DialogResult.Primary)
+			{
+                AppInstance.Restart("");
+			}
+		}
+	}
 }

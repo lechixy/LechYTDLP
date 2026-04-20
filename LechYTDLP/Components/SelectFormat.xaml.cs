@@ -1,6 +1,7 @@
 ﻿using LechYTDLP.Classes;
 using LechYTDLP.Services;
 using LechYTDLP.Util;
+using LechYTDLP.Views;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -17,6 +18,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using static LechYTDLP.Views.SettingsPage;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -25,6 +27,9 @@ namespace LechYTDLP.Components
 {
     public class SelectedFormat
     {
+        // # These values used to define predefined presets
+        public Setting? Preset { get; set; } = null;
+        // # This bottom values used by format dialog service
         public VideoFormat? SelectedVideo { get; set; }
         public VideoFormat? SelectedAudio { get; set; }
         //
@@ -67,22 +72,14 @@ namespace LechYTDLP.Components
         public ObservableCollection<ComboOption> NewCodecs { get; } = [];
         public ObservableCollection<string> Audios { get; } = [];
         public ObservableCollection<ComboOption> NewAudios { get; } = [];
-
-
         public SelectedFormat SelectedFormat = new();
-
-
         private Storyboard _loadingStoryboard = null!;
-
         public event Action<bool>? IsUserCanSave;
 
-        public SelectFormat()
+        public SelectFormat(VideoInfo info)
         {
             InitializeComponent();
-        }
 
-        public void SetData(VideoInfo info)
-        {
             videoData = info;
 
             ThumbnailImage.Source = new BitmapImage(new Uri(info.Thumbnail ?? "https://placehold.co/320x180.png?text=No+Thumbnail"));
@@ -155,7 +152,6 @@ namespace LechYTDLP.Components
                 }
             }
         }
-
         private void Format_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (sender is ComboBox combo)

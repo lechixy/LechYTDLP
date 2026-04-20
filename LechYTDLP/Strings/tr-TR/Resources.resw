@@ -160,7 +160,7 @@
     <value>Ayarlar</value>
   </data>
   <data name="CustomizeYTDLP.Header" xml:space="preserve">
-    <value>YT-DLP'yi Özelleştir</value>
+    <value>YT-DLP'yi özelleştir</value>
   </data>
   <data name="CustomizeYTDLP.Description" xml:space="preserve">
     <value>Sana nasıl davranmalı?</value>
@@ -226,13 +226,13 @@
     <value>Sahte veri kullan</value>
   </data>
   <data name="BlobDataSetting.Description" xml:space="preserve">
-    <value>Test etmek için sahte veri kullabilirsiniz, Masaüstü\a.json dosyasını yt-dlp --dump-json verisi ile doldurun</value>
+    <value>Test etmek için sahte veri kullabilirsiniz, Masaüstü\lechytdlp_blob.json dosyasını yt-dlp --dump-json verisi ile doldurun</value>
   </data>
   <data name="WriteVideoInfoSetting.Header" xml:space="preserve">
     <value>Video verisini yaz</value>
   </data>
   <data name="WriteVideoInfoSetting.Description" xml:space="preserve">
-    <value>yt-dlp --dump-json verisini Masaüstü\b.json dosyasına yaz</value>
+    <value>yt-dlp --dump-json verisini Masaüstü\lechytdlp_dump.json dosyasına yaz</value>
   </data>
   <data name="About.Text" xml:space="preserve">
     <value>Hakkında</value>
@@ -282,13 +282,13 @@
   <data name="File.Text" xml:space="preserve">
     <value>Dosya</value>
   </data>
-  <data name="FilenameSettings.Header" xml:space="preserve">
+  <data name="FileNameSettingsExpander.Header" xml:space="preserve">
     <value>Dosya ismi şablonu</value>
   </data>
-  <data name="FilenameHyperLink.Content" xml:space="preserve">
-    <value>YT-DLP çıktı şablonu örnekleri</value>
+  <data name="FileNameSettingsExpander.Description" xml:space="preserve">
+    <value>İndirmeleriniz için dosya ismi şablonunu özelleştirin</value>
   </data>
-  <data name="FilenameTextBox.PlaceholderText" xml:space="preserve">
+  <data name="FileNameTextBox.PlaceholderText" xml:space="preserve">
     <value>Dosya ismi şablonu belirle</value>
   </data>
   <data name="SaveToSetting.Header" xml:space="preserve">
@@ -427,7 +427,7 @@
     <value>Kaydedildi: {0}</value>
   </data>
   <data name="BrowserExtWontWork" xml:space="preserve">
-    <value>Tarayıcı Eklentisi çalışmayacak • Tarayıcı Eklentisinin HTTP dinleyicisi başlatılamadı: {0}</value>
+    <value>Tarayıcı eklentisi çalışmayacak • Tarayıcı eklentisinin HTTP dinleyicisi başlatılamadı: {0}</value>
   </data>
   <data name="StartingYTdlpWithLog" xml:space="preserve">
     <value>YT-DLP bununla başlatılıyor</value>
@@ -491,6 +491,9 @@
   </data>
   <data name="Unknown" xml:space="preserve">
     <value>Bilinmeyen</value>
+  </data>
+  <data name="UnknownError" xml:space="preserve">
+    <value>Bilinmeyen bir hata oluştu</value>
   </data>
   <data name="UnknownFilesize" xml:space="preserve">
     <value>Bilinmeyen dosya boyutu</value>
@@ -561,7 +564,7 @@
   <data name="CheckYTdlpUpdate.Description" xml:space="preserve">
     <value>YT-DLP için bir güncelleme mevcut mu kontrol edin eğer mevcut ise güncellenecek</value>
   </data>
-  <data name="CheckingForUpdatesLog" xml:space="preserve">
+  <data name="YTdlpCheckingForUpdates" xml:space="preserve">
     <value>YT-DLP için güncellemeler kontrol ediliyor</value>
   </data>
   <data name="YTdlpIsUpToDate" xml:space="preserve">
@@ -614,6 +617,9 @@
   </data>
   <data name="YTdlpUpdatedSuccessfully" xml:space="preserve">
     <value>YT-DLP güncellendi</value>
+  </data>
+  <data name="YTdlpUpdatedSuccessfullyMsg" xml:space="preserve">
+    <value>Updated to {0}</value>
   </data>
   <data name="OtherOptions.Text" xml:space="preserve">
     <value>Diğer</value>
@@ -689,5 +695,222 @@
   </data>
   <data name="Debug" xml:space="preserve">
     <value>Hata ayıklama</value>
+  </data>
+  <data name="ReadingVideoInfoFromBlobDataLog" xml:space="preserve">
+    <value>Video bilgileri Blob Dosyasından alınıyor (Masaüstü\lechytdlp_blob.json)</value>
+  </data>
+  <data name="WritingVideoInfoToJsonLog" xml:space="preserve">
+    <value>Video verisi (--dump-json) Desktop\lechytdlp_dump.json dosyasına yazılıyor</value>
+  </data>
+  <data name="PresetsIllChoose" xml:space="preserve">
+    <value>✨ Ne indireceğimi ben seçeceğim</value>
+  </data>
+  <data name="PresetsBestQuality" xml:space="preserve">
+    <value>En iyi kalite (video+ses)</value>
+  </data>
+  <data name="PresetsCompatible1080pMP4" xml:space="preserve">
+    <value>1080p MP4 (En uyumlu)</value>
+  </data>
+  <data name="PresetsBestQualityAudio" xml:space="preserve">
+    <value>En iyi kalite ses (Dönüştürme yok)</value>
+  </data>
+  <data name="PresetsBestQualityVideo" xml:space="preserve">
+    <value>En iyi kalite video (Dönüştürme yok)</value>
+  </data>
+  <data name="PresetsExtractAudioMP3" xml:space="preserve">
+    <value>Sesi çıkart (MP3)</value>
+  </data>
+  <data name="PresetsCompatible720pMP4" xml:space="preserve">
+    <value>720p MP4 (En uyumlu)</value>
+  </data>
+  <data name="DeleteDownloadHistorySetting.Description" xml:space="preserve">
+    <value>Bazen indirme geçmişi hata verebiliyor (hepsini siler)</value>
+  </data>
+  <data name="DeleteDownloadHistorySetting.Header" xml:space="preserve">
+    <value>İndirme geçmişini boşalt</value>
+  </data>
+  <data name="DeleteDownloadHistoryButton.Content" xml:space="preserve">
+    <value>Sil</value>
+  </data>
+  <data name="DialogLanguageChanged" xml:space="preserve">
+    <value>Dil değiştirildi</value>
+  </data>
+  <data name="Restart" xml:space="preserve">
+    <value>Yeniden başlat</value>
+  </data>
+  <data name="Later" xml:space="preserve">
+    <value>Sonra</value>
+  </data>
+  <data name="DialogLanguageChangedNotice" xml:space="preserve">
+    <value>Dil değişikliğinin uygulanabilmesi için uygulamanın yeniden başlatılması gerekiyor.
+Değişiklikler yeniden başlatıldıktan sonra aktif olacaktır. (İsterseniz sonra yapabilirsiniz ama bazı yerlerde diller karışabilir)</value>
+  </data>
+  <data name="FileNameSettings.Header" xml:space="preserve">
+    <value>Dosya ismi şablonu</value>
+  </data>
+  <data name="FileNamePreviewSettingsCard.Description" xml:space="preserve">
+    <value>Dosya ismi böyle gözükecek</value>
+  </data>
+  <data name="FileNameEmptyPlaceholder" xml:space="preserve">
+    <value>Placeholder boş kullanılamaz</value>
+  </data>
+  <data name="FileNameInvalidCharacterPlaceholder" xml:space="preserve">
+    <value>Geçersiz karakter içeren placeholder: {0}</value>
+  </data>
+  <data name="FileNameSettingsHyperLink.Header" xml:space="preserve">
+    <value>YT-DLP çıktı şablonu örnekleri</value>
+  </data>
+  <data name="FileNameSettingsHyperLink.Description" xml:space="preserve">
+    <value>O sayfadaki her seçenek mevcut olmayabilir</value>
+  </data>
+  <data name="YTdlpUpdateAvailable" xml:space="preserve">
+    <value>YT-DLP güncellemesi mevcut</value>
+  </data>
+  <data name="YTdlpUpdateAvailableMsg" xml:space="preserve">
+    <value>YT-DLP'nin güncel tutulması, platformların API'lerini sık sık güncellediği göz önüne alındığında en iyi uyumluluğu sağlamak için önerilir.</value>
+  </data>
+  <data name="MaybeLater" xml:space="preserve">
+    <value>Belki sonra</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Güncelle</value>
+  </data>
+  <data name="YTdlpUpdateFailed" xml:space="preserve">
+    <value>YT-DLP güncellenemedi</value>
+  </data>
+  <data name="YTdlpUpdateVersionInfo" xml:space="preserve">
+    <value>Şuan ki: {0} &gt; Güncelleme: {1} </value>
+  </data>
+  <data name="YTdlpAutoUpdateCheckBox.Content" xml:space="preserve">
+    <value>Yeni bir versiyon mevcut ise güncelle</value>
+  </data>
+  <data name="YTdlpAutoUpdate.Description" xml:space="preserve">
+    <value>YT-DLP güncellemelerini otomatik olarak kontrol et ve bir güncelleme var ise YT-DLP'yi güncelle</value>
+  </data>
+  <data name="YTdlpAutoUpdate.Header" xml:space="preserve">
+    <value>YT-DLP'yi Otomatik Güncelle</value>
+  </data>
+  <data name="Current" xml:space="preserve">
+    <value>Mevcut</value>
+  </data>
+  <data name="New" xml:space="preserve">
+    <value>Yeni</value>
+  </data>
+  <data name="YTdlpUpdating" xml:space="preserve">
+    <value>YT-DLP güncelleniyor</value>
+  </data>
+  <data name="SaveLogOfEachDownloadSetting.Header" xml:space="preserve">
+    <value>Her indirmenin çıktısını kaydet</value>
+  </data>
+  <data name="SaveLogOfEachDownloadSetting.Description" xml:space="preserve">
+    <value>Her indirme için bir çıktı dosyası kaydedecektir, çıktı dosyası o indirme için yt-dlp çıktısını içerecektir</value>
+  </data>
+  <data name="Behavior.Text" xml:space="preserve">
+    <value>Davranış</value>
+  </data>
+  <data name="OpenFilesInExternalPlayer.Header" xml:space="preserve">
+    <value>Medyayı harici oynatıcıda aç</value>
+  </data>
+  <data name="OpenFilesInExternalPlayer.Description" xml:space="preserve">
+    <value>İndirilen medya dosyaları, yerleşik oynatıcı yerine varsayılan medya oynatıcısında açılacak</value>
+  </data>
+  <data name="AddPlaceholders.Content" xml:space="preserve">
+    <value>Placeholder ekle</value>
+  </data>
+  <data name="SaveButton.Content" xml:space="preserve">
+    <value>Kaydet</value>
+  </data>
+  <data name="FileNameOkLooksGood" xml:space="preserve">
+    <value>Geçerli, iyi görünüyor!</value>
+  </data>
+  <data name="FilenameTemplateInvalidPlaceholder" xml:space="preserve">
+    <value>Geçersiz placeholder formatı</value>
+  </data>
+  <data name="FilenameTemplateInvalidHalfPlaceholder" xml:space="preserve">
+    <value>Eksik kapanan placeholder var</value>
+  </data>
+  <data name="FilenameTemplateCannotBeEmpty" xml:space="preserve">
+    <value>Template boş olamaz</value>
+  </data>
+  <data name="P_Creator" xml:space="preserve">
+    <value>Oluşturucu</value>
+  </data>
+  <data name="P_ReleaseDate" xml:space="preserve">
+    <value>Yayınlanma tarihi</value>
+  </data>
+  <data name="P_Timestamp" xml:space="preserve">
+    <value>Zaman damgası</value>
+  </data>
+  <data name="P_ID" xml:space="preserve">
+    <value>Video id'si</value>
+  </data>
+  <data name="P_ChannelName" xml:space="preserve">
+    <value>Kanal adı</value>
+  </data>
+  <data name="P_ChannelID" xml:space="preserve">
+    <value>Kanal id'si</value>
+  </data>
+  <data name="P_Title" xml:space="preserve">
+    <value>Başlık</value>
+  </data>
+  <data name="P_Duration" xml:space="preserve">
+    <value>Süre</value>
+  </data>
+  <data name="P_PlaylistIndex" xml:space="preserve">
+    <value>Oynatma listesi indeksi</value>
+  </data>
+  <data name="P_PlaylistTitle" xml:space="preserve">
+    <value>Oynatma listesi başlığı</value>
+  </data>
+  <data name="P_Uploader" xml:space="preserve">
+    <value>Yükleyici</value>
+  </data>
+  <data name="P_UploadDate" xml:space="preserve">
+    <value>Yükleme tarihi</value>
+  </data>
+  <data name="P_FullTitle" xml:space="preserve">
+    <value>Tüm başlık</value>
+  </data>
+  <data name="P_Extension" xml:space="preserve">
+    <value>Uzantısı</value>
+  </data>
+  <data name="P_Extractor" xml:space="preserve">
+    <value>Çıkartıcı</value>
+  </data>
+  <data name="P_ExtractorKey" xml:space="preserve">
+    <value>Çıkartıcı anahtarı</value>
+  </data>
+  <data name="Saved" xml:space="preserve">
+    <value>Kaydedildi</value>
+  </data>
+  <data name="Saved!" xml:space="preserve">
+    <value>Kaydedildi!</value>
+  </data>
+  <data name="HistoryCleared" xml:space="preserve">
+    <value>Geçmiş temizlendi</value>
+  </data>
+  <data name="YTdlpUpdateCheckResult" xml:space="preserve">
+    <value>Güncellemeler kontrol edildi. Mevcut sürüm: {0}, En yeni sürüm: {1}</value>
+  </data>
+  <data name="YTdlpUpdateCheckNoInternet" xml:space="preserve">
+    <value>Güncelleme sunucusuna bağlanılamadı, lütfen internet bağlantınızı kontrol edin</value>
+  </data>
+  <data name="YTdlpUpdateCheckError" xml:space="preserve">
+    <value>Güncellemeler kontrol edilirken bir hata oluştu, lütfen daha sonra tekrar deneyin</value>
+  </data>
+  <data name="BrowserExtension.Text" xml:space="preserve">
+    <value>Tarayıcı eklentisi</value>
+  </data>
+  <data name="CustomizeBrowserExtension.Header" xml:space="preserve">
+    <value>Eklentiyi özelleştir</value>
+  </data>
+  <data name="CustomizeBrowserExtension.Description" xml:space="preserve">
+    <value>Eklenti çalışmıyor mu?</value>
+  </data>
+  <data name="ExtensionServerStatus.Header" xml:space="preserve">
+    <value>Eklenti sunucu durumu</value>
+  </data>
+  <data name="BrowserExtWorkingAt" xml:space="preserve">
+    <value>Tarayıcı eklentisi çalışıyor: {0}</value>
   </data>
 </root>

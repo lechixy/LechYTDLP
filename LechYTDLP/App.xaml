@@ -5,12 +5,22 @@
              xmlns:local="using:LechYTDLP">
     <Application.Resources>
         <ResourceDictionary>
+            <!-- Other app resources here -->
+            <!-- Video Dialog Style -->
+            <Style BasedOn="{StaticResource ResourceKey=DefaultContentDialogStyle}" x:Key="PlayerDialogStyle" TargetType="ContentDialog">
+                <Setter Property="Padding"
+                        Value="0" />
+                <Setter Property="Margin"
+                        Value="0" />
+                <Setter Property="CornerRadius"
+                        Value="0" />
+            </Style>
+            
             <local:LogTagToBrushConverter x:Key="LogTagToBrushConverter" />
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
                 <!-- Other merged dictionaries here -->
             </ResourceDictionary.MergedDictionaries>
-            <!-- Other app resources here -->
         </ResourceDictionary>
     </Application.Resources>
 </Application>

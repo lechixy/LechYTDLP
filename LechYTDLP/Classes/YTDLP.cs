@@ -13,6 +13,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LechYTDLP.Classes
 {
@@ -231,6 +232,10 @@ namespace LechYTDLP.Classes
 
         // Debug, logging etc.
         public bool Verbose { get; set; } = false;
+        public bool NoColor { get; set; } = false;
+        public bool Newline { get; set; } = false;
+        public string? ProgressTemplate { get; set; } = null;
+
 
         public string BuildArgs()
         {
@@ -243,17 +248,48 @@ namespace LechYTDLP.Classes
 
             if (SelectedFormat != null)
             {
-                if (SelectedFormat.VideoId != null && SelectedFormat.AudioId != null)
+                // If a preset is selected, we assume it already contains the necessary format selection arguments, so we don't add any format-specific arguments here.
+                if (SelectedFormat.Preset != null)
                 {
-                    args.Add($"-f \"{SelectedFormat.VideoId}+{SelectedFormat.AudioId}\"");
+                    switch (SelectedFormat.Preset.Value)
+                    {
+                        case "bestquality":
+                            args.Add("-f bestvideo+bestaudio");
+                            break;
+                        case "bestvideo":
+                            args.Add("-f bestvideo");
+                            break;
+                        case "bestaudio":
+                            args.Add("-f bestaudio");
+                            break;
+                        case "compatible720pmp4":
+                            args.Add("-f bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best[height<=720][ext=mp4]/best");
+                            args.Add("--merge-output-format mp4");
+                            break;
+                        case "compatible1080pmp4":
+                            args.Add("-f bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080][ext=mp4]/best");
+                            args.Add("--merge-output-format mp4");
+                            break;
+                        case "extractaudiomp3":
+                            args.Add("-x --audio-format mp3");
+                            break;
+                    }
                 }
-                else if (SelectedFormat.VideoId != null)
+                // If no preset is selected, we build the format selection arguments based on the selected video and audio formats.
+                else
                 {
-                    args.Add($"-f \"{SelectedFormat.VideoId}\"");
-                }
-                else if (SelectedFormat.AudioId != null)
-                {
-                    args.Add($"-f \"{SelectedFormat.AudioId}\"");
+                    if (SelectedFormat.VideoId != null && SelectedFormat.AudioId != null)
+                    {
+                        args.Add($"-f \"{SelectedFormat.VideoId}+{SelectedFormat.AudioId}\"");
+                    }
+                    else if (SelectedFormat.VideoId != null)
+                    {
+                        args.Add($"-f \"{SelectedFormat.VideoId}\"");
+                    }
+                    else if (SelectedFormat.AudioId != null)
+                    {
+                        args.Add($"-f \"{SelectedFormat.AudioId}\"");
+                    }
                 }
             }
 
@@ -286,6 +322,15 @@ namespace LechYTDLP.Classes
             if (Verbose)
                 args.Add("--verbose");
 
+            if (NoColor)
+                args.Add("--no-color");
+
+            if (Newline)
+                args.Add("--newline");
+
+            if (ProgressTemplate != null)
+                args.Add($"--progress-template \"{ProgressTemplate}\"");
+
             return string.Join(" ", args);
         }
     }
@@ -309,15 +354,21 @@ namespace LechYTDLP.Classes
                 return await tcs.Task;
             }
 
+            // These args must be included in every yt-dlp process, so we add them by default. User-provided args will be added on top of these.
             var mustHaveArgs = new YTDLPDownloadArgs
             {
                 CookiesPath = SettingsService.CookiesfilePath,
                 JavaScriptRuntime = string.IsNullOrEmpty(SettingsService.JavaScriptRuntime) ? "" : SettingsService.JavaScriptRuntime,
-                Verbose = SettingsService.UseVerboseLoggingOnYTDLP
+                Verbose = SettingsService.UseVerboseLoggingOnYTDLP,
+                NoColor = true,
+                Newline = true
             }.BuildArgs();
 
             var ytdlpArgs = args.BuildArgs();
-            string Arguments = $"{ytdlpArgs} {mustHaveArgs}";
+            // If there is update arg we don't add mustHaveArgs because update process may not work properly with some of those args, and also update process doesn't require those args to work.
+            // NEEDS REFACTOR: This is a bit of a hacky solution, we should find a better way to handle this in the future.
+            string Arguments = args.Update ? ytdlpArgs : $"{ytdlpArgs} {mustHaveArgs}";
+
             LogService.Add($"🚩 {App.LocalizationService.Get("StartingYTdlpWithLog")}:", LogTag.YTDLP);
             LogService.Add($"{SettingsService.YTDLPPath} {Arguments}", LogTag.Normal);
 
@@ -331,10 +382,11 @@ namespace LechYTDLP.Classes
                     RedirectStandardError = true,
                     UseShellExecute = false,
                     CreateNoWindow = true,
+                    StandardOutputEncoding = Encoding.UTF8,
+                    StandardErrorEncoding = Encoding.UTF8
                 },
                 EnableRaisingEvents = true
             };
-
 
             _process.OutputDataReceived += (s, e) =>
             {
@@ -344,7 +396,7 @@ namespace LechYTDLP.Classes
                     {
                         LogService.Add($"ℹ️ {App.LocalizationService.Get("GettingVideoInfoLog")}...", LogTag.Warning);
                     }
-                    else if (e.Data.StartsWith("[download]") && e.Data.Contains("of") && e.Data.Contains("at"))
+                    else if (e.Data.StartsWith("P|"))
                     {
                         LogService.AddOrUpdate(LogKey.Download, e.Data);
                     }
@@ -426,7 +478,15 @@ namespace LechYTDLP.Classes
             // If using blob data, read from local file instead
             if (SettingsService.IsUsingBlobData)
             {
-                string path = "C:\\Users\\lechi\\Desktop\\a.json";
+                LogService.Add($"🧪 {App.LocalizationService.Get("ReadingVideoInfoFromBlobDataLog")}...", LogTag.YTDLP);
+                App.InfoBarService.Show(new InfoBarMessage
+                {
+                    Title = App.LocalizationService.Get("ReadingVideoInfoFromBlobDataLog"),
+                    Message = "",
+                    Severity = InfoBarSeverity.Informational,
+                });
+
+                string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "lechytdlp_blob.json");
                 string readContents;
                 using (StreamReader streamReader = new(path, Encoding.UTF8))
                 {
@@ -457,10 +517,12 @@ namespace LechYTDLP.Classes
                     {
                         OutputReceived -= OnOutput;
 
-                        // Write video info json to file if setting is enabled, write to desktop\b.json
-                        if (SettingsService.WriteVideoInfoJson)
+                        // Write video info json to file if setting is enabled, write to desktop\lechytdlp_dump.json
+                        if (SettingsService.WriteVideoInfoJson && !SettingsService.IsUsingBlobData)
                         {
-                            string outputPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "b.json");
+                            LogService.Add($"💾 {App.LocalizationService.Get("WritingVideoInfoToJsonLog")}...", LogTag.YTDLP);
+
+                            string outputPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "lechytdlp_dump.json");
                             using StreamWriter writer = new(outputPath, false, Encoding.UTF8);
                             //string jsonString = JsonSerializer.Serialize(info, new JsonSerializerOptions { WriteIndented = true });
                             writer.Write(data);
@@ -510,20 +572,25 @@ namespace LechYTDLP.Classes
             return tcs.Task;
         }
 
-        public Task<int> DownloadVideo(YTDLPDownloadArgs args)
+        public Task<int> DownloadVideo(YTDLPDownloadArgs args, VideoInfo info)
         {
             var tcs = new TaskCompletionSource<int>();
 
             LogService.Add($"⬇️ {App.LocalizationService.Get("DownloadingVideoLog")}: {args.Url}", LogTag.YTDLP);
+
+
+            List<string> texts = [];
 
             void OnOutput(string data)
             {
                 if (string.IsNullOrWhiteSpace(data))
                     return;
 
+                HandleOutput(data);
                 try
                 {
-
+                    // Save log of each download if setting is enabled, save to download folder with file name {video_id}.log
+                    if (SettingsService.SaveLogOfEachDownload && !data.StartsWith("P|")) texts.Add(data);
                 }
                 catch (JsonException)
                 {
@@ -535,6 +602,18 @@ namespace LechYTDLP.Classes
             {
                 ProcessExited -= ProcessExited;
                 OutputReceived -= OnOutput;
+
+                if (SettingsService.SaveLogOfEachDownload)
+                {
+                    string logPath = Path.Combine(SettingsService.DownloadPath, $"{info.Id}.log");
+                    using StreamWriter logWriter = new(logPath, false, Encoding.UTF8);
+                    foreach (var text in texts)
+                    {
+                        logWriter.WriteLine(text);
+                    }
+                    logWriter.Flush();
+                    logWriter.Close();
+                }
 
                 tcs.SetResult(exitCode);
             }
@@ -558,11 +637,32 @@ namespace LechYTDLP.Classes
 
             return tcs.Task;
         }
+        public void HandleOutput(string output)
+        {
+            if (string.IsNullOrWhiteSpace(output) || App.DownloadService.CurrentMedia == null)
+                return;
 
-        public Task<UpdateResult> CheckForUpdates()
+            //if (output.Contains("Downloading") && output.Contains("format(s):") && output.Contains('+'))
+            //{
+
+            //}
+
+            if (output.Contains("Merging formats into \""))
+            {
+                App.DownloadService.CurrentMedia.FilePath = output.Split("Merging formats into \"")[1].Split('\"')[0];
+            } else if (output.StartsWith("[download] Destination: "))
+            {
+                App.DownloadService.CurrentMedia.FilePath = output.Split("[download] Destination: ")[1].Trim();
+            } else if (output.Contains("has already been downloaded"))
+            {
+                App.DownloadService.CurrentMedia.FilePath = output.Split("[download]")[1].Split("has already been downloaded")[0].Trim();
+            }
+        }
+        public Task<UpdateResult> CheckAndDownloadUpdate()
         {
             var tcs = new TaskCompletionSource<UpdateResult>();
-            LogService.Add($"🔍 {App.LocalizationService.Get("CheckingForUpdatesLog")}...", LogTag.YTDLP);
+            LogService.Add($"🔍 {App.LocalizationService.Get("YTdlpCheckingForUpdates")}...", LogTag.YTDLP);
+            App.DownloadController.SetBusy(true, $"{App.LocalizationService.Get("YTdlpUpdating")}...");
 
             var args = new YTDLPDownloadArgs
             {
@@ -576,16 +676,30 @@ namespace LechYTDLP.Classes
 
                 try
                 {
-                    if (data.Contains("yt-dlp is up to date")) tcs.SetResult(new UpdateResult
+                    if (data.Contains("yt-dlp is up to date"))
                     {
-                        Status = UpdateStatus.UpToDate,
-                        Message = data.Split('(')[1].Split(')')[0] // Extract new version
-                    });
-                    else if (data.Contains("Updated yt-dlp to")) tcs.SetResult(new UpdateResult
+                        // yt-dlp is up to date (stable@2026.03.17 from yt-dlp/yt-dlp)
+                        string newVersion = data.Split('@')[1].Split(' ')[0].Trim();
+
+                        tcs.SetResult(new UpdateResult
+                        {
+                            Status = UpdateStatus.UpToDate,
+                            Message = data.Split('(')[1].Split(')')[0] // Extract new version
+                        });
+                        SettingsService._LastKnownYTdlpToolVersion = newVersion;
+                    }
+                    else if (data.Contains("Updated yt-dlp to"))
                     {
-                        Status = UpdateStatus.Updated,
-                        Message = data.Split("to ")[1].Trim() // Extract new version
-                    });
+                        // Updated yt-dlp to stable@2026.03.17 from yt-dlp/yt-dlp
+                        string newVersion = data.Split('@')[1].Split(' ')[0].Trim();
+
+                        tcs.SetResult(new UpdateResult
+                        {
+                            Status = UpdateStatus.Updated,
+                            Message = data.Split("to ")[1].Trim() // Extract new version
+                        });
+                        SettingsService._LastKnownYTdlpToolVersion = newVersion;
+                    }
 
                     Debug.WriteLine(data);
                 }
@@ -593,13 +707,13 @@ namespace LechYTDLP.Classes
                 {
                     // dump-json dışında bir satır gelirse ignore
                 }
-            }
-            ;
+            };
 
             void OnExited(int exitCode)
             {
                 ProcessExited -= OnExited;
                 OutputReceived -= OnOutput;
+                App.DownloadController.SetBusy(false, "");
                 if (exitCode != 0)
                     tcs.TrySetResult(new UpdateResult
                     {

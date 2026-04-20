@@ -5,55 +5,57 @@
   xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
-  IgnorableNamespaces="uap rescap">
+  xmlns:systemai="http://schemas.microsoft.com/appx/manifest/systemai/windows10"
+  IgnorableNamespaces="uap rescap systemai">
 
-	<Identity
-	  Name="lechixy.LechYT-DLP"
-	  Publisher="CN=B769E7F4-795F-4C37-9B16-7CE9D4642BA6"
-	  Version="1.2.3.0" />
+  <Identity
+    Name="lechixy.LechYT-DLP"
+    Publisher="CN=B769E7F4-795F-4C37-9B16-7CE9D4642BA6"
+    Version="1.3.7.0" />
 
-	<mp:PhoneIdentity PhoneProductId="2bb4b551-977a-41eb-8a7e-c5fea8a97d21" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="9b26b4b0-5a5a-4afc-b688-2152dbd35a0e" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
-	<Properties>
-		<DisplayName>Lech YT-DLP</DisplayName>
-		<PublisherDisplayName>lechixy</PublisherDisplayName>
-		<Logo>Assets\StoreLogo.png</Logo>
-	</Properties>
+  <Properties>
+    <DisplayName>Lech YT-DLP</DisplayName>
+    <PublisherDisplayName>lechixy</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+  </Properties>
 
-	<Dependencies>
-		<TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
-		<TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
-	</Dependencies>
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.26226.0" />
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.26226.0" />
+  </Dependencies>
 
-	<Resources>
-		<Resource Language="en-US"/>
-		<Resource Language="tr-TR"/>
-	</Resources>
+  <Resources>
+    <Resource Language="x-generate"/>
+  </Resources>
 
-	<Applications>
-		<Application Id="App"
-		  Executable="$targetnametoken$.exe"
-		  EntryPoint="$targetentrypoint$">
-			<uap:VisualElements
-			  DisplayName="Lech YT-DLP"
-			  Description="LechYTDLP"
-			  BackgroundColor="transparent"
-			  Square150x150Logo="Assets\Square150x150Logo.png"
-			  Square44x44Logo="Assets\Square44x44Logo.png">
-				<uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"  Square71x71Logo="Assets\SmallTile.png" Square310x310Logo="Assets\LargeTile.png"/>
-				<uap:SplashScreen Image="Assets\SplashScreen.png" />
-			</uap:VisualElements>
-			<Extensions>
-				<uap:Extension Category="windows.protocol">
-					<uap:Protocol Name="lechytdlp">
-						<uap:DisplayName>lechytdlp</uap:DisplayName>
-					</uap:Protocol>
-				</uap:Extension>
-			</Extensions>
-		</Application>
-	</Applications>
+  <Applications>
+    <Application Id="App"
+      Executable="$targetnametoken$.exe"
+      EntryPoint="$targetentrypoint$">
+      <uap:VisualElements
+        DisplayName="Lech YT-DLP"
+        Description="LechYTDLP"
+        BackgroundColor="transparent"
+        Square150x150Logo="Assets\Square150x150Logo.png"
+        Square44x44Logo="Assets\Square44x44Logo.png">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"  Square71x71Logo="Assets\SmallTile.png" Square310x310Logo="Assets\LargeTile.png"/>
+        <uap:SplashScreen Image="Assets\SplashScreen.png" />
+        <uap:LockScreen BadgeLogo="Assets\BadgeLogo.png" Notification="badge"/>
+      </uap:VisualElements>
+      <Extensions>
+        <uap:Extension Category="windows.protocol">
+          <uap:Protocol Name="lechytdlp">
+            <uap:DisplayName>lechytdlp</uap:DisplayName>
+          </uap:Protocol>
+        </uap:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
 
-	<Capabilities>
-		<rescap:Capability Name="runFullTrust" />
-	</Capabilities>
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+    <systemai:Capability Name="systemAIModels"/>
+  </Capabilities>
 </Package>

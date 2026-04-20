@@ -57,8 +57,9 @@ namespace LechYTDLP.Services
         private static readonly List<LogItem> _logs = new();
         private static readonly Dictionary<LogKey, LogItem> _keyedLogs = new();
 
-        public static event Action<LogItem>? LogAdded;
-        public static event Action<LogItem>? LogUpdated;
+        //public static event Action<LogItem>? LogAdded;
+        //public static event Action<LogItem>? LogUpdated;
+        public static event Action<LogItem>? LogChanged;
 
         public static event Action<int, string>? BadgeChanged;
 
@@ -67,7 +68,7 @@ namespace LechYTDLP.Services
         public static IReadOnlyList<LogItem> GetAll()
         {
             lock (_lock)
-                return _logs.ToList();
+                return [.. _logs];
         }
 
         public static void Add(string text, LogTag tag = LogTag.Normal, bool UpdateBadge = true)
@@ -88,7 +89,7 @@ namespace LechYTDLP.Services
                 if (UpdateBadge) IncrementBadgeInternal();
             }
 
-            LogAdded?.Invoke(item);
+            LogChanged?.Invoke(item);
         }
 
         public static void AddOrUpdate(LogKey key, string text, LogTag tag = LogTag.Normal)
@@ -100,7 +101,7 @@ namespace LechYTDLP.Services
                     existing.Message = text;
                     existing.Tag = tag;
 
-                    LogUpdated?.Invoke(existing);
+                    LogChanged?.Invoke(existing);
                 }
                 else
                 {
@@ -114,7 +115,8 @@ namespace LechYTDLP.Services
                     _keyedLogs[key] = item;
 
                     IncrementBadgeInternal();
-                    LogAdded?.Invoke(item);
+
+                    LogChanged?.Invoke(item); // TEK EVENT
                 }
             }
         }

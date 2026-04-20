@@ -1,4 +1,7 @@
-﻿using LechYTDLP.Services;
+﻿using CommunityToolkit.WinUI.Animations;
+using LechYTDLP.Classes;
+using LechYTDLP.Components;
+using LechYTDLP.Services;
 using LechYTDLP.Views;
 using Microsoft.UI;
 using Microsoft.UI.Composition.SystemBackdrops;
@@ -10,11 +13,15 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Intrinsics.Arm;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Resources;
+using Windows.UI.Notifications;
 using WinRT;
 using WinRT.Interop;
 using static LechYTDLP.Views.SettingsPage;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -31,15 +38,16 @@ namespace LechYTDLP
 
         public MainWindow()
         {
-            this.InitializeComponent();
+            InitializeComponent();
+            App.DialogService = new(this);
 
             App.NavigationService.Initialize(AppFrame, NavView);
 
             // Window sizing
             var hWnd = WindowNative.GetWindowHandle(this);
             var windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
-            AppWindow appWindow = AppWindow.GetFromWindowId(windowId);
-            appWindow.Resize(new Windows.Graphics.SizeInt32(900, 600));
+            AppWindow appWindow = AppWindow.GetFromWindowId(windowId); 
+            appWindow.Resize(new Windows.Graphics.SizeInt32(800, 600));
 
             // Apply theme to app and listen to events
             AppThemeChanged(SettingsService.AppTheme);
@@ -49,10 +57,11 @@ namespace LechYTDLP
             ExtendsContentIntoTitleBar = true;
             // Replace system title bar with the WinUI TitleBar.
             AppTitleBar.Subtitle = $"v{App.GetAppVersion()}";
-            #if DEBUG
+#if DEBUG
             AppTitleBar.Subtitle += $" ({App.LocalizationService.Get("DevelopmentVersion")} • {App.LocalizationService.Get("Debug")})";
-            #endif
+#endif
             SetTitleBar(AppTitleBar);
+            ExtendsContentIntoTitleBar = true;
 
             App.InfoBarService.Register(GlobalInfoBar);
             // App.NavigationService.Navigate<MainPage>();
@@ -63,6 +72,79 @@ namespace LechYTDLP
             // Apply backdrop and listen to events
             AppBackdropChanged(SettingsService.AppBackdrop, true);
             App.SettingsService.AppBackdropChanged += (backdrop) => AppBackdropChanged(backdrop);
+
+            _ = CheckForUpdatesOnStartupAsync();
+        }
+
+        private async Task CheckForUpdatesOnStartupAsync()
+        {
+            try
+            {
+                var result = await UpdateChecker.CheckForUpdatesAsync(SettingsService._LastKnownYTdlpToolVersion);
+
+                if (result.Success && result.IsUpdateAvailable)
+                {
+                    var updateDialog = new UpdateDialog(result);
+                    var dialog = await App.DialogService.ShowAsync(new DialogOptions
+                    {
+                        Title = App.LocalizationService.Get("YTdlpUpdateAvailable"),
+                        Content = updateDialog,
+                        PrimaryButtonText = App.LocalizationService.Get("Update"),
+                        PrimaryButtonStyle = Application.Current.Resources["AccentButtonStyle"] as Style,
+                        CloseButtonText = App.LocalizationService.Get("MaybeLater")
+                    });
+
+                    // If user chooses to update, start the update process.
+                    if (dialog != DialogResult.Primary) return;
+
+                    // Show info bar that update is starting.
+                    App.InfoBarService.Show(new InfoBarMessage
+                    {
+                        Title = App.LocalizationService.Get("YTdlpCheckingForUpdates"),
+                        Message = "",
+                        Severity = InfoBarSeverity.Informational,
+                        IsCancelable = false
+                    });
+
+                    var ytdlp = new YTDLP();
+                    var update = await ytdlp.CheckAndDownloadUpdate();
+
+                    if (update.Status == UpdateStatus.Updated)
+                    {
+                        App.InfoBarService.Show(new InfoBarMessage
+                        {
+                            Title = App.LocalizationService.Get("YTdlpUpdatedSuccessfully"),
+                            Message = App.LocalizationService.Get("YTdlpUpdatedSuccessfullyMsg", result.NewestVersion),
+                            Severity = InfoBarSeverity.Success,
+                            IsCancelable = true
+                        });
+                    }
+                    else if (update.Status == UpdateStatus.Failed)
+                    {
+                        App.InfoBarService.Show(new InfoBarMessage
+                        {
+                            Title = App.LocalizationService.Get("YTdlpUpdateFailed"),
+                            Message = "",
+                            Severity = InfoBarSeverity.Error,
+                            IsCancelable = true
+                        });
+                    }
+                    else // UpToDate
+                    {
+                        App.InfoBarService.Show(new InfoBarMessage
+                        {
+                            Title = App.LocalizationService.Get("YTdlpIsUpToDate"),
+                            Message = "",
+                            Severity = InfoBarSeverity.Success,
+                            IsCancelable = true
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Error checking for updates: " + ex.Message);
+            }
         }
 
         public void NavigateToPage(string pageTag)
@@ -95,7 +177,6 @@ namespace LechYTDLP
             });
         }
 
-
         private void NavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
             if (args.SelectedItemContainer != null)
@@ -121,7 +202,7 @@ namespace LechYTDLP
             }
         }
 
-        public void AppThemeChanged(ThemeItem newTheme)
+        public void AppThemeChanged(Setting newTheme)
         {
             DispatcherQueue.TryEnqueue(() =>
             {
@@ -150,7 +231,7 @@ namespace LechYTDLP
 
                     App.InfoBarService.Show(new InfoBarMessage
                     {
-                        Title = App.LocalizationService.GetString("ThemeChanged", newTheme.DisplayName),
+                        Title = App.LocalizationService.Get("ThemeChanged", newTheme.DisplayName),
                         Message = "",
                         Severity = InfoBarSeverity.Success,
                         DurationMs = 3000,
@@ -159,7 +240,7 @@ namespace LechYTDLP
                 }
             });
         }
-        public void AppBackdropChanged(ThemeItem newBackdrop, bool _isInitializingTheme = false)
+        public void AppBackdropChanged(Setting newBackdrop, bool _isInitializingTheme = false)
         {
             DispatcherQueue.TryEnqueue(() =>
             {
@@ -195,8 +276,8 @@ namespace LechYTDLP
                     App.InfoBarService.Show(new InfoBarMessage
                     {
                         Title = isChanged
-                       ? App.LocalizationService.GetString("BackdropChanged", newBackdrop.DisplayName)
-                       : App.LocalizationService.GetString("BackdropChangedFailed", newBackdrop.DisplayName),
+                       ? App.LocalizationService.Get("BackdropChanged", newBackdrop.DisplayName)
+                       : App.LocalizationService.Get("BackdropChangedFailed", newBackdrop.DisplayName),
                         Message = "",
                         Severity = isChanged ? InfoBarSeverity.Success : InfoBarSeverity.Error,
                         DurationMs = 3000,

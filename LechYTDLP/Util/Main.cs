@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
@@ -113,5 +115,60 @@ namespace LechYTDLP.Util
                 }
             };
         }
+    }
+
+    public static partial class FilenameTemplateHelper
+    {
+        private static readonly Regex PlaceholderRegex = FilenameTemplateHelperRegex();
+
+        public static string ReplaceFilenameTemplateWithSampleData(string template, JsonElement json)
+        {
+            if (string.IsNullOrWhiteSpace(template))
+                return string.Empty;
+
+            return PlaceholderRegex.Replace(template, match =>
+            {
+                var key = match.Groups[1].Value;
+
+                // Nested destek (uploader.name gibi)
+                var value = GetValueFromJson(json, key);
+
+                return value ?? $"[{key}]"; // bulunamazsa debug-friendly göster
+            });
+        }
+
+        private static string? GetValueFromJson(JsonElement json, string key)
+        {
+            // nested path destek: uploader.name
+            var parts = key.Split('.');
+            JsonElement current = json;
+
+            foreach (var part in parts)
+            {
+                if (current.ValueKind != JsonValueKind.Object ||
+                    !current.TryGetProperty(part, out current))
+                {
+                    return null;
+                }
+            }
+
+            return JsonValueToString(current);
+        }
+
+        private static string? JsonValueToString(JsonElement value)
+        {
+            return value.ValueKind switch
+            {
+                JsonValueKind.String => value.GetString(),
+                JsonValueKind.Number => value.ToString(),
+                JsonValueKind.True => "true",
+                JsonValueKind.False => "false",
+                JsonValueKind.Null => null,
+                _ => value.ToString()
+            };
+        }
+
+        [GeneratedRegex(@"%\((.*?)\)s", RegexOptions.Compiled)]
+        private static partial Regex FilenameTemplateHelperRegex();
     }
 }

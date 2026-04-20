@@ -9,40 +9,6 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       mc:Ignorable="d">
 
-    <!--<StackPanel Orientation="Vertical"
-                Margin="36,40,36,0">
-
-        <TextBlock Text="Options"
-                   Style="{StaticResource TitleLargeTextBlockStyle}"
-                   Margin="0,0,0,24" />
-
-        <Grid RowSpacing="16">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-
-            <Grid Margin="48,0"
-                  RowSpacing="12">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <TextBox x:Name="FileNameTextBox"
-                         Header="File name"
-                         Grid.Row="0"
-                         TextChanged="FileNameTextBox_TextChanged"
-                         PlaceholderText="FilenameTemplate" />
-
-                <TextBox x:Name="SaveToTextBox"
-                         Header="Save to"
-                         Grid.Row="1"
-                         PlaceholderText="Downloads"
-                         TextChanged="SaveToTextBox_TextChanged" />
-            </Grid>
-        </Grid>
-    </StackPanel>-->
-
     <Page.Resources>
         <!--  These styles can be referenced to create a consistent SettingsPage layout  -->
         <!--  Spacing between cards  -->
@@ -79,17 +45,52 @@
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
                            x:Uid="File" />
 
-                <controls:SettingsCard x:Name="FilenameSettingsCard"
-                                       x:Uid="FilenameSettings"
-                                       HeaderIcon="{ui:FontIcon Glyph=&#xE8AC;}">
-                    <controls:SettingsCard.Description>
-                        <HyperlinkButton x:Name="FilenameHyperLink"
-                                         x:Uid="FilenameHyperLink" />
-                    </controls:SettingsCard.Description>
-                    <TextBox x:Name="FilenameTextBox"
-                             TextChanged="TextChanged"
-                             x:Uid="FilenameTextBox" />
-                </controls:SettingsCard>
+
+                <controls:SettingsExpander x:Name="FileNameSettingsExpander"
+                                           x:Uid="FileNameSettingsExpander"
+                                           HeaderIcon="{ui:FontIcon Glyph=&#xE8AC;}">
+                    <controls:SettingsExpander.Items>
+
+                        <controls:SettingsCard Header="@melih_abc123.mp4"
+                                               x:Name="FileNamePreviewSettingsCard"
+                                               x:Uid="FileNamePreviewSettingsCard">
+                            <HyperlinkButton x:Name="FileNameSettingsHyperLink" />
+                        </controls:SettingsCard>
+
+                        <controls:SettingsCard ContentAlignment="Vertical"
+                                               HorizontalContentAlignment="Stretch">
+                            <TextBox x:Name="FileNameTextBox"
+                                     PlaceholderText="Add tokens"
+                                     TextChanged="TextChanged">
+                            </TextBox>
+                        </controls:SettingsCard>
+
+                        <controls:SettingsCard HorizontalContentAlignment="Stretch"
+                                               x:Name="FileNameActionsSettingsCard">
+                            <controls:SettingsCard.Content>
+                                <Grid ColumnSpacing="8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <DropDownButton x:Uid="AddPlaceholders" Click="Click" Grid.Column="0">
+                                        <DropDownButton.Flyout>
+                                            <MenuFlyout Placement="Bottom"
+                                                        x:Name="FileNameTemplatePlaceholdersMenuFlyout">
+                                            </MenuFlyout>
+                                        </DropDownButton.Flyout>
+                                    </DropDownButton>
+                                    <Button Click="Click"
+                                            Style="{StaticResource AccentButtonStyle}"
+                                            x:Uid="SaveButton"
+                                            x:Name="FileNameTemplateSaveButton"
+                                            Grid.Column="1" />
+                                </Grid>
+                            </controls:SettingsCard.Content>
+                        </controls:SettingsCard>
+                    </controls:SettingsExpander.Items>
+                </controls:SettingsExpander>
+
 
                 <controls:SettingsCard x:Name="SaveToSettingsCard"
                                        x:Uid="SaveToSetting"
@@ -97,6 +98,12 @@
                     <TextBox x:Name="SaveToTextBox"
                              x:Uid="SaveToTextBox"
                              TextChanged="TextChanged" />
+                </controls:SettingsCard>
+
+                <controls:SettingsCard x:Uid="SaveLogOfEachDownloadSetting"
+                                       HeaderIcon="{ui:FontIcon Glyph=&#xE8FF;}">
+                    <ToggleSwitch x:Name="SaveLogOfEachDownloadSwitch"
+                                  Toggled="SwitchToggled" />
                 </controls:SettingsCard>
 
                 <controls:SettingsCard x:Uid="EmbedThumbnailSetting"
@@ -146,7 +153,7 @@
                         <Button Grid.Column="1"
                                 Margin="8,0,0,0"
                                 x:Name="PickCookiesFileButton"
-                                Click="Button_Click">
+                                Click="Click">
                             <SymbolIcon Symbol="OpenFile" />
                         </Button>
                     </Grid>

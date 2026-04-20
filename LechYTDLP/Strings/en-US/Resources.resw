@@ -226,13 +226,13 @@
     <value>Use blob data</value>
   </data>
   <data name="BlobDataSetting.Description" xml:space="preserve">
-    <value>You can use blob data for testing, fill Desktop\a.json with yt-dlp --dump-json data</value>
+    <value>You can use blob data for testing, fill Desktop\lechytdlp_blob.json with yt-dlp --dump-json data</value>
   </data>
   <data name="WriteVideoInfoSetting.Header" xml:space="preserve">
     <value>Write video info</value>
   </data>
   <data name="WriteVideoInfoSetting.Description" xml:space="preserve">
-    <value>Write yt-dlp --dump-json data to Desktop\b.json</value>
+    <value>Write yt-dlp --dump-json data to Desktop\lechytdlp_dump.json</value>
   </data>
   <data name="About.Text" xml:space="preserve">
     <value>About</value>
@@ -282,14 +282,14 @@
   <data name="File.Text" xml:space="preserve">
     <value>File</value>
   </data>
-  <data name="FilenameSettings.Header" xml:space="preserve">
-    <value>Filename Template</value>
+  <data name="FileNameSettingsExpander.Header" xml:space="preserve">
+    <value>File name template</value>
   </data>
-  <data name="FilenameHyperLink.Content" xml:space="preserve">
-    <value>YT-DLP output template examples</value>
+  <data name="FileNameSettingsExpander.Description" xml:space="preserve">
+    <value>Customize the file name template for your downloads</value>
   </data>
-  <data name="FilenameTextBox.PlaceholderText" xml:space="preserve">
-    <value>Define filename template</value>
+  <data name="FileNameTextBox.PlaceholderText" xml:space="preserve">
+    <value>Define file name template</value>
   </data>
   <data name="SaveToSetting.Header" xml:space="preserve">
     <value>Save directory</value>
@@ -492,6 +492,9 @@
   <data name="Unknown" xml:space="preserve">
     <value>Unknown</value>
   </data>
+  <data name="UnknownError" xml:space="preserve">
+    <value>Unknown error</value>
+  </data>
   <data name="UnknownFilesize" xml:space="preserve">
     <value>Unknown filesize</value>
   </data>
@@ -561,7 +564,7 @@
   <data name="CheckYTdlpUpdate.Description" xml:space="preserve">
     <value>Check is update available for YT-DLP if available it will update</value>
   </data>
-  <data name="CheckingForUpdatesLog" xml:space="preserve">
+  <data name="YTdlpCheckingForUpdates" xml:space="preserve">
     <value>Checking updates for YT-DLP</value>
   </data>
   <data name="YTdlpIsUpToDate" xml:space="preserve">
@@ -613,7 +616,10 @@
     <value>Not Auto Scrolling</value>
   </data>
   <data name="YTdlpUpdatedSuccessfully" xml:space="preserve">
-    <value>Updated YT-DLP</value>
+    <value>YT-DLP updated</value>
+  </data>
+  <data name="YTdlpUpdatedSuccessfullyMsg" xml:space="preserve">
+    <value>Updated to {0}</value>
   </data>
   <data name="OtherOptions.Text" xml:space="preserve">
     <value>Other</value>
@@ -689,5 +695,222 @@
   </data>
   <data name="Debug" xml:space="preserve">
     <value>Debug</value>
+  </data>
+  <data name="ReadingVideoInfoFromBlobDataLog" xml:space="preserve">
+    <value>Getting video info from Blob File(Desktop\lechytdlp_blob.json)</value>
+  </data>
+  <data name="WritingVideoInfoToJsonLog" xml:space="preserve">
+    <value>Writing video info (--dump-json) to Desktop\lechytdlp_dump.json file</value>
+  </data>
+  <data name="PresetsIllChoose" xml:space="preserve">
+    <value>✨ I'll choose what to download</value>
+  </data>
+  <data name="PresetsBestQuality" xml:space="preserve">
+    <value>Best quality (video+audio)</value>
+  </data>
+  <data name="PresetsCompatible1080pMP4" xml:space="preserve">
+    <value>1080p MP4 (Most compatible)</value>
+  </data>
+  <data name="PresetsBestQualityAudio" xml:space="preserve">
+    <value>Best quality audio (No conversion)</value>
+  </data>
+  <data name="PresetsBestQualityVideo" xml:space="preserve">
+    <value>Best quality video (No conversion)</value>
+  </data>
+  <data name="PresetsExtractAudioMP3" xml:space="preserve">
+    <value>Extract audio (MP3)</value>
+  </data>
+  <data name="PresetsCompatible720pMP4" xml:space="preserve">
+    <value>720p MP4 (Most compatible)</value>
+  </data>
+  <data name="DeleteDownloadHistorySetting.Description" xml:space="preserve">
+    <value>Sometimes download history can be bugged (deletes database)</value>
+  </data>
+  <data name="DeleteDownloadHistorySetting.Header" xml:space="preserve">
+    <value>Empty download history</value>
+  </data>
+  <data name="DeleteDownloadHistoryButton.Content" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="DialogLanguageChanged" xml:space="preserve">
+    <value>Language changed</value>
+  </data>
+  <data name="Restart" xml:space="preserve">
+    <value>Restart</value>
+  </data>
+  <data name="Later" xml:space="preserve">
+    <value>Later</value>
+  </data>
+  <data name="DialogLanguageChangedNotice" xml:space="preserve">
+    <value>The application needs to be restarted for the language change to take effect.
+The changes will be applied after restarting. (You can do it later if you want, but languages ​​may get mixed up in some places.)</value>
+  </data>
+  <data name="FileNameSettings.Header" xml:space="preserve">
+    <value>File name template</value>
+  </data>
+  <data name="FileNamePreviewSettingsCard.Description" xml:space="preserve">
+    <value>File name will look like this</value>
+  </data>
+  <data name="FileNameEmptyPlaceholder" xml:space="preserve">
+    <value>Placeholder can't be used empty</value>
+  </data>
+  <data name="FileNameInvalidCharacterPlaceholder" xml:space="preserve">
+    <value>Placeholder with invalid characters: {0}</value>
+  </data>
+  <data name="FileNameSettingsHyperLink.Header" xml:space="preserve">
+    <value>YT-DLP output template examples</value>
+  </data>
+  <data name="FileNameSettingsHyperLink.Description" xml:space="preserve">
+    <value>Not every option that on page available</value>
+  </data>
+  <data name="YTdlpUpdateAvailable" xml:space="preserve">
+    <value>YT-DLP update available</value>
+  </data>
+  <data name="YTdlpUpdateAvailableMsg" xml:space="preserve">
+    <value>It is recommended to keep YT-DLP up to date to ensure the best compatibility because platforms update their APIs frequently.</value>
+  </data>
+  <data name="MaybeLater" xml:space="preserve">
+    <value>Maybe later</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="YTdlpUpdateFailed" xml:space="preserve">
+    <value>YT-DLP update failed</value>
+  </data>
+  <data name="YTdlpUpdateVersionInfo" xml:space="preserve">
+    <value>Current: {0} &gt; Update: {1} </value>
+  </data>
+  <data name="YTdlpAutoUpdateCheckBox.Content" xml:space="preserve">
+    <value>Update when a new version is available</value>
+  </data>
+  <data name="YTdlpAutoUpdate.Description" xml:space="preserve">
+    <value>Automatically check for updates and update YT-DLP when an update is available</value>
+  </data>
+  <data name="YTdlpAutoUpdate.Header" xml:space="preserve">
+    <value>Auto Update YT-DLP</value>
+  </data>
+  <data name="Current" xml:space="preserve">
+    <value>Current</value>
+  </data>
+  <data name="New" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="YTdlpUpdating" xml:space="preserve">
+    <value>Updating YT-DLP</value>
+  </data>
+  <data name="SaveLogOfEachDownloadSetting.Header" xml:space="preserve">
+    <value>Save log of each download</value>
+  </data>
+  <data name="SaveLogOfEachDownloadSetting.Description" xml:space="preserve">
+    <value>Save a log file for each download, the log file will contain the output of yt-dlp for that download</value>
+  </data>
+  <data name="Behavior.Text" xml:space="preserve">
+    <value>Behavior</value>
+  </data>
+  <data name="OpenFilesInExternalPlayer.Header" xml:space="preserve">
+    <value>Open media in external player</value>
+  </data>
+  <data name="OpenFilesInExternalPlayer.Description" xml:space="preserve">
+    <value>Downloaded media files will be opened in the default media player instead of the built-in player</value>
+  </data>
+  <data name="AddPlaceholders.Content" xml:space="preserve">
+    <value>Add placeholder</value>
+  </data>
+  <data name="SaveButton.Content" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="FileNameOkLooksGood" xml:space="preserve">
+    <value>Valid, looks good!</value>
+  </data>
+  <data name="FilenameTemplateInvalidPlaceholder" xml:space="preserve">
+    <value>Invalid placeholder format</value>
+  </data>
+  <data name="FilenameTemplateInvalidHalfPlaceholder" xml:space="preserve">
+    <value>There is a half-finished placeholder</value>
+  </data>
+  <data name="FilenameTemplateCannotBeEmpty" xml:space="preserve">
+    <value>Filename template cannot be empty</value>
+  </data>
+  <data name="P_Creator" xml:space="preserve">
+    <value>Creator</value>
+  </data>
+  <data name="P_ReleaseDate" xml:space="preserve">
+    <value>Release date</value>
+  </data>
+  <data name="P_Timestamp" xml:space="preserve">
+    <value>Timestamp</value>
+  </data>
+  <data name="P_ID" xml:space="preserve">
+    <value>Video id</value>
+  </data>
+  <data name="P_ChannelName" xml:space="preserve">
+    <value>Channel name</value>
+  </data>
+  <data name="P_ChannelID" xml:space="preserve">
+    <value>Channel id</value>
+  </data>
+  <data name="P_Title" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="P_Duration" xml:space="preserve">
+    <value>Duration</value>
+  </data>
+  <data name="P_PlaylistIndex" xml:space="preserve">
+    <value>Playlist index</value>
+  </data>
+  <data name="P_PlaylistTitle" xml:space="preserve">
+    <value>Playlist title</value>
+  </data>
+  <data name="P_Uploader" xml:space="preserve">
+    <value>Uploader</value>
+  </data>
+  <data name="P_UploadDate" xml:space="preserve">
+    <value>Upload date</value>
+  </data>
+  <data name="P_FullTitle" xml:space="preserve">
+    <value>Full title</value>
+  </data>
+  <data name="P_Extension" xml:space="preserve">
+    <value>Extension</value>
+  </data>
+  <data name="P_Extractor" xml:space="preserve">
+    <value>Extractor</value>
+  </data>
+  <data name="P_ExtractorKey" xml:space="preserve">
+    <value>Extractor key</value>
+  </data>
+  <data name="Saved" xml:space="preserve">
+    <value>Saved</value>
+  </data>
+  <data name="Saved!" xml:space="preserve">
+    <value>Saved!</value>
+  </data>
+  <data name="HistoryCleared" xml:space="preserve">
+    <value>History cleared</value>
+  </data>
+  <data name="YTdlpUpdateCheckResult" xml:space="preserve">
+    <value>Checked for updates. Current version: {0}, Newest version: {1}</value>
+  </data>
+  <data name="YTdlpUpdateCheckNoInternet" xml:space="preserve">
+    <value>Failed to connect to the update server, please check your internet connection</value>
+  </data>
+  <data name="YTdlpUpdateCheckError" xml:space="preserve">
+    <value>An error occurred while checking for updates, please try again later</value>
+  </data>
+  <data name="BrowserExtension.Text" xml:space="preserve">
+    <value>Browser extension</value>
+  </data>
+  <data name="CustomizeBrowserExtension.Header" xml:space="preserve">
+    <value>Customize extension</value>
+  </data>
+  <data name="CustomizeBrowserExtension.Description" xml:space="preserve">
+    <value>Is extension not working?</value>
+  </data>
+  <data name="ExtensionServerStatus.Header" xml:space="preserve">
+    <value>Extension server status</value>
+  </data>
+  <data name="BrowserExtWorkingAt" xml:space="preserve">
+    <value>Browser extension is working at: {0}</value>
   </data>
 </root>

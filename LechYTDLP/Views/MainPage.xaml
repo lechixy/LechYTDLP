@@ -79,13 +79,13 @@
                      Width="300"
                      x:Name="LinkTextBox" />
 
-            <Button Click="PasteTextButton_Click"
+            <Button Click="OnClick"
                     Grid.Column="1"
                     x:Name="PasteTextButton">
                 <SymbolIcon Symbol="Paste" />
             </Button>
 
-            <Button Click="DownloadButton_Click"
+            <Button Click="OnClick"
                     Grid.Column="2"
                     HorizontalAlignment="Right"
                     Style="{StaticResource AccentButtonStyle}"
@@ -93,6 +93,11 @@
                     x:Name="DownloadButton">
                 <SymbolIcon Symbol="Download" />
             </Button>
+        </Grid>
+
+        <Grid MinWidth="300" MaxWidth="500">
+            <ComboBox HorizontalAlignment="Stretch" x:Name="PresetComboBox" DisplayMemberPath="DisplayName" SelectionChanged="SelectionChanged">
+            </ComboBox>
         </Grid>
     </StackPanel>
 </Page>

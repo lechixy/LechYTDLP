@@ -42,8 +42,7 @@ namespace LechYTDLP.Views
             foreach (var log in LogService.GetAll())
                 UiLogs.Add(log);
 
-            LogService.LogAdded += OnLogAdded;
-            LogService.LogUpdated += OnLogUpdated;
+            LogService.LogChanged += OnLogChanged;
 
             if (SettingsService.AutoScrollLogs)
             {
@@ -53,20 +52,28 @@ namespace LechYTDLP.Views
             else ScrollToBottomButton.Content = App.LocalizationService.Get("ScrollingToBottomNot");
         }
 
-        private async void OnLogAdded(LogItem item)
+        private void OnLogChanged(LogItem item)
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                UiLogs.Add(item);
-                if (SettingsService.AutoScrollLogs) LogListView.ScrollIntoView(item);
-            });
-        }
+                var existing = UiLogs.FirstOrDefault(x => x.Id == item.Id);
 
-        private async void OnLogUpdated(LogItem item)
-        {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                LogListView.ScrollIntoView(item);
+                if (existing == null)
+                {
+                    UiLogs.Add(item);
+                }
+                else
+                {
+                    // ! THIS CODE NEEDS REFACTORING BECAUSE IT NOT NICE TO REMOVING ADDING THINGS
+
+                    //UiLogs.Remove(item);
+                    //UiLogs.Add(item);
+
+                    //Debug.WriteLine($"Log updated: {existing.Message} {existing.Id}");
+                }
+
+                if (SettingsService.AutoScrollLogs)
+                    LogListView.ScrollIntoView(item);
             });
         }
 
@@ -76,11 +83,9 @@ namespace LechYTDLP.Views
             LogService.ResetLog();
         }
 
-
         private void LogPage_Unloaded(object sender, RoutedEventArgs e)
         {
-            LogService.LogAdded -= OnLogAdded;
-            LogService.LogUpdated -= OnLogUpdated;
+            LogService.LogChanged -= OnLogChanged;
         }
 
         private void OnClick(object sender, RoutedEventArgs e)
@@ -98,7 +103,8 @@ namespace LechYTDLP.Views
                     }
                     else ScrollToBottomButton.Content = App.LocalizationService.Get("ScrollingToBottomNot");
                 }
-            } else if (sender is MenuFlyoutItem menuItem && menuItem.DataContext is LogItem logItem)
+            }
+            else if (sender is MenuFlyoutItem menuItem && menuItem.DataContext is LogItem logItem)
             {
                 if (menuItem.Name == "Copy")
                 {

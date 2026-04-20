@@ -1,4 +1,6 @@
 ﻿using LechYTDLP.Classes;
+using LechYTDLP.Components;
+using LechYTDLP.Services;
 using LechYTDLP.Util;
 using Microsoft.Windows.AppNotifications;
 using Microsoft.Windows.AppNotifications.Builder;
@@ -50,14 +52,30 @@ namespace LechYTDLP.Controllers
 
                 VideoInfoReady?.Invoke(url, info);
 
-                var result = await App.FormatDialogService.ShowAsync(url, info);
-
-                if (result != null)
+                // If the selected preset is "illchose" show format dialog service
+                if (SettingsService.SelectedPreset == SettingsService.Presets.First())
                 {
+                    var result = await App.FormatDialogService.ShowAsync(url, info);
+
+                    if (result != null)
+                    {
+                        App.DownloadService.Enqueue(
+                            result.Url,
+                            result.VideoInfo,
+                            result.SelectedFormat);
+                    }
+                }
+                // Otherwise, enqueue the download with the selected preset
+                else
+                {
+                    var selectedFormat = new SelectedFormat
+                    {
+                        Preset = SettingsService.SelectedPreset,
+                    };
                     App.DownloadService.Enqueue(
-                        result.Url,
-                        result.VideoInfo,
-                        result.SelectedFormat);
+                        url,
+                        info,
+                        selectedFormat);
                 }
             }
             catch (Exception ex)
@@ -71,7 +89,7 @@ namespace LechYTDLP.Controllers
             }
         }
 
-        private void SetBusy(bool value, string Url)
+        public void SetBusy(bool value, string Url)
         {
             _isBusy = value;
             _currentUrl = Url;

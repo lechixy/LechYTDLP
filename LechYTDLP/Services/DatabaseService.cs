@@ -3,6 +3,7 @@ using LechYTDLP.Components;
 using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -79,14 +80,18 @@ namespace LechYTDLP.Services
 
                 command.Parameters.AddWithValue("$guidid", item.Id.ToString());
                 command.Parameters.AddWithValue("$url", item.Url);
-                command.Parameters.AddWithValue("$info", JsonSerializer.Serialize(item.Info));
+                command.Parameters.AddWithValue("$info", JsonSerializer.Serialize(item.Info, App.JsonSerializerOptions));
                 command.Parameters.AddWithValue("$state", (int)item.State);
                 command.Parameters.AddWithValue("$progress", item.Progress);
-                command.Parameters.AddWithValue("$format", JsonSerializer.Serialize(item.SelectedFormat));
+                command.Parameters.AddWithValue("$format", JsonSerializer.Serialize(item.SelectedFormat, App.JsonSerializerOptions));
                 command.Parameters.AddWithValue("$filePath", item.FilePath);
                 command.Parameters.AddWithValue("$createdAt", DateTime.UtcNow.ToString("o"));
 
                 await command.ExecuteNonQueryAsync();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("There is an error while adding or updating a download item: " + ex.Message);
             }
             finally
             {
@@ -117,13 +122,17 @@ namespace LechYTDLP.Services
                     {
                         Id = Guid.Parse(reader.GetString(1)),
                         Url = reader.GetString(2),
-                        Info = JsonSerializer.Deserialize<VideoInfo>(reader.GetString(3))!,
+                        Info = JsonSerializer.Deserialize<VideoInfo>(reader.GetString(3), App.JsonSerializerOptions)!,
                         State = (DownloadState)reader.GetInt32(4),
                         Progress = reader.GetInt32(5),
-                        SelectedFormat = JsonSerializer.Deserialize<SelectedFormat>(reader.GetString(6))!,
+                        SelectedFormat = JsonSerializer.Deserialize<SelectedFormat>(reader.GetString(6), App.JsonSerializerOptions)!,
                         FilePath = reader.GetString(7)
                     });
                 }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("There is an error while retrieving download items: " + ex.Message);
             }
             finally
             {

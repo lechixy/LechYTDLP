@@ -36,7 +36,14 @@
                         Grid.Row="1"
                         SelectionChanged="NavView_SelectionChanged"
                         IsBackButtonVisible="Collapsed"
-                        IsSettingsVisible="True">
+                        IsPaneToggleButtonVisible="True"
+                        IsSettingsVisible="True"
+                        PaneTitle="Lech YT-DLP"
+                        PaneDisplayMode="Left"
+                        IsPaneOpen="False"
+                        ExpandedModeThresholdWidth="200"
+                        SelectionFollowsFocus="Disabled"
+                        IsTabStop="False">
             <NavigationView.MenuItems>
                 <NavigationViewItem x:Uid="DownloadsC"
                                     Tag="DownloadsPage">
@@ -80,11 +87,10 @@
                 <!-- App content -->
                 <Frame x:Name="AppFrame" />
 
-                <!-- GLOBAL InfoBar (overlay) -->
+                <!-- GLOBAL InfoBar -->
                 <InfoBar x:Name="GlobalInfoBar"
                          IsOpen="False"
                          IsClosable="False"
-                         IsHitTestVisible="True"
                          HorizontalAlignment="Right"
                          VerticalAlignment="Bottom"
                          CornerRadius="12"
@@ -92,7 +98,6 @@
                          MaxWidth="400"
                          Margin="0,0,24,24" />
             </Grid>
-
         </NavigationView>
     </Grid>
 </Window>
