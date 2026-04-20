@@ -48,6 +48,12 @@ public sealed partial class MainPage : Page
         InitializeComponent();
         LinkTextBox.PlaceholderText = Main.GetDynamicSearchBoxPlaceholder();
 
+        DispatcherQueue.TryEnqueue(() =>
+        {
+            bool success = LinkTextBox.Focus(FocusState.Programmatic);
+            Debug.WriteLine(success);
+        });
+
         PresetComboBox.ItemsSource = SettingsService.Presets;
         PresetComboBox.SelectedItem = SettingsService.SelectedPreset;
         _initialized = true;
@@ -55,6 +61,14 @@ public sealed partial class MainPage : Page
         if (App.DownloadController.IsBusy)
         {
             DownloadButton.IsEnabled = false;
+            DownloadButton.Content = new ProgressRing
+            {
+                IsActive = true,
+                Width = 20,
+                Height = 20,
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center
+            };
             LinkTextBox.Text = App.DownloadController.CurrentUrl;
             LinkTextBox.IsEnabled = false;
             PasteTextButton.IsEnabled = false;
@@ -209,5 +223,13 @@ public sealed partial class MainPage : Page
         base.OnNavigatedFrom(e);
         App.DownloadController.BusyChanged -= OnBusyChanged;
         // App.DownloadController.VideoInfoReady -= OnVideoInfoReady;
+    }
+
+    private void ElementLoaded(object sender, RoutedEventArgs e)
+    {
+        if (sender is TextBox textBox)
+        {
+            textBox.Focus(FocusState.Programmatic);
+        }
     }
 }

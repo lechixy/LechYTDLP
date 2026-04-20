@@ -1,13 +1,16 @@
 ﻿using CommunityToolkit.WinUI.Animations;
 using LechYTDLP.Classes;
 using LechYTDLP.Components;
+using LechYTDLP.Controllers;
 using LechYTDLP.Services;
 using LechYTDLP.Views;
 using Microsoft.UI;
 using Microsoft.UI.Composition.SystemBackdrops;
+using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections;
@@ -16,7 +19,9 @@ using System.Linq;
 using System.Runtime.Intrinsics.Arm;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.ApplicationModel.Resources;
+using Windows.System;
 using Windows.UI.Notifications;
 using WinRT;
 using WinRT.Interop;
@@ -46,7 +51,7 @@ namespace LechYTDLP
             // Window sizing
             var hWnd = WindowNative.GetWindowHandle(this);
             var windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
-            AppWindow appWindow = AppWindow.GetFromWindowId(windowId); 
+            AppWindow appWindow = AppWindow.GetFromWindowId(windowId);
             appWindow.Resize(new Windows.Graphics.SizeInt32(800, 600));
 
             // Apply theme to app and listen to events
@@ -74,6 +79,42 @@ namespace LechYTDLP
             App.SettingsService.AppBackdropChanged += (backdrop) => AppBackdropChanged(backdrop);
 
             _ = CheckForUpdatesOnStartupAsync();
+
+            RootGrid.AddHandler(UIElement.KeyDownEvent, new KeyEventHandler(Global_KeyDown), true);
+        }
+
+        private void Global_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            var ctrl = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Control)
+                .HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);
+
+            var shift = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift)
+                .HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);
+
+            if (e.Key == VirtualKey.F1)
+            {
+                App.NavigationService.Navigate<SettingsPage>();
+                e.Handled = true;
+            }
+
+            // CTRL + V → özel yapıştır (mesela link parse et)
+            if (ctrl && e.Key == VirtualKey.V)
+            {
+                HandlePaste();
+                e.Handled = true;
+            }
+        }
+
+        private async void HandlePaste()
+        {
+            var data = Clipboard.GetContent();
+
+            if (data.Contains(StandardDataFormats.Text))
+            {
+                var text = await data.GetTextAsync();
+                Debug.WriteLine("Pasted text: " + text);
+                await App.DownloadController.SearchAsync(text);
+            }
         }
 
         private async Task CheckForUpdatesOnStartupAsync()

@@ -7,14 +7,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="using:LechYTDLP.Views"
         mc:Ignorable="d"
-        x:Name="RootFrame"
+        x:Name="RootWindow"
         Title="LechYTDLP">
 
     <!--<Window.SystemBackdrop>
         <MicaBackdrop Kind="BaseAlt" />
     </Window.SystemBackdrop>-->
 
-    <Grid>
+    <Grid x:Name="RootGrid">
         <Grid.RowDefinitions>
             <!-- Title Bar -->
             <RowDefinition Height="Auto" />
@@ -83,7 +83,7 @@
                 </NavigationViewItem>
             </NavigationView.MenuItems>
 
-            <Grid>
+            <Grid x:Name="ContentGrid">
                 <!-- App content -->
                 <Frame x:Name="AppFrame" />
 

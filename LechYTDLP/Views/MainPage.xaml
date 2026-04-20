@@ -77,6 +77,8 @@
                      VerticalAlignment="Stretch"
                      Grid.Column="0"
                      Width="300"
+                     IsTabStop="True"
+                     Loaded="ElementLoaded"
                      x:Name="LinkTextBox" />
 
             <Button Click="OnClick"
