@@ -112,8 +112,14 @@ namespace LechYTDLP
             if (data.Contains(StandardDataFormats.Text))
             {
                 var text = await data.GetTextAsync();
-                Debug.WriteLine("Pasted text: " + text);
-                await App.DownloadController.SearchAsync(text);
+
+                if (SettingsService.DownloadAfterPaste)
+                {
+                    await App.DownloadController.SearchAsync(text);
+                } else
+                {
+                    // TODO: Show a dialog asking user if they want to download the pasted text (if it's a valid URL) or just paste it in the main page's input box.
+                }
             }
         }
 

@@ -171,6 +171,10 @@
                                 <x:String>Bun</x:String>
                             </ComboBox>
                         </controls:SettingsCard>
+                        <controls:SettingsCard x:Uid="ShowJavaScriptRuntimeNoticeSetting">
+                            <ToggleSwitch x:Name="ShowJavaScriptRuntimeNoticeSwitch"
+                                          Toggled="Switch_Toggled" />
+                        </controls:SettingsCard>
                     </controls:SettingsExpander.Items>
                 </controls:SettingsExpander>
 
@@ -183,7 +187,8 @@
                                            IsEnabled="False">
                     <controls:SettingsExpander.Items>
                         <!--Extension server status-->
-                        <controls:SettingsCard x:Uid="ExtensionServerStatus" IsEnabled="False">
+                        <controls:SettingsCard x:Uid="ExtensionServerStatus"
+                                               IsEnabled="False">
                             <Button x:Name="ExtensionServerStatusButton"
                                     x:Uid="ExtensionServerStatusButton"
                                     IsEnabled="False"
@@ -202,6 +207,12 @@
                                        HeaderIcon="{ui:FontIcon Glyph=&#xEA69;}"
                                        IsEnabled="False">
                     <ToggleSwitch x:Name="OpenFilesInExternalPlayerSwitch"
+                                  Toggled="Switch_Toggled" />
+                </controls:SettingsCard>
+
+                <controls:SettingsCard x:Uid="DownloadAfterPasteSetting"
+                                       HeaderIcon="{ui:FontIcon Glyph=&#xE896;}">
+                    <ToggleSwitch x:Name="DownloadAfterPasteSwitch"
                                   Toggled="Switch_Toggled" />
                 </controls:SettingsCard>
 

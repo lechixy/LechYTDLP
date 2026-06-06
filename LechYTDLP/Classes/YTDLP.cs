@@ -188,6 +188,7 @@ namespace LechYTDLP.Classes
     }
 
     [JsonSerializable(typeof(VideoInfo))]
+    [JsonSerializable(typeof(Dictionary<string, JsonElement>))]
     public partial class AppJsonContext : JsonSerializerContext
     {
     }
@@ -650,9 +651,9 @@ namespace LechYTDLP.Classes
             if (output.Contains("Merging formats into \""))
             {
                 App.DownloadService.CurrentMedia.FilePath = output.Split("Merging formats into \"")[1].Split('\"')[0];
-            } else if (output.StartsWith("[download] Destination: "))
+            } else if (output.Contains("Destination: "))
             {
-                App.DownloadService.CurrentMedia.FilePath = output.Split("[download] Destination: ")[1].Trim();
+                App.DownloadService.CurrentMedia.FilePath = output.Split("Destination: ")[1].Trim();
             } else if (output.Contains("has already been downloaded"))
             {
                 App.DownloadService.CurrentMedia.FilePath = output.Split("[download]")[1].Split("has already been downloaded")[0].Trim();

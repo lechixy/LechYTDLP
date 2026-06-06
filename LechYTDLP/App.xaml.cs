@@ -37,6 +37,7 @@ namespace LechYTDLP
     public partial class App : Application
     {
         public static Window? Window { get; private set; }
+        public static DispatcherQueue UIThreadDispatcherQueue { get; private set; }
 
         /// <summary>
         /// Application version string in the format of "Major.Minor.Build", e.g. "1.0.0"
@@ -57,7 +58,6 @@ namespace LechYTDLP
         public static NavigationService NavigationService => ServiceContainer.Get<NavigationService>();
         public static InfoBarService InfoBarService => ServiceContainer.Get<InfoBarService>();
         public static DatabaseService DatabaseService => ServiceContainer.Get<DatabaseService>();
-        public static FormatDialogService FormatDialogService { get; private set; } = null!;
         public static DialogService DialogService { get; set; } = null!;
         public static LogService LogService => ServiceContainer.Get<LogService>();
         public static LocalizationService LocalizationService => ServiceContainer.Get<LocalizationService>();
@@ -122,9 +122,8 @@ namespace LechYTDLP
                 }
             }
 
-			FormatDialogService = new FormatDialogService(Window);
-
             Window.Activate();
+            UIThreadDispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
             WindowInitialized?.Invoke();
 
@@ -157,7 +156,7 @@ namespace LechYTDLP
                 LogService.Add(LocalizationService.Get("FirstRun"), LogTag.Lechixy, false);
 
                 // Check if old settings file exists for importing settings
-                var oldSettingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "LechYTDLP_Settings.json");
+                var oldSettingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "LechYTDLP_Settings.xml");
                 // If the old settings file exists, show an info bar to ask the user if they want to import settings
                 if (File.Exists(oldSettingsPath))
                 {

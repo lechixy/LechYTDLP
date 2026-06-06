@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LechYTDLP.Classes;
@@ -77,23 +78,46 @@ public static class UpdateChecker
 
         try
         {
-            var response = await HttpClient.GetStringAsync(ApiEndpoint);
-            var json = JsonDocument.Parse(response);
-            var root = json.RootElement;
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(20));
+            var json = default(JsonDocument);
 
-            if (root.ValueKind == JsonValueKind.Array && root.GetArrayLength() > 0)
+            for (int i = 0; i < 3; i++)
             {
-                var first = root[0];
-                result.NewestVersion = first.GetProperty("tag_name").GetString() ?? string.Empty;
-                result.CurrentVersion = currentVersion;
+                try
+                {
+                    var response = await HttpClient.GetAsync(ApiEndpoint, cts.Token);
+                    response.EnsureSuccessStatusCode();
+
+                    json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+                    break;
+                }
+                catch (TaskCanceledException) when (i < 2)
+                {
+                    await Task.Delay(1000 * (i + 1));
+                }
             }
-            result.Success = true;
-            SettingsService._LastKnownVersion = result.NewestVersion;
 
-            // Compare versions
-            result.IsUpdateAvailable = currentVersion != "debug" && IsNewerVersion(currentVersion, result.NewestVersion);
+            if (json != null)
+            {
+                var root = json.RootElement;
 
-            LogService.Add(App.LocalizationService.Get("YTdlpUpdateCheckResult", currentVersion, SettingsService._LastKnownVersion), LogTag.App);
+                if (root.ValueKind == JsonValueKind.Array && root.GetArrayLength() > 0)
+                {
+                    var first = root[0];
+                    result.NewestVersion = first.GetProperty("tag_name").GetString() ?? string.Empty;
+                    result.CurrentVersion = currentVersion;
+                }
+                result.Success = true;
+                SettingsService._LastKnownVersion = result.NewestVersion;
+
+                // Compare versions
+                result.IsUpdateAvailable = currentVersion != "debug" && IsNewerVersion(currentVersion, result.NewestVersion);
+
+                LogService.Add(App.LocalizationService.Get("YTdlpUpdateCheckResult", currentVersion, SettingsService._LastKnownVersion), LogTag.App);
+            } else
+            {
+                LogService.Add("there is no json response from the API", LogTag.Warning);
+            }
         }
         catch (HttpRequestException ex)
         {

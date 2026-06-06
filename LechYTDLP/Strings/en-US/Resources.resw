@@ -550,10 +550,10 @@
     <value>No supported JavaScript</value>
   </data>
   <data name="NoJsRuntimeMsg" xml:space="preserve">
-    <value>No supported JavaScript runtime could be found. Some formats can be not on the list. Check at wiki.</value>
+    <value>No supported JavaScript runtime could be found. Some formats can be not on the list. Click "Learn More" button for information. (Your current download may be not affected from this)</value>
   </data>
   <data name="NoJsRuntimeLog" xml:space="preserve">
-    <value>No supported JavaScript runtime could be found. This is required for some extractors to work. Please visit the page for more information.</value>
+    <value>No supported JavaScript runtime could be found. This is required for some extractors to work. Please visit the page for more information. (Your current download may be not affected from this)</value>
   </data>
   <data name="LearnMore" xml:space="preserve">
     <value>Learn more</value>
@@ -912,5 +912,29 @@ The changes will be applied after restarting. (You can do it later if you want, 
   </data>
   <data name="BrowserExtWorkingAt" xml:space="preserve">
     <value>Browser extension is working at: {0}</value>
+  </data>
+  <data name="ShowJavaScriptRuntimeNoticeSetting.Description" xml:space="preserve">
+    <value>Show no JavaScript runtime notice</value>
+  </data>
+  <data name="DontShowAgain" xml:space="preserve">
+    <value>Don't show again</value>
+  </data>
+  <data name="DownloadAfterPasteSetting.Header" xml:space="preserve">
+    <value>Download after pasting a URL</value>
+  </data>
+  <data name="DownloadAfterPasteSetting.Description" xml:space="preserve">
+    <value>Automatically start downloading when a URL is pasted into the app</value>
+  </data>
+  <data name="VideoOrPlaylistDialog" xml:space="preserve">
+    <value>Download video or playlist?</value>
+  </data>
+  <data name="VideoOrPlaylistDialogContent" xml:space="preserve">
+    <value>Your link is contains both a video and a playlist</value>
+  </data>
+  <data name="Video" xml:space="preserve">
+    <value>Video</value>
+  </data>
+  <data name="Playlist" xml:space="preserve">
+    <value>Playlist</value>
   </data>
 </root>

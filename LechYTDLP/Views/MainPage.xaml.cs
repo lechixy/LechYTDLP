@@ -140,6 +140,14 @@ public sealed partial class MainPage : Page
                     var text = await package.GetTextAsync();
                     LinkTextBox.Text = text;
                 }
+
+                if (SettingsService.DownloadAfterPaste)
+                {
+                    await App.DownloadController.SearchAsync(LinkTextBox.Text);
+                } else
+                {
+                    // TODO: Add some kind of notification that the text was pasted and that the user can start the download by clicking the download button
+                }
             }
             catch (Exception ex)
             {

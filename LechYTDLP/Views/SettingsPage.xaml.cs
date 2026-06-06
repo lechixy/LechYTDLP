@@ -46,6 +46,7 @@ public sealed partial class SettingsPage : Page
 
         // # Behavior
         OpenFilesInExternalPlayerSwitch.IsOn = SettingsService.OpenFilesInExternalPlayer;
+        DownloadAfterPasteSwitch.IsOn = SettingsService.DownloadAfterPaste;
 
         // # Customize YT-DLP
         YTDLPPathSetting.PlaceholderText = SettingsService.YTDLPPath;
@@ -59,6 +60,7 @@ public sealed partial class SettingsPage : Page
         JsRuntimeComboBox.SelectedItem = string.IsNullOrEmpty(SettingsService.JavaScriptRuntime)
             ? "None"
             : textInfo.ToTitleCase(SettingsService.JavaScriptRuntime);
+        ShowJavaScriptRuntimeNoticeSwitch.IsOn = SettingsService.ShowJavaScriptRuntimeNotice;
 
         // # Customization
         _isInitializingTheme = true;
@@ -182,6 +184,13 @@ public sealed partial class SettingsPage : Page
         else if (toggleSwitch.Name == "OpenFilesInExternalPlayerSwitch")
         {
             SettingsService.OpenFilesInExternalPlayer = toggleSwitch.IsOn;
+        }
+        else if (toggleSwitch.Name == "ShowJavaScriptRuntimeNoticeSwitch")
+        {
+            SettingsService.ShowJavaScriptRuntimeNotice = toggleSwitch.IsOn;
+        } else if (toggleSwitch.Name == "DownloadAfterPasteSwitch")
+        {
+            SettingsService.DownloadAfterPaste = toggleSwitch.IsOn;
         }
     }
 

@@ -1,10 +1,12 @@
-﻿using LechYTDLP.Util;
+﻿using LechYTDLP.Classes;
+using LechYTDLP.Util;
 using LechYTDLP.Views;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,6 +14,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using Windows.Storage;
 using static LechYTDLP.Views.SettingsPage;
 
@@ -65,7 +68,7 @@ namespace LechYTDLP.Services
         public static string FilenameTemplate
         {
             get => (string?)Settings.Values[nameof(FilenameTemplate)]
-                   ?? "%(uploader)s_%(id)s.%(ext)s";
+                   ?? "%(title)s_%(uploader)s_%(id)s.%(ext)s";
 
             set => Settings.Values[nameof(FilenameTemplate)] = value;
         }
@@ -104,6 +107,12 @@ namespace LechYTDLP.Services
 
         // # Settings
         // Behavior
+        public static bool DownloadAfterPaste
+        {
+            get => (bool?)Settings.Values[nameof(DownloadAfterPaste)]
+                   ?? false;
+            set => Settings.Values[nameof(DownloadAfterPaste)] = value;
+        }
         public static bool OpenFilesInExternalPlayer
         {
             get => (bool?)Settings.Values[nameof(OpenFilesInExternalPlayer)]
@@ -130,6 +139,18 @@ namespace LechYTDLP.Services
             get => (string?)Settings.Values[nameof(JavaScriptRuntime)]
                 ?? "";
             set => Settings.Values[nameof(JavaScriptRuntime)] = value;
+        }
+        public static bool ShowJavaScriptRuntimeNotice
+        {
+            get => (bool?)Settings.Values[nameof(ShowJavaScriptRuntimeNotice)]
+                   ?? true;
+            set => Settings.Values[nameof(ShowJavaScriptRuntimeNotice)] = value;
+        }
+        public static bool _shownJsDialog
+        {
+            get => (bool?)Settings.Values[nameof(_shownJsDialog)]
+                   ?? false;
+            set => Settings.Values[nameof(_shownJsDialog)] = value;
         }
         // # Customization
         public static List<Setting> Languages = [
@@ -323,110 +344,38 @@ namespace LechYTDLP.Services
             return "unknown";
         }
 
-        [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "<Pending>")]
-        public async static void ImportSettingsFromFile(string? file = null)
-        {
-            var filePath = file;
-            // If no file path is provided, open a file picker to select a JSON file
-            if (string.IsNullOrEmpty(file))
-            {
-                if (App.Window == null) return;
-                filePath = await App.PickFileAsync([".json"], App.Window);
-            }
+        private static readonly XmlSerializer SettingsSerializer = new(typeof(SettingsExportData));
 
-            if (!string.IsNullOrEmpty(filePath))
-            {
-                try
-                {
-                    var json = File.ReadAllText(filePath);
-                    var settingsDict = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json, App.JsonSerializerOptions);
-                    if (settingsDict != null)
-                    {
-                        // Remove any keys that start with '_' to avoid importing utility or internal settings
-                        settingsDict = settingsDict.Where(kvp => !kvp.Key.StartsWith('_')).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-                        ImportSettings(settingsDict);
-                        LogService.Add($"{App.LocalizationService.Get("SettingsImportSuccess")}, {App.LocalizationService.Get("SettingsImportSuccessMsg", settingsDict.Count)}: {filePath}", LogTag.App);
-                        App.InfoBarService.Show(new InfoBarMessage
-                        {
-                            Title = App.LocalizationService.Get("SettingsImportSuccess"),
-                            Message = $"{App.LocalizationService.Get("SettingsImportSuccessMsg", settingsDict.Count)}, {App.LocalizationService.Get("SettingImportSuccessNotice")}",
-                            Severity = InfoBarSeverity.Success,
-                        });
-                    }
-                }
-                catch (Exception ex)
-                {
-                    LogService.Add($"{App.LocalizationService.Get("SettingsImportFailed")}: {ex.Message}", LogTag.Error);
-                    App.InfoBarService.Show(new InfoBarMessage
-                    {
-                        Title = App.LocalizationService.Get("SettingsImportFailed"),
-                        Message = App.LocalizationService.Get("CheckLogs"),
-                        Severity = InfoBarSeverity.Error,
-                    });
-                    Debug.WriteLine($"Error importing settings: {ex.Message}");
-                }
-            }
-        }
-        public static void ImportSettings(Dictionary<string, JsonElement> newSettings)
-        {
-            foreach (var kvp in newSettings)
-            {
-                var element = kvp.Value;
-
-                object? value = element.ValueKind switch
-                {
-                    JsonValueKind.String => element.GetString(),
-
-                    JsonValueKind.Number =>
-                        element.TryGetInt32(out var i) ? i :
-                        element.TryGetInt64(out var l) ? l :
-                        element.TryGetDouble(out var d) ? d :
-                        null,
-
-                    JsonValueKind.True => true,
-                    JsonValueKind.False => false,
-
-                    JsonValueKind.Null => null,
-
-                    _ => null
-                };
-
-                if (value == null) continue;
-
-                if (value is string strValue)
-                {
-                    if (kvp.Key == nameof(AppLanguage))
-                    {
-                        var lang = Languages.FirstOrDefault(l => l.Value == strValue);
-                        if (lang != null)
-                            LocalizationService.SetLanguage(lang);
-                    }
-                    else if (kvp.Key == nameof(AppTheme))
-                    {
-                        var theme = Themes.FirstOrDefault(t => t.Value == strValue);
-                        if (theme != null)
-                            App.SettingsService.AppThemeChanged?.Invoke(theme);
-                    }
-                    else if (kvp.Key == nameof(AppBackdrop))
-                    {
-                        var backdrop = Backdrops.FirstOrDefault(b => b.Value == strValue);
-                        if (backdrop != null)
-                            App.SettingsService.AppBackdropChanged?.Invoke(backdrop);
-                    }
-                }
-
-                Settings.Values[kvp.Key] = value;
-            }
-        }
+        [RequiresUnreferencedCode("This method uses reflection to serialize settings, which may be trimmed.")]
         public static void ExportSettings()
         {
             try
             {
-                var settingsDict = Settings.Values.Where(kvp => !kvp.Key.StartsWith('_'))
-                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-                var json = JsonSerializer.Serialize(settingsDict, new JsonSerializerOptions { WriteIndented = true });
-                var exportPath = Path.Combine(LechKnownFolders.GetPath(LechKnownFolder.Documents), $"LechYTDLP_Settings.json");
-                File.WriteAllText(exportPath, json);
+                var data = new SettingsExportData();
+
+                foreach (var kvp in Settings.Values)
+                {
+                    if (kvp.Key.StartsWith('_')) continue;
+
+                    var entry = kvp.Value switch
+                    {
+                        string s => new SettingEntry { Key = kvp.Key, Type = "string", Value = s },
+                        int i => new SettingEntry { Key = kvp.Key, Type = "int", Value = i.ToString() },
+                        long l => new SettingEntry { Key = kvp.Key, Type = "long", Value = l.ToString() },
+                        double d => new SettingEntry { Key = kvp.Key, Type = "double", Value = d.ToString(CultureInfo.InvariantCulture) },
+                        bool b => new SettingEntry { Key = kvp.Key, Type = "bool", Value = b.ToString() },
+                        _ => null
+                    };
+
+                    if (entry != null) data.Entries.Add(entry);
+                }
+
+                var exportPath = Path.Combine(
+                    LechKnownFolders.GetPath(LechKnownFolder.Documents),
+                    "LechYTDLP_Settings.xml");
+
+                using (var writer = new StreamWriter(exportPath))
+                    SettingsSerializer.Serialize(writer, data);
 
                 LogService.Add($"{App.LocalizationService.Get("SettingsExportSuccess")}: {exportPath}", LogTag.App);
                 App.InfoBarService.Show(new InfoBarMessage
@@ -442,6 +391,95 @@ namespace LechYTDLP.Services
                 App.InfoBarService.Show(new InfoBarMessage
                 {
                     Title = App.LocalizationService.Get("SettingsExportFailed"),
+                    Message = App.LocalizationService.Get("CheckLogs"),
+                    Severity = InfoBarSeverity.Error,
+                });
+            }
+        }
+
+        public static void ImportSettings(List<SettingEntry> entries)
+        {
+            foreach (var entry in entries)
+            {
+                if (entry.Key.StartsWith('_')) continue;
+
+                object? value = entry.Type switch
+                {
+                    "string" => entry.Value,
+                    "int" => int.TryParse(entry.Value, out var i) ? i : null,
+                    "long" => long.TryParse(entry.Value, out var l) ? l : null,
+                    "double" => double.TryParse(entry.Value, NumberStyles.Any,
+                                    CultureInfo.InvariantCulture, out var d) ? d : null,
+                    "bool" => bool.TryParse(entry.Value, out var b) ? b : null,
+                    _ => null
+                };
+
+                if (value == null) continue;
+
+                // Özel handling — tema/dil/backdrop
+                if (value is string strValue)
+                {
+                    if (entry.Key == nameof(AppLanguage))
+                    {
+                        var lang = Languages.FirstOrDefault(l => l.Value == strValue);
+                        if (lang != null) LocalizationService.SetLanguage(lang);
+                    }
+                    else if (entry.Key == nameof(AppTheme))
+                    {
+                        var theme = Themes.FirstOrDefault(t => t.Value == strValue);
+                        if (theme != null) App.SettingsService.AppThemeChanged?.Invoke(theme);
+                    }
+                    else if (entry.Key == nameof(AppBackdrop))
+                    {
+                        var backdrop = Backdrops.FirstOrDefault(b => b.Value == strValue);
+                        if (backdrop != null) App.SettingsService.AppBackdropChanged?.Invoke(backdrop);
+                    }
+                }
+
+                Settings.Values[entry.Key] = value;
+            }
+        }
+
+        [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "XmlSerializer — trim-safe")]
+        public static async void ImportSettingsFromFile(string? file = null)
+        {
+            var filePath = file;
+            if (string.IsNullOrEmpty(file))
+            {
+                if (App.Window == null) return;
+                filePath = await App.PickFileAsync([".xml"], App.Window);
+            }
+
+            if (string.IsNullOrEmpty(filePath)) return;
+
+            try
+            {
+                var serializer = new XmlSerializer(typeof(SettingsExportData));
+                using var reader = new StreamReader(filePath);
+                var data = (SettingsExportData?)serializer.Deserialize(reader);
+
+                if (data?.Entries is { Count: > 0 })
+                {
+                    ImportSettings(data.Entries);
+                    LogService.Add(
+                        $"{App.LocalizationService.Get("SettingsImportSuccess")}, " +
+                        $"{App.LocalizationService.Get("SettingsImportSuccessMsg", data.Entries.Count)}: {filePath}",
+                        LogTag.App);
+                    App.InfoBarService.Show(new InfoBarMessage
+                    {
+                        Title = App.LocalizationService.Get("SettingsImportSuccess"),
+                        Message = $"{App.LocalizationService.Get("SettingsImportSuccessMsg", data.Entries.Count)}, " +
+                                   $"{App.LocalizationService.Get("SettingImportSuccessNotice")}",
+                        Severity = InfoBarSeverity.Success,
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                LogService.Add($"{App.LocalizationService.Get("SettingsImportFailed")}: {ex.Message}", LogTag.Error);
+                App.InfoBarService.Show(new InfoBarMessage
+                {
+                    Title = App.LocalizationService.Get("SettingsImportFailed"),
                     Message = App.LocalizationService.Get("CheckLogs"),
                     Severity = InfoBarSeverity.Error,
                 });

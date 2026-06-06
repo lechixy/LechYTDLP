@@ -550,10 +550,10 @@
     <value>Desteklenen JavaScript yok</value>
   </data>
   <data name="NoJsRuntimeMsg" xml:space="preserve">
-    <value>Desteklenen bir JavaScript çalışma zamanı bulunamadı. Bazı formatlar listede olmayabilir. Wiki'ye bakın.</value>
+    <value>Desteklenen bir JavaScript çalışma zamanı bulunamadı. Bazı formatlar listede olmayabilir. "Daha fazla öğren" butonuna tıklayarak bilgi edinebilirsiniz. (şuan ki indirmeniz bundan etkilenmeyebilir)</value>
   </data>
   <data name="NoJsRuntimeLog" xml:space="preserve">
-    <value>Desteklenen bir JavaScript çalışma zamanı bulunamadı. Bazı çıkarıcıların çalışması için gereklidir. Daha fazla bilgi için sayfayı ziyaret edin.</value>
+    <value>Desteklenen bir JavaScript çalışma zamanı bulunamadı. Bazı çıkarıcıların çalışması için gereklidir. Daha fazla bilgi için sayfayı ziyaret edin. (Şuan ki indirmeniz bundan etkilenmeyebilir)</value>
   </data>
   <data name="LearnMore" xml:space="preserve">
     <value>Daha fazla öğren</value>
@@ -912,5 +912,29 @@ Değişiklikler yeniden başlatıldıktan sonra aktif olacaktır. (İsterseniz s
   </data>
   <data name="BrowserExtWorkingAt" xml:space="preserve">
     <value>Tarayıcı eklentisi çalışıyor: {0}</value>
+  </data>
+  <data name="ShowJavaScriptRuntimeNoticeSetting.Description" xml:space="preserve">
+    <value>JavaScript çalışma ortamı yok uyarısını göster</value>
+  </data>
+  <data name="DontShowAgain" xml:space="preserve">
+    <value>Bir daha gösterme</value>
+  </data>
+  <data name="DownloadAfterPasteSetting.Description" xml:space="preserve">
+    <value>Bir URL uygulamaya yapıştırıldığında otomatik olarak indirmeye başla</value>
+  </data>
+  <data name="DownloadAfterPasteSetting.Header" xml:space="preserve">
+    <value>URL yapıştırıldıktan sonra indir</value>
+  </data>
+  <data name="VideoOrPlaylistDialog" xml:space="preserve">
+    <value>Video mu yoksa Oynatma Listesi mi indirilsin?</value>
+  </data>
+  <data name="VideoOrPlaylistDialogContent" xml:space="preserve">
+    <value>Bağlantınız hem video hem de oynatma listesi içeriyor</value>
+  </data>
+  <data name="Video" xml:space="preserve">
+    <value>Video</value>
+  </data>
+  <data name="Playlist" xml:space="preserve">
+    <value>Oynatma listesi</value>
   </data>
 </root>

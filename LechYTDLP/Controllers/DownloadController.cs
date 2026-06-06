@@ -2,6 +2,7 @@
 using LechYTDLP.Components;
 using LechYTDLP.Services;
 using LechYTDLP.Util;
+using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppNotifications;
 using Microsoft.Windows.AppNotifications.Builder;
 using System;
@@ -27,10 +28,60 @@ namespace LechYTDLP.Controllers
         public string CurrentUrl => _currentUrl;
         public RequestData? RequestData => _requestData;
 
+        public async Task<string> CheckSearch(string url)
+        {
+            // https://www.youtube.com/watch?v=jJR9v1WwIuI&list=RDjJR9v1WwIuI&start_radio=1
+            // We check if the url is from because youtube keeps current video in v param, playlist in list param
+            // YTdlp treats this is a playlist url but it is not, so we need to ask user if they want to download the video or the playlist
+            if (url.Contains("youtube", StringComparison.OrdinalIgnoreCase) &&
+                url.Contains("list=", StringComparison.OrdinalIgnoreCase) &&
+                url.Contains("v=", StringComparison.OrdinalIgnoreCase))
+            {
+                var radioDialog = new BasicDialog(App.LocalizationService.Get("VideoOrPlaylistDialogContent"));
+                var dialog = await App.DialogService.ShowAsync(new DialogOptions
+                {
+                    Title = App.LocalizationService.Get("VideoOrPlaylistDialog"),
+                    Content = radioDialog,
+                    PrimaryButtonText = App.LocalizationService.Get("Video"),
+                    PrimaryButtonStyle = Application.Current.Resources["AccentButtonStyle"] as Style,
+                    CloseButtonText = App.LocalizationService.Get("Playlist"),
+                });
+
+                // If the user clicks the primary button, we download the video, otherwise we download the playlist
+                if (dialog == DialogResult.Primary)
+                {
+                    return "https://www.youtube.com/watch?v=" + url.Split("v=")[1].Split('&')[0];
+                }
+                else
+                {
+                    return url;
+                }
+            }
+
+            return string.Empty;
+        }
+
         public async Task SearchAsync(string url, VideoInfo? videoInfo = null)
         {
             if (_isBusy) return;
 
+            // TCS ile UI thread işinin bitmesini bekle
+            var tcs = new TaskCompletionSource<string>();
+
+            App.UIThreadDispatcherQueue.TryEnqueue(async () =>
+            {
+                try
+                {
+                    var checkResult = await CheckSearch(url);
+                    tcs.SetResult(checkResult == string.Empty ? url : checkResult);
+                }
+                catch (Exception ex)
+                {
+                    tcs.SetException(ex);
+                }
+            });
+
+            url = await tcs.Task;
             SetBusy(true, url);
 
             try
@@ -55,7 +106,7 @@ namespace LechYTDLP.Controllers
                 // If the selected preset is "illchose" show format dialog service
                 if (SettingsService.SelectedPreset == SettingsService.Presets.First())
                 {
-                    var result = await App.FormatDialogService.ShowAsync(url, info);
+                    var result = await App.DialogService.ShowAsync(url, info);
 
                     if (result != null)
                     {
