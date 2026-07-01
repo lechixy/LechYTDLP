@@ -214,10 +214,15 @@ namespace LechYTDLP.Classes
 
         // Output
         public bool DumpJson { get; set; } = false;
+        public string? PrintToFile { get; set; } = null;
 
         // File
         public string? OutputPath { get; set; }
         public string? FFmpegLocation { get; set; }
+        public bool? ForceOverwrites { get; set; }
+
+        // Downloads
+        public int? ConcurrentFragments { get; set; }
 
         // Account
         public string? CookiesPath { get; set; }
@@ -226,6 +231,7 @@ namespace LechYTDLP.Classes
         public bool EmbedMetadata { get; set; } = false;
         public bool EmbedThumbnail { get; set; } = false;
         public bool EmbedSubs { get; set; } = false;
+        public bool? NoMTime { get; set; }
 
         // YT-DLP
         public bool Update { get; set; } = false;
@@ -237,6 +243,8 @@ namespace LechYTDLP.Classes
         public bool Newline { get; set; } = false;
         public string? ProgressTemplate { get; set; } = null;
 
+        // More
+        public string? CustomYtDlpParams { get; set; }
 
         public string BuildArgs()
         {
@@ -332,6 +340,27 @@ namespace LechYTDLP.Classes
             if (ProgressTemplate != null)
                 args.Add($"--progress-template \"{ProgressTemplate}\"");
 
+            if (PrintToFile != null)
+                args.Add($"--print-to-file {PrintToFile}");
+
+            if (NoMTime != null)
+                args.Add("--no-mtime");
+
+            if (CustomYtDlpParams != null)
+            {
+                args.Add(SettingsService.CustomYtDlpParams);
+            }
+
+            if (ConcurrentFragments != null)
+            {
+                args.Add($"--concurrent-fragments {ConcurrentFragments}");
+            }
+
+            if (ForceOverwrites != null)
+            {
+                args.Add("--force-overwrites");
+            }
+
             return string.Join(" ", args);
         }
     }
@@ -362,7 +391,9 @@ namespace LechYTDLP.Classes
                 JavaScriptRuntime = string.IsNullOrEmpty(SettingsService.JavaScriptRuntime) ? "" : SettingsService.JavaScriptRuntime,
                 Verbose = SettingsService.UseVerboseLoggingOnYTDLP,
                 NoColor = true,
-                Newline = true
+                Newline = true,
+                NoMTime = true,
+
             }.BuildArgs();
 
             var ytdlpArgs = args.BuildArgs();
@@ -384,7 +415,13 @@ namespace LechYTDLP.Classes
                     UseShellExecute = false,
                     CreateNoWindow = true,
                     StandardOutputEncoding = Encoding.UTF8,
-                    StandardErrorEncoding = Encoding.UTF8
+                    StandardErrorEncoding = Encoding.UTF8,
+                    WorkingDirectory = Environment.CurrentDirectory,
+                    EnvironmentVariables =
+                    {
+                        ["PYTHONIOENCODING"] = "utf-8",
+                        ["PYTHONUTF8"] = "1"
+                    }
                 },
                 EnableRaisingEvents = true
             };
@@ -599,7 +636,7 @@ namespace LechYTDLP.Classes
                 }
             }
 
-            void OnProcessExited(int exitCode)
+            async void OnProcessExited(int exitCode)
             {
                 ProcessExited -= ProcessExited;
                 OutputReceived -= OnOutput;
@@ -614,6 +651,43 @@ namespace LechYTDLP.Classes
                     }
                     logWriter.Flush();
                     logWriter.Close();
+                }
+
+                // We need info about the video to set filepath etc.
+                string infoJsonPath = Path.Combine(LechKnownFolders.GetPath(LechKnownFolder.Documents), $"LechYTDLP\\Logs\\{info.Id}.info.json");
+
+                if (File.Exists(infoJsonPath))
+                {
+                    string json = await File.ReadAllTextAsync(infoJsonPath, Encoding.UTF8);
+                    try
+                    {
+                        var videoInfo = JsonSerializer.Deserialize<VideoInfo>(json, AppJsonContext.Default.VideoInfo);
+                        if (videoInfo != null && videoInfo.Filename != null && App.DownloadService.CurrentMedia != null)
+                        {
+                            App.DownloadService.CurrentMedia.FilePath = videoInfo.Filename;
+                        }
+                    }
+                    catch (JsonException ex)
+                    {
+                        LogService.Add("Error parsing video info JSON: " + ex.Message, LogTag.Error);
+                    }
+                }
+
+                // If there is no filepath set, we can try to find the file in the download folder
+                if (App.DownloadService.CurrentMedia != null && !File.Exists(App.DownloadService.CurrentMedia.FilePath))
+                {
+                    var fileName = App.DownloadService.CurrentMedia.FilePath
+                        .Split(Path.DirectorySeparatorChar).LastOrDefault()?
+                        .Split('.')[0];
+
+                    // Try to find the file in the download folder
+                    var files = Directory.GetFiles(SettingsService.DownloadPath, $"{App.DownloadService.CurrentMedia.Id}.*");
+                    // We sort list by last write time to get the most recent file
+                    if (files.Length > 0)
+                    {
+                        Array.Sort(files, (x, y) => File.GetLastWriteTime(y).CompareTo(File.GetLastWriteTime(x)));
+                        App.DownloadService.CurrentMedia.FilePath = files[0];
+                    }
                 }
 
                 tcs.SetResult(exitCode);
@@ -648,16 +722,16 @@ namespace LechYTDLP.Classes
 
             //}
 
-            if (output.Contains("Merging formats into \""))
-            {
-                App.DownloadService.CurrentMedia.FilePath = output.Split("Merging formats into \"")[1].Split('\"')[0];
-            } else if (output.Contains("Destination: "))
-            {
-                App.DownloadService.CurrentMedia.FilePath = output.Split("Destination: ")[1].Trim();
-            } else if (output.Contains("has already been downloaded"))
-            {
-                App.DownloadService.CurrentMedia.FilePath = output.Split("[download]")[1].Split("has already been downloaded")[0].Trim();
-            }
+            //if (output.Contains("Merging formats into"))
+            //{
+            //    App.DownloadService.CurrentMedia.FilePath = output.Split('"')[1].Split('"')[0];
+            //} else if (output.Contains("Destination: "))
+            //{
+            //    App.DownloadService.CurrentMedia.FilePath = output.Split("Destination: ")[1].Trim();
+            //} else if (output.Contains("has already been downloaded"))
+            //{
+            //    App.DownloadService.CurrentMedia.FilePath = output.Split("[download]")[1].Split("has already been downloaded")[0].Trim();
+            //}
         }
         public Task<UpdateResult> CheckAndDownloadUpdate()
         {
@@ -682,24 +756,24 @@ namespace LechYTDLP.Classes
                         // yt-dlp is up to date (stable@2026.03.17 from yt-dlp/yt-dlp)
                         string newVersion = data.Split('@')[1].Split(' ')[0].Trim();
 
+                        SettingsService._LastKnownYTdlpToolVersion = newVersion;
                         tcs.SetResult(new UpdateResult
                         {
                             Status = UpdateStatus.UpToDate,
                             Message = data.Split('(')[1].Split(')')[0] // Extract new version
                         });
-                        SettingsService._LastKnownYTdlpToolVersion = newVersion;
                     }
                     else if (data.Contains("Updated yt-dlp to"))
                     {
                         // Updated yt-dlp to stable@2026.03.17 from yt-dlp/yt-dlp
                         string newVersion = data.Split('@')[1].Split(' ')[0].Trim();
 
+                        SettingsService._LastKnownYTdlpToolVersion = newVersion;
                         tcs.SetResult(new UpdateResult
                         {
                             Status = UpdateStatus.Updated,
                             Message = data.Split("to ")[1].Trim() // Extract new version
                         });
-                        SettingsService._LastKnownYTdlpToolVersion = newVersion;
                     }
 
                     Debug.WriteLine(data);
@@ -708,7 +782,8 @@ namespace LechYTDLP.Classes
                 {
                     // dump-json dışında bir satır gelirse ignore
                 }
-            };
+            }
+            ;
 
             void OnExited(int exitCode)
             {

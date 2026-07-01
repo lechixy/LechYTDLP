@@ -73,7 +73,9 @@
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <DropDownButton x:Uid="AddPlaceholders" Click="Click" Grid.Column="0">
+                                    <DropDownButton x:Uid="AddPlaceholders"
+                                                    Click="Click"
+                                                    Grid.Column="0">
                                         <DropDownButton.Flyout>
                                             <MenuFlyout Placement="Bottom"
                                                         x:Name="FileNameTemplatePlaceholdersMenuFlyout">
@@ -95,12 +97,34 @@
                 <controls:SettingsCard x:Name="SaveToSettingsCard"
                                        x:Uid="SaveToSetting"
                                        HeaderIcon="{ui:FontIcon Glyph=&#xE8B7;}">
-                    <TextBox x:Name="SaveToTextBox"
-                             x:Uid="SaveToTextBox"
-                             TextChanged="TextChanged" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="SaveToTextBox"
+                                 x:Uid="SaveToTextBox"
+                                 MaxWidth="300"
+                                 Grid.Column="0"
+                                 TextChanged="TextChanged" />
+                        <Button Grid.Column="1"
+                                Margin="8,0,0,0"
+                                x:Name="SaveToButton"
+                                Click="Click">
+                            <SymbolIcon Symbol="OpenFile" />
+                        </Button>
+                    </Grid>
+                </controls:SettingsCard>
+
+                <controls:SettingsCard x:Uid="ForceOverwritesSetting"
+                                       x:Name="ForceOverwritesSetting"
+                                       HeaderIcon="{ui:FontIcon Glyph=&#xE929;}">
+                    <ToggleSwitch x:Name="ForceOverwritesSwitch"
+                                  Toggled="SwitchToggled" />
                 </controls:SettingsCard>
 
                 <controls:SettingsCard x:Uid="SaveLogOfEachDownloadSetting"
+                                       x:Name="SaveLogOfEachDownload"
                                        HeaderIcon="{ui:FontIcon Glyph=&#xE8FF;}">
                     <ToggleSwitch x:Name="SaveLogOfEachDownloadSwitch"
                                   Toggled="SwitchToggled" />
@@ -120,6 +144,32 @@
                                        HeaderIcon="{ui:FontIcon Glyph=&#xE7F0;}">
                     <ToggleSwitch x:Name="EmbedSubsSettingSwitch"
                                   Toggled="SwitchToggled" />
+                </controls:SettingsCard>
+
+                <!--Downloads-->
+                <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
+                           x:Uid="Downloads" />
+
+                <controls:SettingsCard x:Uid="ConcurrentFragmentsSetting"
+                                       x:Name="ConcurrentFragmentsSetting"
+                                       HeaderIcon="{ui:FontIcon Glyph=&#xE7BC;}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Slider x:Name="ConcurrentFragmentsSettingSlider"
+                                ValueChanged="ValueChanged"
+                                Maximum="25"
+                                Minimum="1"
+                                Grid.Column="0"
+                                StepFrequency="1"
+                                SnapsTo="StepValues" />
+                        <!--<TextBlock x:Name="ConcurrentFragmentsSettingText"
+                                   Text="1"
+                                   Grid.Column="1"
+                                   VerticalAlignment="Stretch" />-->
+                    </Grid>
                 </controls:SettingsCard>
 
                 <!--Account-->
@@ -159,6 +209,24 @@
                     </Grid>
                 </controls:SettingsCard>
 
+                <InfoBar x:Uid="AccountCookieNotice"
+                         IsOpen="True"
+                         IsClosable="False"
+                         Margin="0,0,0,4"
+                         Severity="Warning" />
+
+                <!--Other-->
+                <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
+                           x:Uid="Other" />
+
+                <controls:SettingsCard x:Name="CustomParamsSetting"
+                                       x:Uid="CustomParamsSetting"
+                                       HeaderIcon="{ui:FontIcon Glyph=&#xE710;}">
+                    <TextBox x:Name="CustomParamsTextBox"
+                             MaxWidth="300"
+                             x:Uid="CustomParamsTextBox"
+                             TextChanged="TextChanged" />
+                </controls:SettingsCard>
             </StackPanel>
         </Grid>
     </ScrollViewer>

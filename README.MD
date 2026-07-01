@@ -1,6 +1,22 @@
 <p align="center">
-  <img width="65%" src="https://raw.githubusercontent.com/lechixy/LechYTDLP/refs/heads/main/Assets/lechytdlp_banner.png">
+  <img width="65%" src="https://raw.githubusercontent.com/lechixy/LechYTDLP/refs/heads/main/Assets/lechytdlp1_banner.png">
 </p>
+
+<p align="center">
+  <a href="https://github.com/lechixy/LechYTDLP/releases/latest">
+    <img src="https://img.shields.io/github/v/release/lechixy/LechYTDLP?label=latest&style=flat-square" alt="Latest version">
+  </a>
+  <a href="https://github.com/lechixy/LechYTDLP/releases/latest">
+    <img src="https://img.shields.io/github/downloads/lechixy/LechYTDLP/total?style=flat-square">
+  </a>
+  <a href="https://github.com/lechixy/LechYTDLP/stargazers">
+    <img src="https://img.shields.io/github/stars/lechixy/LechYTDLP?style=flat-square">
+  </a>
+  <a href="https://github.com/OpenNBS/OpenNoteBlockStudio/blob/master/LICENSE">
+    <img src="https://img.shields.io/github/license/OpenNBS/OpenNoteBlockStudio">
+  </a>
+</p>
+
 <p align="center">
 <strong>English</strong> • <a href="https://github.com/lechixy/LechYTDLP/blob/main/README.tr.MD">Türkçe</a>
 </p>
@@ -8,7 +24,7 @@
 ---
 Another **[YT-DLP](https://github.com/yt-dlp/yt-dlp)** Gui application for **Windows** but it built with **Windows 11 Style (Win UI 3)**
 
-<a href="https://apps.microsoft.com/detail/9N28HRK3320G?referrer=appbadge&cid=GitHub_README&mode=direct">
+<a href="https://apps.microsoft.com/detail/9n28hrk3320g?referrer=appbadge&cid=GitHub_README&mode=full" target="_blank"  rel="noopener noreferrer">
 	<img src="https://get.microsoft.com/images/en-us%20dark.svg" width="200"/>
 </a>
 <img alt="AppShowcase" src="https://raw.githubusercontent.com/lechixy/LechYTDLP/refs/heads/main/Assets/lechytdlp_showcase.png" />
@@ -25,7 +41,7 @@ This is my first project with Win UI 3 trying to do my best 💖
 - **GitHub version** is free and open-source, but requires manual updates. Installing the GitHub version is a bit more complicated than the Microsoft Store version.
 
 ### Using Microsoft Store
-<a href="https://apps.microsoft.com/detail/9N28HRK3320G?referrer=appbadge&cid=GitHub_README&mode=direct">
+<a href="https://apps.microsoft.com/detail/9n28hrk3320g?referrer=appbadge&cid=GitHub_README&mode=full" target="_blank"  rel="noopener noreferrer">
 	<img src="https://get.microsoft.com/images/en-us%20dark.svg" width="300"/>
 </a>
 

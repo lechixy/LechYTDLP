@@ -360,6 +360,9 @@
   <data name="CopyFilePath.Text" xml:space="preserve">
     <value>Copy file path</value>
   </data>
+  <data name="RemoveFromHistory.Text" xml:space="preserve">
+    <value>Remove</value>
+  </data>
   <data name="Delete.Text" xml:space="preserve">
     <value>Delete</value>
   </data>
@@ -420,6 +423,9 @@
   <data name="DeletedFromHistory" xml:space="preserve">
     <value>Deleted from history</value>
   </data>
+  <data name="DeletedFile" xml:space="preserve">
+    <value>File deleted</value>
+  </data>
   <data name="DeleteFailed" xml:space="preserve">
     <value>Delete failed</value>
   </data>
@@ -471,13 +477,13 @@
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
-  <data name="Resolution.Header" xml:space="preserve">
+  <data name="ResolutionSelect.Header" xml:space="preserve">
     <value>Resolution</value>
   </data>
   <data name="Codec.Header" xml:space="preserve">
     <value>Codec</value>
   </data>
-  <data name="Audio.Header" xml:space="preserve">
+  <data name="AudioSelect.Header" xml:space="preserve">
     <value>Audio</value>
   </data>
   <data name="SuggestAVC1" xml:space="preserve">
@@ -570,7 +576,7 @@
   <data name="YTdlpIsUpToDate" xml:space="preserve">
     <value>YT-DLP is up to date</value>
   </data>
-  <data name="YTdlpUpdateCheckFailed" xml:space="preserve">
+  <data name="UpdateCheckFailed" xml:space="preserve">
     <value>Can't check the YT-DLP update</value>
   </data>
   <data name="FailedToStartYTdlpLog" xml:space="preserve">
@@ -684,6 +690,9 @@
   <data name="UnknownVersion" xml:space="preserve">
     <value>Unknown version</value>
   </data>
+  <data name="UnknownPreset" xml:space="preserve">
+    <value>Unknown preset</value>
+  </data>
   <data name="ImportOldSettingsNotice" xml:space="preserve">
     <value>Old settings file found, asking for importing settings</value>
   </data>
@@ -703,7 +712,7 @@
     <value>Writing video info (--dump-json) to Desktop\lechytdlp_dump.json file</value>
   </data>
   <data name="PresetsIllChoose" xml:space="preserve">
-    <value>✨ I'll choose what to download</value>
+    <value>✨ I'll choose what to do</value>
   </data>
   <data name="PresetsBestQuality" xml:space="preserve">
     <value>Best quality (video+audio)</value>
@@ -766,7 +775,7 @@ The changes will be applied after restarting. (You can do it later if you want, 
   <data name="YTdlpUpdateAvailable" xml:space="preserve">
     <value>YT-DLP update available</value>
   </data>
-  <data name="YTdlpUpdateAvailableMsg" xml:space="preserve">
+  <data name="YTdlpUpdateNoticeMsg" xml:space="preserve">
     <value>It is recommended to keep YT-DLP up to date to ensure the best compatibility because platforms update their APIs frequently.</value>
   </data>
   <data name="MaybeLater" xml:space="preserve">
@@ -889,13 +898,13 @@ The changes will be applied after restarting. (You can do it later if you want, 
   <data name="HistoryCleared" xml:space="preserve">
     <value>History cleared</value>
   </data>
-  <data name="YTdlpUpdateCheckResult" xml:space="preserve">
-    <value>Checked for updates. Current version: {0}, Newest version: {1}</value>
+  <data name="UpdateCheckResult" xml:space="preserve">
+    <value>Checked for {0} updates. Current version: {1}, Newest version: {2}</value>
   </data>
-  <data name="YTdlpUpdateCheckNoInternet" xml:space="preserve">
+  <data name="UpdateCheckNoInternet" xml:space="preserve">
     <value>Failed to connect to the update server, please check your internet connection</value>
   </data>
-  <data name="YTdlpUpdateCheckError" xml:space="preserve">
+  <data name="UpdateCheckError" xml:space="preserve">
     <value>An error occurred while checking for updates, please try again later</value>
   </data>
   <data name="BrowserExtension.Text" xml:space="preserve">
@@ -936,5 +945,71 @@ The changes will be applied after restarting. (You can do it later if you want, 
   </data>
   <data name="Playlist" xml:space="preserve">
     <value>Playlist</value>
+  </data>
+  <data name="ConfirmLatestVersionLog" xml:space="preserve">
+    <value>YT-DLP might be outdated, please confirm you are on the latest version on Settings</value>
+  </data>
+  <data name="ConfirmLatestVersion" xml:space="preserve">
+    <value>YT-DLP might be outdated</value>
+  </data>
+  <data name="ConfirmLatestVersionMsg" xml:space="preserve">
+    <value>Please confirm you are on the latest version on Settings</value>
+  </data>
+  <data name="Retry.Text" xml:space="preserve">
+    <value>Retry</value>
+  </data>
+  <data name="AccountCookieNotice.Title" xml:space="preserve">
+    <value>Don't share your cookies with anyone else</value>
+  </data>
+  <data name="Preset.Header" xml:space="preserve">
+    <value>Preset</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="CopyMedia.Text" xml:space="preserve">
+    <value>Copy media</value>
+  </data>
+  <data name="InfoBarRetryTitle" xml:space="preserve">
+    <value>Added to queue for retry</value>
+  </data>
+  <data name="Audio" xml:space="preserve">
+    <value>Audio</value>
+  </data>
+  <data name="YTdlpUpdateCheckFailed" xml:space="preserve">
+    <value>Can't check the YT-DLP update</value>
+  </data>
+  <data name="UpdateNoticeMsg" xml:space="preserve">
+    <value>You can download it from the official GitHub releases page or update it from Microsoft Store</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Lech YT-DLP update available!</value>
+  </data>
+  <data name="AppUpdated" xml:space="preserve">
+    <value>App updated</value>
+  </data>
+  <data name="ConcurrentFragmentsSetting.Header" xml:space="preserve">
+    <value>Concurrent fragments</value>
+  </data>
+  <data name="ConcurrentFragmentsSetting.Description" xml:space="preserve">
+    <value>Number of fragments of a DASH/HLSnative video that should be downloaded concurrently</value>
+  </data>
+  <data name="Other.Text" xml:space="preserve">
+    <value>More</value>
+  </data>
+  <data name="CustomParamsSetting.Header" xml:space="preserve">
+    <value>Custom YT-DLP parameters</value>
+  </data>
+  <data name="CustomParamsSetting.Description" xml:space="preserve">
+    <value>If you know what you are doing, you can add custom parameters to the command line. For example: --playlist-random (separated by spaces)</value>
+  </data>
+  <data name="CustomParamsTextBox.PlaceholderText" xml:space="preserve">
+    <value>Add custom params...</value>
+  </data>
+  <data name="ForceOverwritesSetting.Header" xml:space="preserve">
+    <value>Force overwrites</value>
+  </data>
+  <data name="ForceOverwritesSetting.Description" xml:space="preserve">
+    <value>Overwrite all video and metadata files (this option includes --no-continue)</value>
   </data>
 </root>

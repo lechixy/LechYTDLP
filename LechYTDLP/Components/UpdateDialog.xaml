@@ -10,9 +10,9 @@
     <StackPanel VerticalAlignment="Stretch"
                 HorizontalAlignment="Stretch"
                 Spacing="8">
-        <RichTextBlock x:Name="YTdlpVersionText"
+        <RichTextBlock x:Name="VersionText"
                        TextWrapping="Wrap" />
-        <TextBlock x:Name="YTdlpUpdateNotice"
+        <TextBlock x:Name="UpdateNotice"
                    TextWrapping="Wrap"
                    Style="{StaticResource BodyTextBlockStyle}" />
 

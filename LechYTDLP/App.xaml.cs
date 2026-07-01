@@ -15,6 +15,7 @@ using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
@@ -42,15 +43,36 @@ namespace LechYTDLP
         /// <summary>
         /// Application version string in the format of "Major.Minor.Build", e.g. "1.0.0"
         /// </summary>
+        /// https://stackoverflow.com/questions/28635208/retrieve-the-current-app-version-from-package
         public static string GetAppVersion()
         {
-            var v = Package.Current.Id.Version;
-            return $"{v.Major}.{v.Minor}.{v.Build}";
-        }
-		public Action? WindowInitialized;
+            try
+            {
+                // 1. Try to get the MSIX package version (Packaged environment)
+                Package package = Package.Current;
+                PackageId packageId = package.Id;
+                PackageVersion version = packageId.Version;
 
-		// Api Server for browser extension
-		public static LocalApiServer ApiServer { get; private set; } = null!;
+                return $"{version.Major}.{version.Minor}.{version.Build}";
+            }
+            catch (InvalidOperationException)
+            {
+                // 2. Fallback to Assembly version (Unpackaged environment / Debugging)
+                Version? assemblyVersion = Assembly.GetEntryAssembly()?.GetName().Version;
+
+                if (assemblyVersion != null)
+                {
+                    return $"{assemblyVersion.Major}.{assemblyVersion.Minor}.{assemblyVersion.Build}";
+                }
+
+                return "1.0.0";
+            }
+        }
+
+        public Action? WindowInitialized;
+
+        // Api Server for browser extension
+        public static LocalApiServer ApiServer { get; private set; } = null!;
 
         // Services
         public static SettingsService SettingsService => ServiceContainer.Get<SettingsService>();
@@ -95,7 +117,7 @@ namespace LechYTDLP
         {
             Window = new MainWindow();
 
-			var activatedArgs = Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().GetActivatedEventArgs();
+            var activatedArgs = Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().GetActivatedEventArgs();
             var activationKind = activatedArgs.Kind;
             if (activationKind == ExtendedActivationKind.Protocol)
             {
@@ -108,7 +130,7 @@ namespace LechYTDLP
                     // The URL to open is in the query parameter "url", e.g. lechytdlp://open?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DdQw4w9WgXcQ&browser=Chrome&version=1.0.0
                     var url = System.Web.HttpUtility.ParseQueryString(uri.Query).Get("url");
                     // If the url parameter is not empty, add it to the download list
-                    if (!string.IsNullOrEmpty(url) )
+                    if (!string.IsNullOrEmpty(url))
                     {
                         var extensionBrowser = System.Web.HttpUtility.ParseQueryString(uri.Query).Get("browser") ?? LocalizationService.Get("UnknownBrowser");
                         var extensionVersion = System.Web.HttpUtility.ParseQueryString(uri.Query).Get("version") ?? LocalizationService.Get("UnknownVersion");
@@ -117,7 +139,7 @@ namespace LechYTDLP
                             Url = url,
                             ExtensionBrowser = extensionBrowser,
                             ExtensionVersion = extensionVersion,
-                         });
+                        });
                     }
                 }
             }
@@ -127,7 +149,7 @@ namespace LechYTDLP
 
             WindowInitialized?.Invoke();
 
-			_ = DatabaseService.InitializeAsync();
+            _ = DatabaseService.InitializeAsync();
 
             LocalizationService.SetDefaultLanguageBasedOnSystem();
 
@@ -149,8 +171,8 @@ namespace LechYTDLP
             // Listen for download requests from the browser extension
             ApiServer.DownloadRequested += (data) => BrowserAddedMediaHandler(data);
 
-			// If it's the first run, show a welcome message and ask if the user wants to import settings from the old settings file.
-			if (SettingsService._IsFirstRun)
+            // If it's the first run, show a welcome message and ask if the user wants to import settings from the old settings file.
+            if (SettingsService._IsFirstRun)
             {
                 // YOU reference because of Joe Goldberg ofc.
                 LogService.Add(LocalizationService.Get("FirstRun"), LogTag.Lechixy, false);
@@ -182,6 +204,18 @@ namespace LechYTDLP
 
                 SettingsService._IsFirstRun = false;
             }
+
+            if (!SettingsService._IsFirstRun && GetAppVersion() != SettingsService._LastUsedVersion)
+            {
+                LogService.Add(LocalizationService.Get("AppUpdated"), LogTag.Lechixy, false);
+                InfoBarService.Show(new InfoBarMessage
+                {
+                    Title = LocalizationService.Get("AppUpdated"),
+                    Message = "",
+                    Severity = InfoBarSeverity.Informational
+                });
+                SettingsService._LastUsedVersion = GetAppVersion();
+            }
         }
 
         private async void BrowserAddedMediaHandler(RequestData data)
@@ -193,8 +227,9 @@ namespace LechYTDLP
                 Message = data.Url,
                 Severity = InfoBarSeverity.Success,
             });
-            await DownloadController.SearchAsync(data.Url);
+            await DownloadController.SearchAsync(data.Url, new SearchOptions { ForceDialog = true });
         }
+
         public static async Task<string?> PickFileAsync(string[] FilterExtensions, Window window)
         {
             var picker = new FileOpenPicker();
@@ -221,6 +256,19 @@ namespace LechYTDLP
 
             return null;
         }
+
+        public static async Task<string?> PickFolderAsync(Window window)
+        {
+            var picker = new FolderPicker();
+            var hwnd = WindowNative.GetWindowHandle(window);
+            InitializeWithWindow.Initialize(picker, hwnd);
+            StorageFolder folder = await picker.PickSingleFolderAsync();
+            if (folder != null)
+            {
+                return folder.Path;
+            }
+            return null;
+        }
     }
 
     public partial class LogTagToBrushConverter : IValueConverter
@@ -238,7 +286,6 @@ namespace LechYTDLP
                 _ => new SolidColorBrush(Colors.LightGray)
             };
         }
-
         public object ConvertBack(object value, Type targetType, object parameter, string language)
             => throw new NotImplementedException();
     }

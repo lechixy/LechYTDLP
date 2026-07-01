@@ -360,6 +360,9 @@
   <data name="CopyFilePath.Text" xml:space="preserve">
     <value>Dosya yolunu kopyala</value>
   </data>
+  <data name="RemoveFromHistory.Text" xml:space="preserve">
+    <value>Kaldır</value>
+  </data>
   <data name="Delete.Text" xml:space="preserve">
     <value>Sil</value>
   </data>
@@ -420,6 +423,9 @@
   <data name="DeletedFromHistory" xml:space="preserve">
     <value>Geçmişten silindi</value>
   </data>
+  <data name="DeletedFile" xml:space="preserve">
+    <value>Dosya silindi</value>
+  </data>
   <data name="DeleteFailed" xml:space="preserve">
     <value>Silme başarız oldu</value>
   </data>
@@ -471,13 +477,13 @@
   <data name="Cancel" xml:space="preserve">
     <value>İptal</value>
   </data>
-  <data name="Resolution.Header" xml:space="preserve">
+  <data name="ResolutionSelect.Header" xml:space="preserve">
     <value>Çözünürlük</value>
   </data>
   <data name="Codec.Header" xml:space="preserve">
     <value>Kodlayıcı</value>
   </data>
-  <data name="Audio.Header" xml:space="preserve">
+  <data name="AudioSelect.Header" xml:space="preserve">
     <value>Ses</value>
   </data>
   <data name="SuggestAVC1" xml:space="preserve">
@@ -570,8 +576,8 @@
   <data name="YTdlpIsUpToDate" xml:space="preserve">
     <value>YT-DLP şuan güncel</value>
   </data>
-  <data name="YTdlpUpdateCheckFailed" xml:space="preserve">
-    <value>YT-DLP güncellemesi kontrol edilemedi</value>
+  <data name="UpdateCheckFailed" xml:space="preserve">
+    <value>Güncelleme kontrol edilemedi</value>
   </data>
   <data name="FailedToStartYTdlpLog" xml:space="preserve">
     <value>YT-DLP başlatılamadı</value>
@@ -684,6 +690,9 @@
   <data name="UnknownVersion" xml:space="preserve">
     <value>Bilinmeyen versiyon</value>
   </data>
+  <data name="UnknownPreset" xml:space="preserve">
+    <value>Bilinmeyen hazır ayar</value>
+  </data>
   <data name="ImportOldSettingsNotice" xml:space="preserve">
     <value>Eski tercihler dosyası bulundu, içerik aktarmak ister misiniz diye soruluyor</value>
   </data>
@@ -703,7 +712,7 @@
     <value>Video verisi (--dump-json) Desktop\lechytdlp_dump.json dosyasına yazılıyor</value>
   </data>
   <data name="PresetsIllChoose" xml:space="preserve">
-    <value>✨ Ne indireceğimi ben seçeceğim</value>
+    <value>✨ Ne yapacağımı ben seçeceğim</value>
   </data>
   <data name="PresetsBestQuality" xml:space="preserve">
     <value>En iyi kalite (video+ses)</value>
@@ -766,7 +775,7 @@ Değişiklikler yeniden başlatıldıktan sonra aktif olacaktır. (İsterseniz s
   <data name="YTdlpUpdateAvailable" xml:space="preserve">
     <value>YT-DLP güncellemesi mevcut</value>
   </data>
-  <data name="YTdlpUpdateAvailableMsg" xml:space="preserve">
+  <data name="YTdlpUpdateNoticeMsg" xml:space="preserve">
     <value>YT-DLP'nin güncel tutulması, platformların API'lerini sık sık güncellediği göz önüne alındığında en iyi uyumluluğu sağlamak için önerilir.</value>
   </data>
   <data name="MaybeLater" xml:space="preserve">
@@ -889,13 +898,13 @@ Değişiklikler yeniden başlatıldıktan sonra aktif olacaktır. (İsterseniz s
   <data name="HistoryCleared" xml:space="preserve">
     <value>Geçmiş temizlendi</value>
   </data>
-  <data name="YTdlpUpdateCheckResult" xml:space="preserve">
-    <value>Güncellemeler kontrol edildi. Mevcut sürüm: {0}, En yeni sürüm: {1}</value>
+  <data name="UpdateCheckResult" xml:space="preserve">
+    <value>{0} güncellemeleri kontrol edildi. Mevcut sürüm: {1}, En yeni sürüm: {2}</value>
   </data>
-  <data name="YTdlpUpdateCheckNoInternet" xml:space="preserve">
+  <data name="UpdateCheckNoInternet" xml:space="preserve">
     <value>Güncelleme sunucusuna bağlanılamadı, lütfen internet bağlantınızı kontrol edin</value>
   </data>
-  <data name="YTdlpUpdateCheckError" xml:space="preserve">
+  <data name="UpdateCheckError" xml:space="preserve">
     <value>Güncellemeler kontrol edilirken bir hata oluştu, lütfen daha sonra tekrar deneyin</value>
   </data>
   <data name="BrowserExtension.Text" xml:space="preserve">
@@ -919,11 +928,11 @@ Değişiklikler yeniden başlatıldıktan sonra aktif olacaktır. (İsterseniz s
   <data name="DontShowAgain" xml:space="preserve">
     <value>Bir daha gösterme</value>
   </data>
-  <data name="DownloadAfterPasteSetting.Description" xml:space="preserve">
-    <value>Bir URL uygulamaya yapıştırıldığında otomatik olarak indirmeye başla</value>
-  </data>
   <data name="DownloadAfterPasteSetting.Header" xml:space="preserve">
     <value>URL yapıştırıldıktan sonra indir</value>
+  </data>
+  <data name="DownloadAfterPasteSetting.Description" xml:space="preserve">
+    <value>Bir URL uygulamaya yapıştırıldığında otomatik olarak indirmeye başla</value>
   </data>
   <data name="VideoOrPlaylistDialog" xml:space="preserve">
     <value>Video mu yoksa Oynatma Listesi mi indirilsin?</value>
@@ -936,5 +945,71 @@ Değişiklikler yeniden başlatıldıktan sonra aktif olacaktır. (İsterseniz s
   </data>
   <data name="Playlist" xml:space="preserve">
     <value>Oynatma listesi</value>
+  </data>
+  <data name="ConfirmLatestVersionLog" xml:space="preserve">
+    <value>YT-DLP güncel olmayabilir, lütfen Ayarlar'dan en son sürümde olduğunuzu doğrulayın</value>
+  </data>
+  <data name="ConfirmLatestVersion" xml:space="preserve">
+    <value>YT-DLP güncel olmayabilir</value>
+  </data>
+  <data name="ConfirmLatestVersionMsg" xml:space="preserve">
+    <value>Lütfen Ayarlar'dan en son sürümde olduğunuzu doğrulayın</value>
+  </data>
+  <data name="Retry.Text" xml:space="preserve">
+    <value>Tekrar dene</value>
+  </data>
+  <data name="AccountCookieNotice.Title" xml:space="preserve">
+    <value>Çerezlerinizi başka kimseyle paylaşmayın</value>
+  </data>
+  <data name="Preset.Header" xml:space="preserve">
+    <value>Hazır ayarlar</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>İndir</value>
+  </data>
+  <data name="CopyMedia.Text" xml:space="preserve">
+    <value>Medyayı kopyala</value>
+  </data>
+  <data name="InfoBarRetryTitle" xml:space="preserve">
+    <value>Yeniden denemek için sıraya eklendi</value>
+  </data>
+  <data name="Audio" xml:space="preserve">
+    <value>Ses</value>
+  </data>
+  <data name="YTdlpUpdateCheckFailed" xml:space="preserve">
+    <value>YT-DLP güncellemesi kontrol edilemedi</value>
+  </data>
+  <data name="UpdateNoticeMsg" xml:space="preserve">
+    <value>Resmi GitHub sürümler sayfasından indirebilir veya Microsoft Store'dan güncelleyebilirsiniz</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Lech YT-DLP güncellemesi mevcut!</value>
+  </data>
+  <data name="AppUpdated" xml:space="preserve">
+    <value>Uygulama güncellendi</value>
+  </data>
+  <data name="ConcurrentFragmentsSetting.Header" xml:space="preserve">
+    <value>Eş zamanlı parçalar</value>
+  </data>
+  <data name="ConcurrentFragmentsSetting.Description" xml:space="preserve">
+    <value>Aynı anda indirilmesi gereken DASH/HLSnative video parçası sayısı</value>
+  </data>
+  <data name="Other.Text" xml:space="preserve">
+    <value>Daha fazla</value>
+  </data>
+  <data name="CustomParamsSetting.Header" xml:space="preserve">
+    <value>Özel YT-DLP parametreleri</value>
+  </data>
+  <data name="CustomParamsSetting.Description" xml:space="preserve">
+    <value>Eğer ne yaptığınızı biliyorsanız, komut satırına özel parametreler ekleyebilirsiniz. Örneğin: --playlist-random (boşluk ile ayrılmıi)</value>
+  </data>
+  <data name="CustomParamsTextBox.PlaceholderText" xml:space="preserve">
+    <value>Özel parametreler ekleyin...</value>
+  </data>
+  <data name="ForceOverwritesSetting.Header" xml:space="preserve">
+    <value>Üzerine yazmaları zorla</value>
+  </data>
+  <data name="ForceOverwritesSetting.Description" xml:space="preserve">
+    <value>Tüm video ve metadata dosyalarının üzerine yaz (bu seçenek --no-continue içerir)</value>
   </data>
 </root>

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -28,13 +29,66 @@ public static class UpdateChecker
             { "Accept", "application/json" }
         }
     };
-    private const string ApiEndpoint = "https://api.github.com/repos/yt-dlp/yt-dlp/releases";
+
+    /// <summary>
+    /// Güncelleme kontrolü yapılacak kaynak (repo) türü.
+    /// </summary>
+    public enum UpdateTarget
+    {
+        App,
+        YtDlp
+        // İleride: örn. FFmpeg, vs.
+    }
+
+    public static string TargetName(UpdateTarget target) => target switch
+    {
+        UpdateTarget.App => "Lech YT-DLP",
+        UpdateTarget.YtDlp => "YT-DLP",
+        _ => throw new NotImplementedException()
+    };
+
+    /// <summary>
+    /// Her bir güncelleme kaynağının API endpoint'i, cache süresi ve
+    /// SettingsService üzerindeki karşılık gelen alanlara erişim bilgisini tutar.
+    /// </summary>
+    private class UpdateSourceConfig
+    {
+        public required string ApiEndpoint { get; init; }
+        public required TimeSpan CacheDuration { get; init; }
+        public required Func<long> GetLastCheckAt { get; init; }
+        public required Action<long> SetLastCheckAt { get; init; }
+        public required Func<string> GetLastKnownVersion { get; init; }
+        public required Action<string> SetLastKnownVersion { get; init; }
+    }
+
+    private static readonly Dictionary<UpdateTarget, UpdateSourceConfig> SourceConfigs = new()
+    {
+        [UpdateTarget.App] = new UpdateSourceConfig
+        {
+            ApiEndpoint = "https://api.github.com/repos/lechixy/LechYTDLP/releases",
+            CacheDuration = TimeSpan.FromMinutes(15),
+            GetLastCheckAt = () => SettingsService._LastUpdateCheckAt,
+            SetLastCheckAt = v => SettingsService._LastUpdateCheckAt = v,
+            GetLastKnownVersion = () => SettingsService._LastKnownVersion,
+            SetLastKnownVersion = v => SettingsService._LastKnownVersion = v
+        },
+        [UpdateTarget.YtDlp] = new UpdateSourceConfig
+        {
+            ApiEndpoint = "https://api.github.com/repos/yt-dlp/yt-dlp/releases",
+            CacheDuration = TimeSpan.FromMinutes(10),
+            GetLastCheckAt = () => SettingsService._LastYTdlpUpdateCheckAt,
+            SetLastCheckAt = v => SettingsService._LastYTdlpUpdateCheckAt = v,
+            GetLastKnownVersion = () => SettingsService._LastKnownYTdlpVersion,
+            SetLastKnownVersion = v => SettingsService._LastKnownYTdlpVersion = v
+        }
+    };
 
     /// <summary>
     /// Result of an update check
     /// </summary>
     public class UpdateCheckResult
     {
+        public UpdateTarget Target { get; set; }
         public bool IsUpdateAvailable { get; set; }
         public string NewestVersion { get; set; } = string.Empty;
         public string CurrentVersion { get; set; } = string.Empty;
@@ -44,24 +98,26 @@ public static class UpdateChecker
     }
 
     /// <summary>
-    /// Check for updates from the API
+    /// Belirtilen hedef (App, YtDlp, vs.) için GitHub üzerinden güncelleme kontrolü yapar.
     /// </summary>
-    /// <param name="currentVersion">The current app version (e.g., "v2.5.0")</param>
-    /// <returns>UpdateCheckResult with update information</returns>
-    public static async Task<UpdateCheckResult> CheckForUpdatesAsync(string currentVersion)
+    /// <param name="target">Kontrol edilecek kaynak (App / YtDlp / ...)</param>
+    /// <param name="currentVersion">Mevcut versiyon (örn. "v2.5.0")</param>
+    public static async Task<UpdateCheckResult> CheckForUpdateAsync(UpdateTarget target, string currentVersion)
     {
-        // currentVersion = SettingsService._LastKnownYTdlpToolVersion; // this is default tool version is updated every github release
+        var config = SourceConfigs[target];
 
-        // If we have a cached version and it was updated less than 10 minutes ago, return the cached result
-        // debug only, always return cached result to avoid hitting the API too much during development
-        var lastChecked = DateTime.FromBinary(SettingsService._LastUpdateCheckAt);
-        if ((DateTime.Now - lastChecked).TotalMinutes < 10)
+        // Cache kontrolü
+        var lastChecked = DateTime.FromBinary(config.GetLastCheckAt());
+        if ((DateTime.Now - lastChecked) < config.CacheDuration)
         {
-            LogService.Add(App.LocalizationService.Get("YTdlpUpdateCheckResult", currentVersion, SettingsService._LastKnownVersion), LogTag.App);
+            var cachedVersion = config.GetLastKnownVersion();
+            LogService.Add(App.LocalizationService.Get("UpdateCheckResult", TargetName(target), currentVersion, cachedVersion), LogTag.App);
+
             return new UpdateCheckResult
             {
-                IsUpdateAvailable = currentVersion != "debug" && IsNewerVersion(currentVersion, SettingsService._LastKnownVersion),
-                NewestVersion = SettingsService._LastKnownVersion,
+                Target = target,
+                IsUpdateAvailable = currentVersion != "debug" && IsNewerVersion(currentVersion, cachedVersion),
+                NewestVersion = cachedVersion,
                 CurrentVersion = currentVersion,
                 CheckedAt = lastChecked,
                 Success = true,
@@ -70,32 +126,12 @@ public static class UpdateChecker
         }
 
         var now = DateTime.Now;
-        var result = new UpdateCheckResult
-        {
-            CheckedAt = now
-        };
-        SettingsService._LastUpdateCheckAt = now.ToBinary();
+        var result = new UpdateCheckResult { CheckedAt = now, Target = target };
+        config.SetLastCheckAt(now.ToBinary());
 
         try
         {
-            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(20));
-            var json = default(JsonDocument);
-
-            for (int i = 0; i < 3; i++)
-            {
-                try
-                {
-                    var response = await HttpClient.GetAsync(ApiEndpoint, cts.Token);
-                    response.EnsureSuccessStatusCode();
-
-                    json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
-                    break;
-                }
-                catch (TaskCanceledException) when (i < 2)
-                {
-                    await Task.Delay(1000 * (i + 1));
-                }
-            }
+            var json = await FetchReleaseJsonWithRetryAsync(config.ApiEndpoint);
 
             if (json != null)
             {
@@ -107,14 +143,15 @@ public static class UpdateChecker
                     result.NewestVersion = first.GetProperty("tag_name").GetString() ?? string.Empty;
                     result.CurrentVersion = currentVersion;
                 }
-                result.Success = true;
-                SettingsService._LastKnownVersion = result.NewestVersion;
 
-                // Compare versions
+                result.Success = true;
+                config.SetLastKnownVersion(result.NewestVersion);
+
                 result.IsUpdateAvailable = currentVersion != "debug" && IsNewerVersion(currentVersion, result.NewestVersion);
 
-                LogService.Add(App.LocalizationService.Get("YTdlpUpdateCheckResult", currentVersion, SettingsService._LastKnownVersion), LogTag.App);
-            } else
+                LogService.Add(App.LocalizationService.Get("UpdateCheckResult", TargetName(target), currentVersion, result.NewestVersion), LogTag.App);
+            }
+            else
             {
                 LogService.Add("there is no json response from the API", LogTag.Warning);
             }
@@ -122,36 +159,48 @@ public static class UpdateChecker
         catch (HttpRequestException ex)
         {
             Debug.WriteLine(ex);
-            LogService.Add(App.LocalizationService.Get("YTdlpUpdateCheckNoInternet"), LogTag.Error);
+            LogService.Add(App.LocalizationService.Get("UpdateCheckNoInternet"), LogTag.Error);
             result.Success = false;
         }
         catch (Exception ex)
         {
             Debug.WriteLine(ex);
-            LogService.Add(App.LocalizationService.Get("YTdlpUpdateCheckError"), LogTag.Error);
+            LogService.Add(App.LocalizationService.Get("UpdateCheckError"), LogTag.Error);
             result.Success = false;
         }
 
         return result;
     }
 
-    //public static void OpenUpdateUrl(string url)
-    //{
-    //    if (string.IsNullOrEmpty(url)) return;
+    private static async Task<JsonDocument?> FetchReleaseJsonWithRetryAsync(string apiEndpoint)
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            try
+            {
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(20));
 
-    //    try
-    //    {
-    //        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-    //        {
-    //            FileName = url,
-    //            UseShellExecute = true
-    //        });
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        Logger.Error(ex, "Failed to open update URL");
-    //    }
-    //}
+                using var response = await HttpClient.GetAsync(apiEndpoint, cts.Token);
+                response.EnsureSuccessStatusCode();
+
+                using var stream = await response.Content.ReadAsStreamAsync();
+                return await JsonDocument.ParseAsync(stream);
+            }
+            catch (Exception ex) when (i < 2)
+            {
+                Debug.WriteLine(ex);
+                Debug.WriteLine("Update check failed, retrying...");
+                await Task.Delay((i + 1) * 1000);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                Debug.WriteLine("Update check failed.");
+            }
+        }
+
+        return null;
+    }
 
     private static bool IsNewerVersion(string currentVersion, string newestVersion)
     {

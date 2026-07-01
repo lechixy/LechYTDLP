@@ -249,7 +249,7 @@ namespace LechYTDLP.Services
                     {
                         Title = App.LocalizationService.Get("SelectFormat"),
                         Content = content,
-                        PrimaryButtonText = App.LocalizationService.Get("Save"),
+                        PrimaryButtonText = App.LocalizationService.Get("Download"),
                         PrimaryButtonStyle = Application.Current.Resources["AccentButtonStyle"] as Style,
                         CloseButtonText = App.LocalizationService.Get("Cancel"),
                         IsPrimaryButtonEnabled = false,

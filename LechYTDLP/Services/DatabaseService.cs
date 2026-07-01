@@ -1,5 +1,6 @@
 ﻿using LechYTDLP.Classes;
 using LechYTDLP.Components;
+using LechYTDLP.Util;
 using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
@@ -22,9 +23,29 @@ namespace LechYTDLP.Services
 
         public DatabaseService()
         {
-            string dbPath = Path.Combine(
-                ApplicationData.Current.LocalFolder.Path,
-                "history.db");
+            string dbPath = Path.Combine(LechKnownFolders.GetPath(LechKnownFolder.Documents), "LechYTDLP\\Database\\history.db");
+            string oldDbPath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "history.db");
+
+            try
+            {
+                if (!File.Exists(dbPath))
+                {
+                    // We check if the old database exists and copy it to the new location
+                    // Start with v1.6.0, we moved the database to the Documents folder for better accessibility.
+                    if (File.Exists(oldDbPath))
+                    {
+                        File.Copy(oldDbPath, dbPath, true);
+                        File.Delete(oldDbPath);
+                    }
+
+                    Debug.WriteLine("Database file not found. Creating a new one.");
+                    Directory.CreateDirectory(Path.GetDirectoryName(dbPath) ?? Path.Combine(LechKnownFolders.GetPath(LechKnownFolder.Documents), "LechYTDLP\\Database"));
+                    File.Create(dbPath).Close();
+                }
+            } catch (Exception ex)
+            {
+                Debug.WriteLine($"Error while checking/creating database file: {ex.Message}");
+            }
 
             _connectionString = $"Data Source={dbPath}";
         }

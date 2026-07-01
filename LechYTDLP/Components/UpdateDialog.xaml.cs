@@ -28,14 +28,21 @@ namespace LechYTDLP.Components
         {
             InitializeComponent();
 
-            YTdlpVersionText.Blocks.Clear();
+            VersionText.Blocks.Clear();
             var paragraph = new Paragraph();
             paragraph.Inlines.Add(new Run { Text = result.CurrentVersion, FontWeight = FontWeights.Bold, Foreground = (Brush)Application.Current.Resources["ControlStrongFillColorDefaultBrush"] });
             paragraph.Inlines.Add(new Run { Text = " > ", FontWeight = FontWeights.Bold });
             paragraph.Inlines.Add(new Run { Text = result.NewestVersion, FontWeight = FontWeights.Bold, Foreground = (Brush)Application.Current.Resources["AccentTextFillColorPrimaryBrush"] });
-            YTdlpVersionText.Blocks.Add(paragraph);
+            VersionText.Blocks.Add(paragraph);
 
-            YTdlpUpdateNotice.Text = $"{App.LocalizationService.Get("YTdlpUpdateAvailableMsg")}";
+            // "UpdateNoticeMsg" = "You can download it from the official GitHub releases page or update it from Microsoft Store";
+            // Turksih = "Resmi GitHub sürümler sayfasından indirebilir veya Microsoft Store'dan güncelleyebilirsiniz";
+
+            UpdateNotice.Text = result.Target switch {
+                UpdateTarget.App => App.LocalizationService.Get("UpdateNoticeMsg"),
+                UpdateTarget.YtDlp => App.LocalizationService.Get("YTdlpUpdateNoticeMsg"),
+                _ => "A new version is available. You can update it now."
+            };
             // YTdlpAutoUpdateCheckBox.IsChecked = SettingsService.YTdlpAutoUpdate;
         }
 

@@ -157,6 +157,18 @@ namespace LechYTDLP.Services
             //var fullPath = Path.Combine(SettingsService.DownloadPath, fileName);
             //item.FilePath = fullPath;
 
+            // We need to delete the file if it already exists, otherwise yt-dlp will rewrite it and json file will be wrong
+            var printToFilePath = Path.Combine(LechKnownFolders.GetPath(LechKnownFolder.Documents), $"LechYTDLP\\Logs\\{info.Id}.info.json");
+            if (File.Exists(printToFilePath))
+            {
+                try
+                {
+                    File.Delete(printToFilePath);
+                } catch {
+                    Debug.WriteLine($"Failed to delete {printToFilePath}");
+                }
+            }
+
             // İndirme işlemini başlat
             var args = new YTDLPDownloadArgs
             {
@@ -165,6 +177,7 @@ namespace LechYTDLP.Services
                 SelectedFormat = item.SelectedFormat,
                 OutputPath = Path.Combine(SettingsService.DownloadPath, SettingsService.FilenameTemplate),
                 FFmpegLocation = SettingsService.FFmpegPath,
+                PrintToFile = $"\"video:%()j\" \"{printToFilePath}\"",
 
                 Newline = true,
                 NoColor = true,
@@ -251,6 +264,12 @@ namespace LechYTDLP.Services
             //    CurrentMedia.State = DownloadState.Completed;
             //    CurrentMediaUpdated?.Invoke();
             //}
+        }
+
+        public async void RemoveFromHistory(DownloadItem item)
+        {
+            await App.DatabaseService.DeleteByGuidIdAsync(item.Id.ToString());
+            HistoryUpdated?.Invoke(true);
         }
 
         private static string ApplyTemplate(string template, VideoInfo info, string ext)

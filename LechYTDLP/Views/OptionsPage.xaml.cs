@@ -32,7 +32,8 @@ public sealed partial class OptionsPage : Page
 {
     enum OptionType
     {
-        CookiesFile
+        CookiesFile,
+        DownloadPath
     }
 
     private static readonly Dictionary<string, string> PlaceholderMap = new()
@@ -66,6 +67,8 @@ public sealed partial class OptionsPage : Page
     string LocalFilenameTemplateText = SettingsService.FilenameTemplate;
     ICommand InsertTextCommand => new RelayCommand<string?>(InsertText);
 
+    public bool _isInitializing = true;
+
     public OptionsPage()
     {
         InitializeComponent();
@@ -93,17 +96,27 @@ public sealed partial class OptionsPage : Page
         // File
         SaveToTextBox.Text = SettingsService.DownloadPath;
         FileNameTextBox.Text = SettingsService.FilenameTemplate;
+        ForceOverwritesSwitch.IsOn = SettingsService.ForceOverwrites;
         SaveLogOfEachDownloadSwitch.IsOn = SettingsService.SaveLogOfEachDownload;
         EmbedThumbnailSettingSwitch.IsOn = SettingsService.EmbedThumbnail;
         EmbedSubsSettingSwitch.IsOn = SettingsService.EmbedSubs;
 
+        // Downloads
+        ConcurrentFragmentsSettingSlider.Value = SettingsService.ConcurrentFragments;
+
         // Account
         CookiesFileTextBox.Text = SettingsService.CookiesfilePath;
+
+        // More
+        CustomParamsTextBox.Text = SettingsService.CustomYtDlpParams;
 
         // Hyperlinks
         FileNameSettingsHyperLink.Content = App.LocalizationService.Get("LearnMore");
         FileNameSettingsHyperLink.NavigateUri = new Uri(Util.Main.GetLink(Util.Links.OutputTemplate));
         CookiesFileHyperLink.NavigateUri = new Uri(Util.Main.GetLink(Util.Links.WhyINeedToMyPassCookiesHere));
+
+
+        _isInitializing = false;
     }
 
     private void InsertText(string? text)
@@ -181,11 +194,19 @@ public sealed partial class OptionsPage : Page
     {
         if (sender is ToggleSwitch toggle)
         {
-            if (toggle.Name == "EmbedThumbnailSettingSwitch")
+            if (toggle == ForceOverwritesSwitch)
+            {
+                SettingsService.ForceOverwrites = toggle.IsOn;
+            }
+            else if (toggle == SaveLogOfEachDownloadSwitch)
+            {
+                SettingsService.SaveLogOfEachDownload = toggle.IsOn;
+            }
+            else if (toggle == EmbedThumbnailSettingSwitch)
             {
                 SettingsService.EmbedThumbnail = toggle.IsOn;
             }
-            else if (toggle.Name == "EmbedSubsSettingSwitch")
+            else if (toggle == EmbedSubsSettingSwitch)
             {
                 SettingsService.EmbedSubs = toggle.IsOn;
             }
@@ -253,6 +274,16 @@ public sealed partial class OptionsPage : Page
                     SettingsService.CookiesfilePath = textbox.Text;
 
             }
+            else if (textbox.Name == "CustomParamsTextBox")
+            {
+                if (textbox.Text.Length == 0)
+                {
+                    SettingsService.ResetSetting(nameof(SettingsService.CustomYtDlpParams));
+                    textbox.PlaceholderText = SettingsService.CustomYtDlpParams;
+                }
+                else
+                    SettingsService.CustomYtDlpParams = textbox.Text;
+            }
         }
     }
 
@@ -266,11 +297,21 @@ public sealed partial class OptionsPage : Page
             CookiesFileTextBox.Text = path;
     }
 
+    private async void PickFolder(OptionType Which)
+    {
+        if (App.Window == null) return;
+        var path = await App.PickFolderAsync(App.Window);
+        if (path == null) return;
+        if (Which == OptionType.DownloadPath)
+            SaveToTextBox.Text = path;
+    }
+
     private void Click(object sender, RoutedEventArgs e)
     {
         if (sender is Button btn)
         {
             if (btn.Name == "PickCookiesFileButton") PickFile(OptionType.CookiesFile);
+            else if (btn.Name == "SaveToButton") PickFolder(OptionType.DownloadPath);
             else if (btn.Name == "FileNameTemplateSaveButton")
             {
                 if (!IsValidFilenameTemplate(LocalFilenameTemplateText, out var error))
@@ -310,4 +351,18 @@ public sealed partial class OptionsPage : Page
 
     [GeneratedRegex(@"%\((.*?)\)s")]
     private static partial Regex YTdlpPlaceholderRegex();
+
+    private void ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (_isInitializing) return;
+
+        if (sender is Slider slider)
+        {
+            if (slider.Name == "ConcurrentFragmentsSettingSlider")
+            {
+                SettingsService.ConcurrentFragments = (int)slider.Value;
+                //ConcurrentFragmentsSettingText.Text = $"{slider.Value}";
+            }
+        }
+    }
 }

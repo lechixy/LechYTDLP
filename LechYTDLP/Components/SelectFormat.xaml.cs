@@ -37,11 +37,58 @@ namespace LechYTDLP.Components
         public string? AudioFileExtension { get; set; }
         public string? FilePath { get; set; }
         //
-        public string? Resolution { get; set; }
         public string? VideoId { get; set; }
         public string? Codec { get; set; }
         public string? Audio { get; set; }
         public string? AudioId { get; set; }
+
+        public enum FormatType
+        {
+            Video,
+            Audio,
+            Both
+        }
+
+        public void Reset(FormatType formatType)
+        {
+            // Only res:
+            // Selected Video
+            // Video Id
+            // File Extension
+            // Res and codec:
+            // Codec + others
+            if (formatType == FormatType.Video)
+            {
+                SelectedVideo = null;
+                VideoId = null;
+                Codec = null;
+                FileExtension = null;
+            }
+            // Selected Audio
+            // Audio Id
+            // Audio File Extension
+            // Audio
+            else if (formatType == FormatType.Audio)
+            {
+                SelectedAudio = null;
+                Audio = null;
+                AudioId = null;
+                AudioFileExtension = null;
+            }
+            else if (formatType == FormatType.Both)
+            {
+                Preset = null;
+                SelectedVideo = null;
+                SelectedAudio = null;
+                FileExtension = null;
+                AudioFileExtension = null;
+                FilePath = null;
+                VideoId = null;
+                Codec = null;
+                Audio = null;
+                AudioId = null;
+            }
+        }
     }
 
     public class FilteredVideoFormat
@@ -66,12 +113,10 @@ namespace LechYTDLP.Components
         public VideoInfo videoData = null!;
         public ObservableCollection<MergedVideoFormat> MergedFormats { get; } = [];
         public ObservableCollection<FilteredVideoFormat> FilteredFormats { get; } = [];
-        public ObservableCollection<string> Resolutions { get; } = [];
-        public ObservableCollection<ComboOption> NewResolutions { get; } = [];
-        public ObservableCollection<string> Codecs { get; } = [];
-        public ObservableCollection<ComboOption> NewCodecs { get; } = [];
-        public ObservableCollection<string> Audios { get; } = [];
-        public ObservableCollection<ComboOption> NewAudios { get; } = [];
+        public ObservableCollection<ComboOption> Presets { get; } = [];
+        public ObservableCollection<ComboOption> Resolutions { get; } = [];
+        public ObservableCollection<ComboOption> Codecs { get; } = [];
+        public ObservableCollection<ComboOption> Audios { get; } = [];
         public SelectedFormat SelectedFormat = new();
         private Storyboard _loadingStoryboard = null!;
         public event Action<bool>? IsUserCanSave;
@@ -87,7 +132,7 @@ namespace LechYTDLP.Components
 
             VideoUploaderAndExtractor.Blocks.Clear();
             var p = new Paragraph();
-            p.Inlines.Add(new Run { Text = $"@{info.Uploader}" ?? App.LocalizationService.Get("UnknownUploader"), FontWeight = Microsoft.UI.Text.FontWeights.Bold });
+            p.Inlines.Add(new Run { Text = $"@{info.Uploader}" ?? App.LocalizationService.Get("UnknownUploader") });
             p.Inlines.Add(new Run { Text = $" • {info.ExtractorKey}" });
             VideoUploaderAndExtractor.Blocks.Add(p);
 
@@ -95,20 +140,32 @@ namespace LechYTDLP.Components
 
             var VideoFormats = info.Formats!;
 
-            ResolutionSelect.ItemsSource = NewResolutions;
-            CodecSelect.ItemsSource = NewCodecs;
-            AudioSelect.ItemsSource = NewAudios;
+            PresetSelect.ItemsSource = Presets;
+            ResolutionSelect.ItemsSource = Resolutions;
+            CodecSelect.ItemsSource = Codecs;
+            AudioSelect.ItemsSource = Audios;
 
-            NewResolutions.Add(new ComboOption
+            for (int i = 0; i < SettingsService.Presets.Count; i++)
+            {
+                var preset = SettingsService.Presets[i];
+                Presets.Add(new ComboOption
+                {
+                    FormatId = preset.Value,
+                    Text = preset.DisplayName
+                });
+            }
+
+            Resolutions.Add(new ComboOption
             {
                 FormatId = "no",
                 Text = App.LocalizationService.Get("DontIncludeVideo")
             });
-            NewAudios.Add(new ComboOption
+            Audios.Add(new ComboOption
             {
                 FormatId = "no",
                 Text = App.LocalizationService.Get("DontIncludeAudio")
             });
+            PresetSelect.SelectedIndex = 0;
             ResolutionSelect.SelectedIndex = 0;
             AudioSelect.SelectedIndex = 0;
 
@@ -120,7 +177,7 @@ namespace LechYTDLP.Components
                 if (currentFormat.Format.Contains("audio only"))
                 {
                     var AudioText = $"{currentFormat.ACodec} • {currentFormat.FormatNote}";
-                    NewAudios.Add(new ComboOption
+                    Audios.Add(new ComboOption
                     {
                         FormatId = currentFormat.FormatId,
                         Text = AudioText,
@@ -143,7 +200,7 @@ namespace LechYTDLP.Components
                     });
 
                     if (currentFormat.Resolution != null && currentFormat.Resolution != "audio only")
-                        NewResolutions.Add(new ComboOption
+                        Resolutions.Add(new ComboOption
                         {
                             FormatId = currentFormat.FormatId,
                             Text = currentFormat.Resolution,
@@ -162,6 +219,30 @@ namespace LechYTDLP.Components
                 var Selected = (ComboOption)e.AddedItems[0];
                 if (Selected == null) return;
 
+                Debug.WriteLine(Selected.ToString());
+
+                if (combo.Name == "PresetSelect")
+                {
+                    // If the preset is not "illchose"
+                    if (Selected.FormatId != SettingsService.Presets[0].Value)
+                    {
+                        VideoFormatGrid.Visibility = Visibility.Collapsed;
+                        AudioFormatGrid.Visibility = Visibility.Collapsed;
+                        FormatBorder.Visibility = Visibility.Collapsed;
+
+                        SelectedFormat.Preset = SettingsService.Presets.FirstOrDefault(p => p.Value == Selected.FormatId);
+                    }
+                    // If the preset is "illchose"
+                    else
+                    {
+                        VideoFormatGrid.Visibility = Visibility.Visible;
+                        AudioFormatGrid.Visibility = Visibility.Visible;
+                        FormatBorder.Visibility = Visibility.Visible;
+
+                        SelectedFormat.Preset = null;
+                    }
+                }
+
                 if (combo.Name == "ResolutionSelect")
                 {
                     // If "Doesn't include video" is selected, hide codec selection and video info
@@ -169,6 +250,7 @@ namespace LechYTDLP.Components
                     {
                         CodecSelect.Visibility = Visibility.Collapsed;
                         VideoInfo.Visibility = Visibility.Collapsed;
+                        SelectedFormat.Reset(SelectedFormat.FormatType.Video);
                         return;
                     }
 
@@ -178,14 +260,14 @@ namespace LechYTDLP.Components
                     if (SelectedVideo != null && SelectedVideo.Formats != null)
                     {
                         // Add codecs to the codec combobox
-                        NewCodecs.Clear();
+                        Codecs.Clear();
 
                         for (int i = 0; i < SelectedVideo.Formats.Length; i++)
                         {
                             var VCodec = SelectedVideo.Formats[i].VCodec;
                             string CodecText = VCodec != null ? VCodec!.Split('.')[0] : App.LocalizationService.Get("NoCodecInfo");
 
-                            NewCodecs.Add(new ComboOption
+                            Codecs.Add(new ComboOption
                             {
                                 FormatId = SelectedVideo.Formats[i].FormatId,
                                 Text = CodecText,
@@ -207,7 +289,7 @@ namespace LechYTDLP.Components
                         SelectedFormat.VideoId = SelectedVideo.Formats[0].FormatId;
                         SelectedFormat.SelectedVideo = SelectedVideo.Formats[0];
 
-                        SelectedFormat.Codec = NewCodecs[0].VCodec;
+                        SelectedFormat.Codec = Codecs[0].VCodec;
                         SelectedFormat.FileExtension = SelectedVideo.Formats[0].Ext;
                         LogService.Add($"{App.LocalizationService.Get("SelectedVideoLog")}: {SelectedFormat.VideoId} - {SelectedFormat.Codec}", LogTag.YTDLP);
 
@@ -273,6 +355,7 @@ namespace LechYTDLP.Components
                     if (Selected.FormatId == "no")
                     {
                         AudioInfo.Visibility = Visibility.Collapsed;
+                        SelectedFormat.Reset(SelectedFormat.FormatType.Audio);
                         return;
                     }
 
@@ -304,6 +387,8 @@ namespace LechYTDLP.Components
             var audio = AudioSelect.SelectedItem as ComboOption;
             var codecSelected = CodecSelect.SelectedItem != null;
 
+            bool presetValid = SelectedFormat.Preset != null && SelectedFormat.Preset.Value != SettingsService.Presets[0].Value;
+
             bool videoValid =
                 video?.FormatId is string videoText &&
                 !videoText.Contains("no", StringComparison.OrdinalIgnoreCase) &&
@@ -313,7 +398,7 @@ namespace LechYTDLP.Components
                 audio?.FormatId is string audioText &&
                 !audioText.Contains("no", StringComparison.OrdinalIgnoreCase);
 
-            bool isReady = videoValid || audioValid;
+            bool isReady = presetValid || videoValid || audioValid;
 
             IsUserCanSave?.Invoke(isReady);
             return isReady;

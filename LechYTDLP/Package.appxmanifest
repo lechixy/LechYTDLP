@@ -11,7 +11,7 @@
   <Identity
     Name="lechixy.LechYT-DLP"
     Publisher="CN=B769E7F4-795F-4C37-9B16-7CE9D4642BA6"
-    Version="1.5.0.0" />
+    Version="1.6.5.0" />
 
   <mp:PhoneIdentity PhoneProductId="9b26b4b0-5a5a-4afc-b688-2152dbd35a0e" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 

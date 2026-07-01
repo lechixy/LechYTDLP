@@ -272,6 +272,10 @@
                                                         Click="OnClick"
                                                         Icon="{ui:FontIcon Glyph=&#xEC50;}"
                                                         Name="OpenInExplorer" />
+                                        <MenuFlyoutItem x:Uid="CopyMedia"
+                                                        Click="OnClick"
+                                                        Icon="{ui:FontIcon Glyph=&#xEA69;}"
+                                                        Name="CopyMedia" />
                                         <MenuFlyoutSubItem x:Uid="Copy"
                                                            Icon="{ui:FontIcon Glyph=&#xE8C8;}">
                                             <MenuFlyoutItem x:Uid="CopyTitle"
@@ -287,6 +291,10 @@
                                                             Icon="{ui:FontIcon Glyph=&#xE8B7;}"
                                                             Name="CopyFilepath" />
                                         </MenuFlyoutSubItem>
+                                        <MenuFlyoutItem x:Uid="RemoveFromHistory"
+                                                        Click="OnClick"
+                                                        Icon="{ui:FontIcon Glyph=&#xE894;}"
+                                                        Name="RemoveFromHistory" />
                                         <MenuFlyoutItem x:Uid="Delete"
                                                         Foreground="{ThemeResource SystemFillColorCriticalBrush}"
                                                         Click="OnClick"

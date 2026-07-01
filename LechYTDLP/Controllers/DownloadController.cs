@@ -15,6 +15,12 @@ using System.Threading.Tasks;
 
 namespace LechYTDLP.Controllers
 {
+    public class SearchOptions
+    {
+        public VideoInfo? VideoInfo { get; set; }
+        public bool? ForceDialog { get; set; } = false;
+    }
+
     public class DownloadController
     {
         public event Action<bool, string>? BusyChanged;
@@ -61,7 +67,7 @@ namespace LechYTDLP.Controllers
             return string.Empty;
         }
 
-        public async Task SearchAsync(string url, VideoInfo? videoInfo = null)
+        public async Task SearchAsync(string url, SearchOptions? searchOptions = null)
         {
             if (_isBusy) return;
 
@@ -84,6 +90,8 @@ namespace LechYTDLP.Controllers
             url = await tcs.Task;
             SetBusy(true, url);
 
+            var videoInfo = searchOptions?.VideoInfo;
+
             try
             {
                 VideoInfo? info = null;
@@ -104,16 +112,34 @@ namespace LechYTDLP.Controllers
                 VideoInfoReady?.Invoke(url, info);
 
                 // If the selected preset is "illchose" show format dialog service
-                if (SettingsService.SelectedPreset == SettingsService.Presets.First())
+                if (SettingsService.SelectedPreset == SettingsService.Presets.First() || searchOptions?.ForceDialog == true)
                 {
-                    var result = await App.DialogService.ShowAsync(url, info);
+                    // TCS ile UI thread işinin bitmesini bekle
+                    var ftcs = new TaskCompletionSource<FormatSelectionResult?>();
 
+                    App.UIThreadDispatcherQueue.TryEnqueue(async () =>
+                    {
+                        try
+                        {
+                            var dialogResult = await App.DialogService.ShowAsync(url, info);
+                            ftcs.SetResult(dialogResult);
+                        }
+                        catch (Exception ex)
+                        {
+                            ftcs.SetException(ex);
+                        }
+                    });
+
+                    var result = await ftcs.Task;
                     if (result != null)
                     {
                         App.DownloadService.Enqueue(
                             result.Url,
                             result.VideoInfo,
                             result.SelectedFormat);
+                    } else
+                    {
+                        Debug.WriteLine("User canceled the download dialog.");
                     }
                 }
                 // Otherwise, enqueue the download with the selected preset

@@ -102,6 +102,7 @@ namespace LechYTDLP.Util
                     Severity = InfoBarSeverity.Warning
                 });
             }
+            // No JavaScript runtime.
             else if (ex.Message.Contains("No supported JavaScript runtime could be found"))
             {
                 LogService.Add(App.LocalizationService.Get("NoJsRuntimeLog", ex.Message), LogTag.Warning);
@@ -140,12 +141,30 @@ namespace LechYTDLP.Util
                     });
                 }
             }
+            // yt-dlp might be outdated.
+            // but can also be caused by other issues as well
+            else if (ex.Message.Contains("Confirm you are on the latest version using", StringComparison.OrdinalIgnoreCase))
+            {
+                // ConfirmLatestVersionLog = "YT-DLP might be outdated. Please confirm you are on the latest version on Settings.";
+                // Türkçe = "YT-DLP güncel olmayabilir. Lütfen Ayarlar'dan en son sürümde olduğunuzu doğrulayın.";
+                // ConfirmLatestVersion = "YT-DLP might be outdated";
+                // ConfirmLatestVersionMsg = "Please confirm you are on the latest version on Settings.";
+
+                LogService.Add($"{App.LocalizationService.Get("ConfirmLatestVersionLog")} {ex.Message}", LogTag.Warning);
+                App.InfoBarService.Show(new InfoBarMessage
+                {
+                    Title = App.LocalizationService.Get("ConfirmLatestVersion"),
+                    Message = App.LocalizationService.Get("ConfirmLatestVersionMsg"),
+                    Severity = InfoBarSeverity.Warning
+                });
+            }
             else if (ex.Message.Contains("JS Challenge Provider") && ex.Message.Contains("returned an invalid response"))
             {
                 //// JsChallengeProviderInvalidResponseLog = "JS Challenge Provider returned an invalid response: {0}";
                 //LogService.Add(App.LocalizationService.Get("JsChallengeProviderInvalidResponseLog", ex.Message), LogTag.Warning);
                 return;
             }
+            // Unhandled exception.
             else
             {
                 LogService.Add(ex.Message, LogTag.Error);

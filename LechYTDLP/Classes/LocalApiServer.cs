@@ -86,6 +86,14 @@ namespace LechYTDLP.Classes
 
             LogService.Add($"Received {req.HttpMethod} request for {req.Url}", LogTag.ApiServer);
 
+            if (req.HttpMethod == "GET" && req.Url!.AbsolutePath == "/")
+            {
+                res.StatusCode = 200;
+                var responseString = "hello world\nLech-YTDLP Local API Server is running";
+                await WriteResponse(res, responseString);
+                return;
+            }
+
             // Preflight request
             if (req.HttpMethod == "OPTIONS")
             {
@@ -122,7 +130,7 @@ namespace LechYTDLP.Classes
             }
 
             res.StatusCode = 404;
-            await WriteResponse(res, "not found");
+            await WriteResponse(res, "404 - not found");
         }
 
         private async Task WriteResponse(HttpListenerResponse res, string text)

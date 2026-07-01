@@ -79,10 +79,16 @@ namespace LechYTDLP.Services
 
             set => Settings.Values[nameof(DownloadPath)] = value;
         }
+        public static bool ForceOverwrites
+        {
+            get => (bool?)Settings.Values[nameof(ForceOverwrites)]
+                   ?? false;
+            set => Settings.Values[nameof(ForceOverwrites)] = value;
+        }
         public static bool SaveLogOfEachDownload
         {
             get => (bool?)Settings.Values[nameof(SaveLogOfEachDownload)]
-                   ?? true;
+                   ?? false;
             set => Settings.Values[nameof(SaveLogOfEachDownload)] = value;
         }
         public static bool EmbedThumbnail
@@ -97,12 +103,26 @@ namespace LechYTDLP.Services
                    ?? false;
             set => Settings.Values[nameof(EmbedSubs)] = value;
         }
+        // Downloads
+        public static int ConcurrentFragments
+        {
+            get => (int?)Settings.Values[nameof(ConcurrentFragments)]
+                   ?? 5;
+            set => Settings.Values[nameof(ConcurrentFragments)] = value;
+        }
         // Account
         public static string CookiesfilePath
         {
             get => (string?)Settings.Values[nameof(CookiesfilePath)]
                    ?? string.Empty;
             set => Settings.Values[nameof(CookiesfilePath)] = value;
+        }
+        // More
+        public static string CustomYtDlpParams
+        {
+            get => (string?)Settings.Values[nameof(CustomYtDlpParams)]
+                   ?? string.Empty;
+            set => Settings.Values[nameof(CustomYtDlpParams)] = value;
         }
 
         // # Settings
@@ -269,7 +289,10 @@ namespace LechYTDLP.Services
                    ?? "stable";
             set => Settings.Values[nameof(SelectedUpdateChannel)] = value;
         }
-        // These are used to cache the last known version and the last time we checked for updates, so that we don't have to hit the API every time and can still show update notifications based on the cached information
+
+        // These are used to cache the last known version and the last time we checked for updates
+        // so that we don't have to hit the API every time and can still show update notifications based on the cached information
+        // App Update Info:
         public static string _LastKnownVersion
         {
             get
@@ -278,13 +301,37 @@ namespace LechYTDLP.Services
 
                 if (string.IsNullOrEmpty(value))
                 {
-                    value = ReadYTdlpVersionInfo();
+                    value = $"v{App.GetAppVersion()}";
                     Settings.Values[nameof(_LastKnownVersion)] = value;
                 }
 
                 return value;
             }
             set => Settings.Values[nameof(_LastKnownVersion)] = value;
+        }
+        public static long _LastUpdateCheckAt
+        {
+            get => (long?)Settings.Values[nameof(_LastUpdateCheckAt)]
+                   ?? 0;
+            set => Settings.Values[nameof(_LastUpdateCheckAt)] = value;
+        }
+
+        // YT-DLP Update Info:
+        public static string _LastKnownYTdlpVersion
+        {
+            get
+            {
+                var value = (string?)Settings.Values[nameof(_LastKnownYTdlpVersion)];
+
+                if (string.IsNullOrEmpty(value))
+                {
+                    value = ReadYTdlpVersionInfo();
+                    Settings.Values[nameof(_LastKnownYTdlpVersion)] = value;
+                }
+
+                return value;
+            }
+            set => Settings.Values[nameof(_LastKnownYTdlpVersion)] = value;
         }
         public static string _LastKnownYTdlpToolVersion
         {
@@ -302,11 +349,11 @@ namespace LechYTDLP.Services
             }
             set => Settings.Values[nameof(_LastKnownYTdlpToolVersion)] = value;
         }
-        public static long _LastUpdateCheckAt
+        public static long _LastYTdlpUpdateCheckAt
         {
-            get => (long?)Settings.Values[nameof(_LastUpdateCheckAt)]
+            get => (long?)Settings.Values[nameof(_LastYTdlpUpdateCheckAt)]
                    ?? 0;
-            set => Settings.Values[nameof(_LastUpdateCheckAt)] = value;
+            set => Settings.Values[nameof(_LastYTdlpUpdateCheckAt)] = value;
         }
 
         // Other
@@ -315,6 +362,12 @@ namespace LechYTDLP.Services
             get => (bool?)Settings.Values[nameof(_IsFirstRun)]
                    ?? true;
             set => Settings.Values[nameof(_IsFirstRun)] = value;
+        }
+        public static string _LastUsedVersion
+        {
+            get => (string?)Settings.Values[nameof(_LastUsedVersion)]
+                   ?? $"v{App.GetAppVersion()}";
+            set => Settings.Values[nameof(_LastUsedVersion)] = value;
         }
 
         // It's reads version info from the yt-dlp metadata

@@ -127,11 +127,37 @@ namespace LechYTDLP
         {
             try
             {
-                var result = await UpdateChecker.CheckForUpdatesAsync(SettingsService._LastKnownYTdlpToolVersion);
+                // Check for updates on startup
 
-                if (result.Success && result.IsUpdateAvailable)
+                // LechYTDLP version check
+                var appResult = await UpdateChecker.CheckForUpdateAsync(UpdateChecker.UpdateTarget.App, $"v{App.GetAppVersion()}");
+
+                if (appResult.Success && appResult.IsUpdateAvailable)
                 {
-                    var updateDialog = new UpdateDialog(result);
+                    // "UpdateAvailable" = "Update available! Click here to download the latest version."
+                    var updateDialog = new UpdateDialog(appResult);
+                    var dialog = await App.DialogService.ShowAsync(new DialogOptions
+                    {
+                        Title = App.LocalizationService.Get("UpdateAvailable"),
+                        Content = updateDialog,
+                        PrimaryButtonText = App.LocalizationService.Get("Update"),
+                        PrimaryButtonStyle = Application.Current.Resources["AccentButtonStyle"] as Style,
+                        CloseButtonText = App.LocalizationService.Get("MaybeLater")
+                    });
+
+                    // If user chooses to update, start the update process.
+                    if (dialog != DialogResult.Primary) return;
+
+                    // Open the update URL in the default browser
+                    await Launcher.LaunchUriAsync(new Uri("https://apps.microsoft.com/detail/9n28hrk3320g?referrer=appbadge&mode=full&hl=en-GB&gl=TR"));
+                }
+
+                // YT-DLP version check
+                var ytDlpresult = await UpdateChecker.CheckForUpdateAsync(UpdateChecker.UpdateTarget.YtDlp, SettingsService._LastKnownYTdlpToolVersion);
+
+                if (ytDlpresult.Success && appResult.IsUpdateAvailable)
+                {
+                    var updateDialog = new UpdateDialog(appResult);
                     var dialog = await App.DialogService.ShowAsync(new DialogOptions
                     {
                         Title = App.LocalizationService.Get("YTdlpUpdateAvailable"),
@@ -161,7 +187,7 @@ namespace LechYTDLP
                         App.InfoBarService.Show(new InfoBarMessage
                         {
                             Title = App.LocalizationService.Get("YTdlpUpdatedSuccessfully"),
-                            Message = App.LocalizationService.Get("YTdlpUpdatedSuccessfullyMsg", result.NewestVersion),
+                            Message = App.LocalizationService.Get("YTdlpUpdatedSuccessfullyMsg", appResult.NewestVersion),
                             Severity = InfoBarSeverity.Success,
                             IsCancelable = true
                         });

@@ -1,4 +1,5 @@
-﻿using LechYTDLP.Controllers;
+﻿using CommunityToolkit.WinUI.Controls;
+using LechYTDLP.Controllers;
 using LechYTDLP.Services;
 using LechYTDLP.Util;
 using Microsoft.UI.Xaml;
@@ -17,6 +18,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Media.Core;
@@ -62,16 +64,45 @@ namespace LechYTDLP.Components
                 QueueMediaItemThumbnail.Source = new BitmapImage(new Uri(thumbUrl));
             }
 
-            string saveStatus = item.State == 
-                DownloadState.Completed || item.State == DownloadState.Failed
-                ? App.LocalizationService.Get("SavedTo", item.FilePath)
-                : App.LocalizationService.Get("SavingTo", SettingsService.DownloadPath);
+            string saveStatus = item.State switch
+            {
+                DownloadState.Completed => App.LocalizationService.Get("SavedTo", item.FilePath),
+                DownloadState.Failed => "Failed",
+                _ => App.LocalizationService.Get("SavingTo", SettingsService.DownloadPath)
+            };
 
             QueueMediaItemUploaderAndSavingTo.Blocks.Clear();
             var p = new Paragraph();
-            p.Inlines.Add(new Run { Text = $"@{item.Info.Uploader}" ?? App.LocalizationService.Get("UnknownUploader"), FontWeight = Microsoft.UI.Text.FontWeights.Bold });
-            p.Inlines.Add(new Run { Text = $" • {saveStatus}" });
+            p.Inlines.Add(new Run { Text = $"@{item.Info.Uploader}" ?? App.LocalizationService.Get("UnknownUploader") });
+            if (item.State != DownloadState.Failed && item.FilePath != null)
+            {
+                p.Inlines.Add(new Run { Text = $" • {saveStatus}" });
+            }
             QueueMediaItemUploaderAndSavingTo.Blocks.Add(p);
+
+            var metadataItem = new List<string>();
+
+            if (item.SelectedFormat.Preset == null)
+            {
+                if (item.SelectedFormat.SelectedVideo != null)
+                {
+                    metadataItem.Add(App.LocalizationService.Get("Video"));
+                    metadataItem.Add(item.SelectedFormat.SelectedVideo.VideoExt);
+                    metadataItem.Add(item.SelectedFormat.SelectedVideo.Resolution);
+                }
+                else if (item.SelectedFormat.Audio != null)
+                {
+                    metadataItem.Add(App.LocalizationService.Get("Audio"));
+                    metadataItem.Add(item.SelectedFormat.AudioFileExtension);
+                    metadataItem.Add(item.SelectedFormat.Audio);
+                }
+            }
+            else
+            {
+                metadataItem.Add(SettingsService.Presets.FirstOrDefault(p => p.Value == item.SelectedFormat.Preset.Value)?.DisplayName ?? App.LocalizationService.Get("UnknownPreset"));
+            }
+
+            QueueMediaItemMetadata.Text = string.Join(" • ", metadataItem);
 
             QueueMediaItemStatus.Text = item.State switch
             {
@@ -89,47 +120,71 @@ namespace LechYTDLP.Components
             if (item.State == DownloadState.Paused || item.State == DownloadState.TestingFormat)
             {
                 QueueMediaItemStatus.Foreground = Application.Current.Resources["SystemFillColorCautionBrush"] as Brush;
+
+                // Hide "Retry" button for other statuses
+                QueueMediaItemRetryButton.Visibility = Visibility.Collapsed;
             }
             else if (item.State == DownloadState.Failed)
             {
                 QueueMediaItemStatus.Foreground = Application.Current.Resources["SystemFillColorCriticalBrush"] as Brush;
+
+                // Show "Retry" button for failed downloads
+                QueueMediaItemRetryButton.Visibility = Visibility.Visible;
             }
             else
             {
                 QueueMediaItemStatus.Foreground = Application.Current.Resources["AccentTextFillColorPrimaryBrush"] as Brush;
+
+                // Hide "Retry" button for other statuses
+                QueueMediaItemRetryButton.Visibility = Visibility.Collapsed;
             }
         }
 
-        //Medya öğesine tıklandığında yapılacak işlemler
-        //Örneğin, detay sayfasına yönlendirme veya oynatma işlemi
-        private void QueueMediaItem_Click(object sender, RoutedEventArgs e)
+        private async void Click(object sender, RoutedEventArgs e)
         {
-            var path = Item.FilePath;
-            if (string.IsNullOrEmpty(path) == false)
+            if (sender is Button button)
             {
-                if (File.Exists(path) == false && Directory.Exists(path) == false)
+                if (button.Name == "QueueMediaItem")
                 {
-                    KnownErrors.ShowGenericError(KnownErrors.GenericError.NoFileOrDirectory);
-                    return;
-                }
-
-                if (SettingsService.OpenFilesInExternalPlayer)
-                {
-                    try
+                    var path = Item.FilePath;
+                    if (string.IsNullOrEmpty(path) == false)
                     {
-                        Process.Start(new ProcessStartInfo(path)
+                        if (File.Exists(path) == false && Directory.Exists(path) == false)
                         {
-                            UseShellExecute = true
-                        });
+                            KnownErrors.ShowGenericError(KnownErrors.GenericError.NoFileOrDirectory);
+                            return;
+                        }
+
+                        if (SettingsService.OpenFilesInExternalPlayer)
+                        {
+                            try
+                            {
+                                Process.Start(new ProcessStartInfo(path)
+                                {
+                                    UseShellExecute = true
+                                });
+                            }
+                            catch (Exception)
+                            {
+                                KnownErrors.ShowGenericError(KnownErrors.GenericError.NoFileOrDirectory);
+                            }
+                            return;
+                        }
+                        else
+                        {
+                            PlayerController.PlayMediaItem(Item);
+                        }
                     }
-                    catch (Exception)
-                    {
-                        KnownErrors.ShowGenericError(KnownErrors.GenericError.NoFileOrDirectory);
-                    }
-                    return;
-                } else
+                }
+                if (button.Name == "QueueMediaItemRetryButton")
                 {
-                    PlayerController.PlayMediaItem(Item);
+                    await App.DownloadController.SearchAsync(Item.Url, new SearchOptions { VideoInfo = Item.Info, ForceDialog = true });
+                    App.InfoBarService.Show(new InfoBarMessage
+                    {
+                        Title = App.LocalizationService.Get("InfoBarRetryTitle"),
+                        Message = "",
+                        Severity = InfoBarSeverity.Informational
+                    });
                 }
             }
         }

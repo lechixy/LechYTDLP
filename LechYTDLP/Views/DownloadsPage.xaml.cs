@@ -1,5 +1,6 @@
 ﻿using LechYTDLP.Classes;
 using LechYTDLP.Components;
+using LechYTDLP.Controllers;
 using LechYTDLP.Services;
 using LechYTDLP.Util;
 using Microsoft.UI.Xaml;
@@ -226,7 +227,7 @@ namespace LechYTDLP.Views
 
                 CurrentVideoUploaderAndSavingTo.Blocks.Clear();
                 var p = new Paragraph();
-                p.Inlines.Add(new Run { Text = $"@{info.Uploader}" ?? App.LocalizationService.Get("UnknownUploader"), FontWeight = Microsoft.UI.Text.FontWeights.Bold });
+                p.Inlines.Add(new Run { Text = $"@{info.Uploader}" ?? App.LocalizationService.Get("UnknownUploader") });
                 p.Inlines.Add(new Run { Text = $" • {App.LocalizationService.Get("SavingTo", SettingsService.DownloadPath)}" });
                 CurrentVideoUploaderAndSavingTo.Blocks.Add(p);
 
@@ -261,7 +262,8 @@ namespace LechYTDLP.Views
                     {
                         try
                         {
-                            await App.DownloadController.SearchAsync(dataContext.Url, dataContext.Info);
+                            // Start a new download with the same info but force for dialog to show up
+                            await App.DownloadController.SearchAsync(dataContext.Url, new SearchOptions { VideoInfo = dataContext.Info, ForceDialog = true });
                             // App.InfoBarService.Show(new InfoBarMessage("Copied to clipboard", "", InfoBarSeverity.Informational, 3000));
                         }
                         catch (Exception ex)
@@ -298,7 +300,13 @@ namespace LechYTDLP.Views
                     {
                         var package = new DataPackage();
 
-                        if (flyout.Name == "CopyLink") package.SetText(dataContext.Url);
+                        if (flyout.Name == "CopyMedia")
+                        {
+                            var file = Windows.Storage.StorageFile.GetFileFromPathAsync(dataContext.FilePath).GetAwaiter().GetResult();
+                            var fileList = new List<Windows.Storage.IStorageItem> { file };
+                            package.SetStorageItems(fileList);
+                        }
+                        else if (flyout.Name == "CopyLink") package.SetText(dataContext.Url);
                         else if (flyout.Name == "CopyFilepath") package.SetText(dataContext.FilePath);
                         else if (flyout.Name == "CopyTitle") package.SetText(dataContext.Info.Title ?? App.LocalizationService.Get("UnknownTitle"));
 
@@ -311,16 +319,45 @@ namespace LechYTDLP.Views
                         });
                         Clipboard.SetContent(package);
                     }
-                    else if (flyout.Name == "Delete")
+                    else if (flyout.Name == "RemoveFromHistory")
                     {
-                        Debug.WriteLine($"Delete clicked for: {dataContext.Id}");
                         try
                         {
-                            await App.DatabaseService.DeleteByGuidIdAsync(dataContext.Id.ToString());
-                            await UpdateHistoryQueue(true);
+                            App.DownloadService.RemoveFromHistory(dataContext);
                             App.InfoBarService.Show(new InfoBarMessage
                             {
                                 Title = App.LocalizationService.Get("DeletedFromHistory"),
+                                Message = "",
+                                Severity = InfoBarSeverity.Informational,
+                                DurationMs = 3000
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine(ex);
+                            App.InfoBarService.Show(new InfoBarMessage
+                            {
+                                Title = App.LocalizationService.Get("DeleteFailed"),
+                                Message = ex.Message,
+                                Severity = InfoBarSeverity.Error,
+                                DurationMs = 4000
+                            });
+                        }
+                    }
+                    else if (flyout.Name == "Delete")
+                    {
+                        try
+                        {
+                            if (!File.Exists(dataContext.FilePath))
+                            {
+                                KnownErrors.ShowGenericError(KnownErrors.GenericError.NoFileOrDirectory);
+                                return;
+                            }
+                            App.DownloadService.RemoveFromHistory(dataContext);
+                            File.Delete(dataContext.FilePath);
+                            App.InfoBarService.Show(new InfoBarMessage
+                            {
+                                Title = App.LocalizationService.Get("DeletedFile"),
                                 Message = "",
                                 Severity = InfoBarSeverity.Informational,
                                 DurationMs = 3000
