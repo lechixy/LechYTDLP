@@ -393,7 +393,9 @@ namespace LechYTDLP.Classes
                 NoColor = true,
                 Newline = true,
                 NoMTime = true,
-
+                CustomYtDlpParams = SettingsService.CustomYtDlpParams,
+                ConcurrentFragments = SettingsService.ConcurrentFragments,
+                ForceOverwrites = SettingsService.ForceOverwrites
             }.BuildArgs();
 
             var ytdlpArgs = args.BuildArgs();

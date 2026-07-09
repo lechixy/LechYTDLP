@@ -39,6 +39,7 @@ namespace LechYTDLP.Classes
 
         public void Start()
         {
+# if DEBUG
             try
             {
                 _listener.Start();
@@ -53,6 +54,7 @@ namespace LechYTDLP.Classes
                 // ServerStatusChanged?.Invoke("Error");
                 return;
             }
+#endif
         }
 
         public void Stop()

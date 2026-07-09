@@ -1,4 +1,10 @@
-﻿This build is most stable and has been tested for a long time. It is recommended for most users.
+﻿# Features
+
+# Fixes
+
+---------------
+# v1.6.5
+This build is most stable and has been tested for a long time. It is recommended for most users.
 
 Thank you for using LechYTDLP <3
 

@@ -2,6 +2,7 @@
 using LechYTDLP.Controllers;
 using LechYTDLP.Core;
 using LechYTDLP.Services;
+using Microsoft.Extensions.Configuration;
 using Microsoft.UI;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
@@ -11,6 +12,8 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.Windows.ApplicationModel.Resources;
 using Microsoft.Windows.AppLifecycle;
 using Microsoft.Windows.Globalization;
+using Sentry;
+using Sentry.Profiling;
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -87,6 +90,16 @@ namespace LechYTDLP
         // Controllers
         public static DownloadController DownloadController { get; } = new();
 
+        // Configuration
+        private static readonly IConfiguration Configuration = new ConfigurationBuilder()
+            .SetBasePath(AppContext.BaseDirectory)
+            .AddJsonFile("appsettings.Local.json", optional: false, reloadOnChange: false)
+        .Build();
+
+        // Sentry
+        private static readonly bool IsSentryEnabled = Configuration.GetValue<bool>("Sentry:Enabled");
+        private static readonly string DefaultSentryDsn = Configuration.GetValue<string>("Sentry:Dsn") ?? "";
+
         // Helpers
         public static JsonElement SampleJson { get; private set; }
 
@@ -116,6 +129,81 @@ namespace LechYTDLP
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
             Window = new MainWindow();
+
+            // Init Sentry if it is enabled and app in release mode
+#if !DEBUG
+            if (IsSentryEnabled && !string.IsNullOrEmpty(DefaultSentryDsn))
+            {
+                Debug.WriteLine("Initializing Sentry...");
+                try
+                {
+                    SentrySdk.Init(options =>
+                    {
+                        // A Sentry Data Source Name (DSN) is required.
+                        // See https://docs.sentry.io/product/sentry-basics/dsn-explainer/
+                        // You can set it in the SENTRY_DSN environment variable, or you can set it in code here.
+
+                        options.Dsn = DefaultSentryDsn;
+
+                        // When debug is enabled, the Sentry client will emit detailed debugging information to the console.
+                        // This might be helpful, or might interfere with the normal operation of your application.
+                        // We enable it here for demonstration purposes when first trying Sentry.
+                        // You shouldn't do this in your applications unless you're troubleshooting issues with Sentry.
+                        options.Debug = true;
+
+                        // This option is recommended. It enables Sentry's "Release Health" feature.
+                        options.AutoSessionTracking = true;
+
+                        // Set TracesSampleRate to 1.0 to capture 100%
+                        // of transactions for tracing.
+                        // We recommend adjusting this value in production.
+                        options.TracesSampleRate = 1.0;
+
+                        // Sample rate for profiling, applied on top of othe TracesSampleRate,
+                        // e.g. 0.2 means we want to profile 20 % of the captured transactions.
+                        // We recommend adjusting this value in production.
+                        options.ProfilesSampleRate = 1.0;
+                        // Requires NuGet package: Sentry.Profiling
+                        // Note: By default, the profiler is initialized asynchronously. This can
+                        // be tuned by passing a desired initialization timeout to the constructor.
+                        options.AddIntegration(new ProfilingIntegration(
+                            // During startup, wait up to 500ms to profile the app startup code.
+                            // This could make launching the app a bit slower so comment it out if you
+                            // prefer profiling to start asynchronously
+                            TimeSpan.FromMilliseconds(500)
+                        ));
+                        // Enable logs to be sent to Sentry
+                        options.EnableLogs = true;
+                    });
+
+                    AppDomain.CurrentDomain.UnhandledException += (_, e) =>
+                    {
+                        if (e.ExceptionObject is Exception ex)
+                        {
+                            SentrySdk.CaptureException(ex);
+                            SentrySdk.Flush(TimeSpan.FromSeconds(3));
+                        }
+                    };
+                    TaskScheduler.UnobservedTaskException += (_, e) =>
+                    {
+                        SentrySdk.CaptureException(e.Exception);
+                        SentrySdk.Flush(TimeSpan.FromSeconds(3));
+                    };
+
+                    this.UnhandledException += (_, e) =>
+                    {
+                        SentrySdk.CaptureException(e.Exception);
+                        SentrySdk.Flush(TimeSpan.FromSeconds(3));
+                    };
+                } catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error initializing Sentry: {ex.Message}");
+                } finally
+                {
+                    Debug.WriteLine("Sentry initialized.");
+                }
+            }
+#endif
 
             var activatedArgs = Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().GetActivatedEventArgs();
             var activationKind = activatedArgs.Kind;

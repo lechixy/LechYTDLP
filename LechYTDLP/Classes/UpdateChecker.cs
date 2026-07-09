@@ -205,10 +205,10 @@ public static class UpdateChecker
     private static bool IsNewerVersion(string currentVersion, string newestVersion)
     {
         if (currentVersion == "unknown" || newestVersion == "unknown")
-        {
-            Debug.WriteLine("Version information is unknown, cannot compare versions.");
             return false;
-        }
+
+        currentVersion = currentVersion.Trim().TrimStart('v', 'V');
+        newestVersion = newestVersion.Trim().TrimStart('v', 'V');
 
         try
         {

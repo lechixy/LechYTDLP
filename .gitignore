@@ -6,6 +6,9 @@
 # Executables
 LechYTDLP/Tools/
 
+# App Settings for local
+LechYTDLP/appsettings.Local.json
+
 # User-specific files
 *.rsuser
 *.suo

@@ -14,10 +14,18 @@
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 	<ItemGroup>
+	  <None Remove="appsettings.json" />
+	  <None Remove="appsettings.Local.json" />
 	  <None Remove="Components\LechMediaPlayer.xaml" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<Content Include="appsettings.json">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="appsettings.Local.json">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
 		<Content Include="Tools\yt-dlp.exe">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
@@ -58,9 +66,13 @@
 		<PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.2.251219" />
 		<PackageReference Include="CommunityToolkit.WinUI.Triggers" Version="8.2.251219" />
 		<PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.5" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.9" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.9" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.5" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7705" />
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260317003" />
+		<PackageReference Include="Sentry" Version="6.6.0" />
+		<PackageReference Include="Sentry.Profiling" Version="6.6.0" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Content Update="Assets\filename_dumpdata.json">
