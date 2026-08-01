@@ -58,8 +58,8 @@ namespace LechYTDLP.Components
 
             QueueMediaItemTitle.Text = item.Info.Title ?? App.LocalizationService.Get("UnknownTitle");
 
-            string thumbUrl = item.Info.Thumbnail ?? "https://placehold.co/320x180.png?text=No+Thumbnail";
-            if (QueueMediaItemThumbnail.Source is not BitmapImage bmp || bmp.UriSource?.ToString() != thumbUrl)
+            string thumbUrl = string.IsNullOrEmpty(item.Info.BestThumbnailUrl) ? "https://placehold.co/320x180.png?text=No+Thumbnail" : item.Info.BestThumbnailUrl;
+            if (QueueMediaItemThumbnail.Source is not BitmapImage bmp || bmp.UriSource != null || bmp.UriSource?.ToString() != thumbUrl)
             {
                 QueueMediaItemThumbnail.Source = new BitmapImage(new Uri(thumbUrl));
             }
@@ -67,6 +67,7 @@ namespace LechYTDLP.Components
             string saveStatus = item.State switch
             {
                 DownloadState.Completed => App.LocalizationService.Get("SavedTo", item.FilePath),
+                DownloadState.PartiallyCompleted => App.LocalizationService.Get("SavedTo", item.FilePath),
                 DownloadState.Failed => "Failed",
                 _ => App.LocalizationService.Get("SavingTo", SettingsService.DownloadPath)
             };
@@ -82,24 +83,37 @@ namespace LechYTDLP.Components
 
             var metadataItem = new List<string>();
 
-            if (item.SelectedFormat.Preset == null)
+            if (item.Type == Classes.InfoType.Video)
             {
-                if (item.SelectedFormat.SelectedVideo != null)
+                if (item.SelectedFormat.Preset == null)
                 {
-                    metadataItem.Add(App.LocalizationService.Get("Video"));
-                    metadataItem.Add(item.SelectedFormat.SelectedVideo.VideoExt);
-                    metadataItem.Add(item.SelectedFormat.SelectedVideo.Resolution);
+                    if (item.SelectedFormat.SelectedVideo != null)
+                    {
+                        metadataItem.Add(App.LocalizationService.Get("Video"));
+                        metadataItem.Add(item.SelectedFormat.SelectedVideo.VideoExt!);
+                        metadataItem.Add(item.SelectedFormat.SelectedVideo.Resolution!);
+                    }
+                    else if (item.SelectedFormat.Audio != null)
+                    {
+                        metadataItem.Add(App.LocalizationService.Get("Audio"));
+                        metadataItem.Add(item.SelectedFormat.AudioFileExtension!);
+                        metadataItem.Add(item.SelectedFormat.Audio);
+                    }
                 }
-                else if (item.SelectedFormat.Audio != null)
+                else
                 {
-                    metadataItem.Add(App.LocalizationService.Get("Audio"));
-                    metadataItem.Add(item.SelectedFormat.AudioFileExtension);
-                    metadataItem.Add(item.SelectedFormat.Audio);
+                    metadataItem.Add(SettingsService.Presets.FirstOrDefault(p => p.Value == item.SelectedFormat.Preset.Value)?.DisplayName ?? App.LocalizationService.Get("UnknownPreset"));
                 }
             }
-            else
+            else if (item.Type == Classes.InfoType.Playlist)
             {
-                metadataItem.Add(SettingsService.Presets.FirstOrDefault(p => p.Value == item.SelectedFormat.Preset.Value)?.DisplayName ?? App.LocalizationService.Get("UnknownPreset"));
+                metadataItem.Add(App.LocalizationService.Get("Playlist"));
+                metadataItem.Add($"{item.Meta.PlaylistAvailableVideoCount} {App.LocalizationService.Get("Video2")}");
+                metadataItem.Add(SettingsService.Presets.FirstOrDefault(p => p.Value == item.SelectedFormats.FirstOrDefault()?.Preset?.Value)?.DisplayName ?? App.LocalizationService.Get("UnknownPreset"));
+                //if (item.Meta.PlaylistUnavailableVideoCount > 0)
+                //{
+                //    metadataItem.Add(App.LocalizationService.Get("UnavailableVideos", item.Meta.PlaylistUnavailableVideoCount));
+                //}
             }
 
             QueueMediaItemMetadata.Text = string.Join(" • ", metadataItem);
@@ -109,6 +123,7 @@ namespace LechYTDLP.Components
                 DownloadState.Queued => App.LocalizationService.Get("StatusQueued"),
                 DownloadState.Downloading => App.LocalizationService.Get("StatusDownloading"),
                 DownloadState.Completed => App.LocalizationService.Get("StatusCompleted"),
+                DownloadState.PartiallyCompleted => App.LocalizationService.Get("StatusPartiallyCompleted"),
                 DownloadState.Failed => App.LocalizationService.Get("StatusFailed"),
                 DownloadState.Paused => App.LocalizationService.Get("StatusPaused"),
                 DownloadState.Resuming => App.LocalizationService.Get("StatusResuming"),
@@ -117,7 +132,7 @@ namespace LechYTDLP.Components
             };
 
 
-            if (item.State == DownloadState.Paused || item.State == DownloadState.TestingFormat)
+            if (item.State == DownloadState.Paused || item.State == DownloadState.TestingFormat || item.State == DownloadState.PartiallyCompleted)
             {
                 QueueMediaItemStatus.Foreground = Application.Current.Resources["SystemFillColorCautionBrush"] as Brush;
 
@@ -147,33 +162,50 @@ namespace LechYTDLP.Components
                 if (button.Name == "QueueMediaItem")
                 {
                     var path = Item.FilePath;
-                    if (string.IsNullOrEmpty(path) == false)
-                    {
-                        if (File.Exists(path) == false && Directory.Exists(path) == false)
-                        {
-                            KnownErrors.ShowGenericError(KnownErrors.GenericError.NoFileOrDirectory);
-                            return;
-                        }
+                    if (string.IsNullOrEmpty(path)) return;
 
-                        if (SettingsService.OpenFilesInExternalPlayer)
+                    if (Item.Type == Classes.InfoType.Video && !File.Exists(path))
+                    {
+                        KnownErrors.ShowGenericError(KnownErrors.GenericError.NoFileOrDirectory);
+                        return;
+                    }
+
+                    if (Item.Type == Classes.InfoType.Playlist && !Directory.Exists(path))
+                    {
+                        KnownErrors.ShowGenericError(KnownErrors.GenericError.NoFileOrDirectory);
+                        return;
+                    }
+
+                    // Open file in LechYTDLP player
+                    if (!SettingsService.OpenFilesInExternalPlayer)
+                    {
+                        PlayerController.PlayMediaItem(Item);
+                        return;
+                    }
+
+                    // Open file in external player
+                    try
+                    {
+                        if (Item.Type == Classes.InfoType.Video)
                         {
-                            try
+                            Process.Start(new ProcessStartInfo(path)
                             {
-                                Process.Start(new ProcessStartInfo(path)
-                                {
-                                    UseShellExecute = true
-                                });
-                            }
-                            catch (Exception)
-                            {
-                                KnownErrors.ShowGenericError(KnownErrors.GenericError.NoFileOrDirectory);
-                            }
-                            return;
+                                UseShellExecute = true
+                            });
                         }
-                        else
+                        else if (Item.Type == Classes.InfoType.Playlist)
                         {
-                            PlayerController.PlayMediaItem(Item);
+                            Process.Start(new ProcessStartInfo
+                            {
+                                FileName = "explorer.exe",
+                                Arguments = $"\"{path}\"",
+                                UseShellExecute = true
+                            });
                         }
+                    }
+                    catch (Exception)
+                    {
+                        KnownErrors.ShowGenericError(KnownErrors.GenericError.NoFileOrDirectory);
                     }
                 }
                 if (button.Name == "QueueMediaItemRetryButton")

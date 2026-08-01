@@ -5,6 +5,8 @@ using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -123,6 +125,103 @@ namespace LechYTDLP.Classes
         public string? Format { get; set; }
         [JsonPropertyName("filename")]
         public string? Filename { get; set; }
+        [JsonPropertyName("playlist_count")]
+        public int? PlaylistCount { get; set; }
+        [JsonPropertyName("entries")]
+        public PlaylistVideoInfo[]? Entries { get; set; }
+        [JsonPropertyName("_type")]
+        public InfoType Type { get; set; }
+        public string BestThumbnailUrl
+        {
+            get
+            {
+                if (Type == InfoType.Video)
+                {
+                    return Thumbnail ?? string.Empty;
+                }
+                else if (Type == InfoType.Playlist)
+                {
+                    return Thumbnails?.LastOrDefault()?.Url ?? string.Empty;
+                }
+
+                return string.Empty;
+            }
+        }
+    }
+
+    [JsonConverter(typeof(JsonStringEnumConverter<InfoType>))]
+    public enum InfoType
+    {
+        [JsonStringEnumMemberName("video")]
+        Video,
+
+        [JsonStringEnumMemberName("playlist")]
+        Playlist,
+
+        [JsonStringEnumMemberName("unknown")]
+        Unknown
+    }
+
+    public class PlaylistVideoInfo : INotifyPropertyChanged
+    {
+        // INotify implementation
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+
+        // About the video
+        [JsonPropertyName("title")]
+        public string? Title { get; set; }
+        [JsonPropertyName("thumbnails")]
+        public Thumbnail[]? Thumbnails { get; set; }
+        public string? BestThumbnailUrl => Thumbnails?.LastOrDefault()?.Url;
+        [JsonPropertyName("duration")]
+        public double? Duration { get; set; }
+        [JsonPropertyName("timestamp")]
+        public long? Timestamp { get; set; }
+        [JsonPropertyName("ie_key")]
+        public string? IeKey { get; set; }
+        [JsonPropertyName("id")]
+        public string? Id { get; set; }
+        [JsonPropertyName("url")]
+        public string? Url { get; set; }
+
+        // For binding
+        private bool _isSelectEnabled = false;
+        public bool IsSelectEnabled
+        {
+            get => _isSelectEnabled;
+            set
+            {
+                if (_isSelectEnabled == value)
+                    return;
+
+                _isSelectEnabled = value;
+                PropertyChanged?.Invoke(this,
+                    new PropertyChangedEventArgs(nameof(IsSelectEnabled)));
+            }
+        }
+
+        public ObservableCollection<ComboOption> Presets { get; set; } = [];
+        private ComboOption? _selectedPreset;
+        public ComboOption? SelectedPreset
+        {
+            get => _selectedPreset;
+            set
+            {
+                if (_selectedPreset == value)
+                    return;
+                _selectedPreset = value;
+                PropertyChanged?.Invoke(this,
+                    new PropertyChangedEventArgs(nameof(SelectedPreset)));
+                SelectedPresetChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+
+        public int Index { get; set; }
+        public string NumberedTitle => $"{Index + 1} - {Title}";
+
+        public event EventHandler? SelectedPresetChanged;
     }
 
 
@@ -213,8 +312,9 @@ namespace LechYTDLP.Classes
         public SelectedFormat? SelectedFormat { get; set; }
 
         // Output
-        public bool DumpJson { get; set; } = false;
-        public string? PrintToFile { get; set; } = null;
+        public bool? DumpJson { get; set; }
+        public bool? DumpSingleJson { get; set; }
+        public string? PrintToFile { get; set; }
 
         // File
         public string? OutputPath { get; set; }
@@ -222,7 +322,12 @@ namespace LechYTDLP.Classes
         public bool? ForceOverwrites { get; set; }
 
         // Downloads
+        public string? PlaylistItems { get; set; }
         public int? ConcurrentFragments { get; set; }
+        public bool? SkipDownload { get; set; }
+
+        // Processing
+        public bool? FlatPlaylist { get; set; }
 
         // Account
         public string? CookiesPath { get; set; }
@@ -265,22 +370,51 @@ namespace LechYTDLP.Classes
                         case "bestquality":
                             args.Add("-f bestvideo+bestaudio");
                             break;
+
                         case "bestvideo":
                             args.Add("-f bestvideo");
                             break;
+
                         case "bestaudio":
                             args.Add("-f bestaudio");
                             break;
-                        case "compatible720pmp4":
-                            args.Add("-f bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best[height<=720][ext=mp4]/best");
-                            args.Add("--merge-output-format mp4");
-                            break;
+
                         case "compatible1080pmp4":
                             args.Add("-f bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080][ext=mp4]/best");
                             args.Add("--merge-output-format mp4");
                             break;
+
+                        case "compatible720pmp4":
+                            args.Add("-f bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best[height<=720][ext=mp4]/best");
+                            args.Add("--merge-output-format mp4");
+                            break;
+
                         case "extractaudiomp3":
                             args.Add("-x --audio-format mp3");
+                            break;
+
+                        case "2160p":
+                            args.Add("-f bestvideo[height<=2160]+bestaudio/best[height<=2160]");
+                            break;
+
+                        case "1440p":
+                            args.Add("-f bestvideo[height<=1440]+bestaudio/best[height<=1440]");
+                            break;
+
+                        case "1080p":
+                            args.Add("-f bestvideo[height<=1080]+bestaudio/best[height<=1080]");
+                            break;
+
+                        case "720p":
+                            args.Add("-f bestvideo[height<=720]+bestaudio/best[height<=720]");
+                            break;
+
+                        case "480p":
+                            args.Add("-f bestvideo[height<=480]+bestaudio/best[height<=480]");
+                            break;
+
+                        case "360p":
+                            args.Add("-f bestvideo[height<=360]+bestaudio/best[height<=360]");
                             break;
                     }
                 }
@@ -302,8 +436,11 @@ namespace LechYTDLP.Classes
                 }
             }
 
-            if (DumpJson)
+            if (DumpJson != null)
                 args.Add("--dump-json");
+
+            if (DumpSingleJson != null)
+                args.Add("--dump-single-json");
 
             if (!string.IsNullOrEmpty(FFmpegLocation))
                 args.Add($"--ffmpeg-location \"{FFmpegLocation}\"");
@@ -359,6 +496,21 @@ namespace LechYTDLP.Classes
             if (ForceOverwrites != null)
             {
                 args.Add("--force-overwrites");
+            }
+
+            if (SkipDownload != null)
+            {
+                args.Add("--skip-download");
+            }
+
+            if (FlatPlaylist != null)
+            {
+                args.Add("--flat-playlist");
+            }
+
+            if (PlaylistItems != null)
+            {
+                args.Add($"--playlist-items {PlaylistItems}");
             }
 
             return string.Join(" ", args);
@@ -432,7 +584,7 @@ namespace LechYTDLP.Classes
             {
                 if (!string.IsNullOrEmpty(e.Data))
                 {
-                    if (args.DumpJson)
+                    if (args.DumpSingleJson != null)
                     {
                         LogService.Add($"ℹ️ {App.LocalizationService.Get("GettingVideoInfoLog")}...", LogTag.Warning);
                     }
@@ -446,7 +598,7 @@ namespace LechYTDLP.Classes
                 }
             };
 
-            _process.ErrorDataReceived += (s, e) =>
+            _process.ErrorDataReceived += async (s, e) =>
             {
                 if (!string.IsNullOrEmpty(e.Data))
                 {
@@ -454,7 +606,7 @@ namespace LechYTDLP.Classes
 
                     Debug.WriteLine("This error received from yt-dlp process:");
                     Debug.WriteLine(e.Data);
-                    KnownErrors.Check(new Exception(e.Data));
+                    await KnownErrors.Check(new Exception(e.Data));
                     ErrorReceived?.Invoke(e.Data);
                 }
             };
@@ -488,7 +640,7 @@ namespace LechYTDLP.Classes
                 LogService.Add($"❌ {App.LocalizationService.Get("FailedToStartYTdlpLog")}: {ex.Message}", LogTag.Error);
 
                 _process = null;
-                KnownErrors.Check(ex);
+                await KnownErrors.Check(ex);
                 tcs.SetResult(-1);
             }
 
@@ -510,7 +662,8 @@ namespace LechYTDLP.Classes
             var ytdlpArgs = new YTDLPDownloadArgs
             {
                 Url = url,
-                DumpJson = true,
+                DumpSingleJson = true,
+                FlatPlaylist = true,
                 OutputPath = $"{SettingsService.DownloadPath}\\{SettingsService.FilenameTemplate}"
             };
             LogService.Add($"⏳ {App.LocalizationService.Get("GettingVideoInfoLog")}: {url}", LogTag.YTDLP);
@@ -557,16 +710,16 @@ namespace LechYTDLP.Classes
                     {
                         OutputReceived -= OnOutput;
 
-                        // Write video info json to file if setting is enabled, write to desktop\lechytdlp_dump.json
-                        if (SettingsService.WriteVideoInfoJson && !SettingsService.IsUsingBlobData)
-                        {
-                            LogService.Add($"💾 {App.LocalizationService.Get("WritingVideoInfoToJsonLog")}...", LogTag.YTDLP);
+                        //// Write video info json to file if setting is enabled, write to desktop\lechytdlp_dump.json
+                        //if (SettingsService.WriteVideoInfoJson && !SettingsService.IsUsingBlobData)
+                        //{
+                        //    LogService.Add($"💾 {App.LocalizationService.Get("WritingVideoInfoToJsonLog")}...", LogTag.YTDLP);
 
-                            string outputPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "lechytdlp_dump.json");
-                            using StreamWriter writer = new(outputPath, false, Encoding.UTF8);
-                            //string jsonString = JsonSerializer.Serialize(info, new JsonSerializerOptions { WriteIndented = true });
-                            writer.Write(data);
-                        }
+                        //    string outputPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "lechytdlp_dump.json");
+                        //    using StreamWriter writer = new(outputPath, false, Encoding.UTF8);
+                        //    //string jsonString = JsonSerializer.Serialize(info, new JsonSerializerOptions { WriteIndented = true });
+                        //    writer.Write(data);
+                        //}
 
                         tcs.TrySetResult(info);
                     }
@@ -604,7 +757,9 @@ namespace LechYTDLP.Classes
                 catch (Exception ex)
                 {
                     OutputReceived -= OnOutput;
-                    KnownErrors.Check(ex);
+                    ProcessExited -= OnProcessExited;
+
+                    await KnownErrors.Check(ex);
                     tcs.TrySetException(ex);
                 }
             });
@@ -627,15 +782,19 @@ namespace LechYTDLP.Classes
                     return;
 
                 HandleOutput(data);
-                try
-                {
-                    // Save log of each download if setting is enabled, save to download folder with file name {video_id}.log
-                    if (SettingsService.SaveLogOfEachDownload && !data.StartsWith("P|")) texts.Add(data);
-                }
-                catch (JsonException)
-                {
-                    // dump-json dışında bir satır gelirse ignore
-                }
+
+                // Add the output to the list for later processing
+                if (SettingsService.SaveLogOfEachDownload && !data.StartsWith("P|")) texts.Add(data);
+            }
+
+            void OnError(string data)
+            {
+                if (string.IsNullOrWhiteSpace(data))
+                    return;
+                HandleOutput(data);
+
+                // Add the error to the list for later processing
+                if (SettingsService.SaveLogOfEachDownload && !data.StartsWith("P|")) texts.Add(data);
             }
 
             async void OnProcessExited(int exitCode)
@@ -643,9 +802,10 @@ namespace LechYTDLP.Classes
                 ProcessExited -= ProcessExited;
                 OutputReceived -= OnOutput;
 
+                // Save log of each download if setting is enabled, save to Documents/LechYTDLP/Logs folder with file name {video_id}.log
                 if (SettingsService.SaveLogOfEachDownload)
                 {
-                    string logPath = Path.Combine(SettingsService.DownloadPath, $"{info.Id}.log");
+                    string logPath = Path.Combine(LechKnownFolders.GetLogsPath(), $"{info.Id}.log");
                     using StreamWriter logWriter = new(logPath, false, Encoding.UTF8);
                     foreach (var text in texts)
                     {
@@ -660,18 +820,33 @@ namespace LechYTDLP.Classes
 
                 if (File.Exists(infoJsonPath))
                 {
-                    string json = await File.ReadAllTextAsync(infoJsonPath, Encoding.UTF8);
-                    try
+                    if (info.Type == InfoType.Video)
                     {
-                        var videoInfo = JsonSerializer.Deserialize<VideoInfo>(json, AppJsonContext.Default.VideoInfo);
-                        if (videoInfo != null && videoInfo.Filename != null && App.DownloadService.CurrentMedia != null)
+                        try
                         {
-                            App.DownloadService.CurrentMedia.FilePath = videoInfo.Filename;
+                            string json = await File.ReadAllTextAsync(infoJsonPath, Encoding.UTF8);
+                            var videoInfo = JsonSerializer.Deserialize<VideoInfo>(json, AppJsonContext.Default.VideoInfo);
+                            if (videoInfo != null && videoInfo.Filename != null && App.DownloadService.CurrentMedia != null)
+                            {
+                                App.DownloadService.CurrentMedia.FilePath = videoInfo.Filename;
+                            }
+                        }
+                        catch (JsonException ex)
+                        {
+                            LogService.Add("Error parsing video info JSON: " + ex.Message, LogTag.Error);
                         }
                     }
-                    catch (JsonException ex)
+                    else if (info.Type == InfoType.Playlist)
                     {
-                        LogService.Add("Error parsing video info JSON: " + ex.Message, LogTag.Error);
+                        // We handle playlist info differently, because yt-dlp writes every video info to single line json, so we need to read all lines and deserialize them into a list of VideoInfo objects.
+                        // We read all lines from the info json file, and deserialize each line into a VideoInfo object, and add them to a list.
+
+                        // Solution: We show user to downloaded files folder
+
+                        if (App.DownloadService.CurrentMedia != null)
+                        {
+                            App.DownloadService.CurrentMedia.FilePath = SettingsService.DownloadPath;
+                        }
                     }
                 }
 
@@ -696,6 +871,7 @@ namespace LechYTDLP.Classes
             }
 
             OutputReceived += OnOutput;
+            ErrorReceived += OnError;
             ProcessExited += OnProcessExited;
 
             _ = Task.Run(async () =>
@@ -707,7 +883,10 @@ namespace LechYTDLP.Classes
                 catch (Exception ex)
                 {
                     OutputReceived -= OnOutput;
-                    KnownErrors.Check(ex);
+                    ErrorReceived -= OnError;
+                    ProcessExited -= OnProcessExited;
+
+                    await KnownErrors.Check(ex);
                     tcs.TrySetException(ex);
                 }
             });

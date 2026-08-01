@@ -41,7 +41,7 @@ namespace LechYTDLP
     public partial class App : Application
     {
         public static Window? Window { get; private set; }
-        public static DispatcherQueue UIThreadDispatcherQueue { get; private set; }
+        public static DispatcherQueue UIThreadDispatcherQueue { get; private set; } = null!;
 
         /// <summary>
         /// Application version string in the format of "Major.Minor.Build", e.g. "1.0.0"
@@ -205,6 +205,9 @@ namespace LechYTDLP
             }
 #endif
 
+            Window.Activate();
+            UIThreadDispatcherQueue = DispatcherQueue.GetForCurrentThread();
+
             var activatedArgs = Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().GetActivatedEventArgs();
             var activationKind = activatedArgs.Kind;
             if (activationKind == ExtendedActivationKind.Protocol)
@@ -231,9 +234,6 @@ namespace LechYTDLP
                     }
                 }
             }
-
-            Window.Activate();
-            UIThreadDispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
             WindowInitialized?.Invoke();
 

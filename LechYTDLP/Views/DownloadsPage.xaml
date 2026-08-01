@@ -127,6 +127,12 @@
                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                            TextWrapping="NoWrap" />
 
+                            <!--<TextBlock Grid.Row="2"
+                                       x:Name="CurrentVideoMetadata"
+                                       Style="{ThemeResource CaptionTextBlockStyle}"
+                                       Foreground="{ThemeResource TextFillColorPrimary}"
+                                       TextWrapping="NoWrap" />-->
+
                             <Grid Grid.Row="2"
                                   Margin="0,0,0,4"
                                   VerticalAlignment="Bottom"

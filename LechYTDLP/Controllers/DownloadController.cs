@@ -112,7 +112,9 @@ namespace LechYTDLP.Controllers
                 VideoInfoReady?.Invoke(url, info);
 
                 // If the selected preset is "illchose" show format dialog service
-                if (SettingsService.SelectedPreset == SettingsService.Presets.First() || searchOptions?.ForceDialog == true)
+                // If the options are set to force the dialog, show format dialog service
+                // If the info is a playlist, show format dialog service
+                if (SettingsService.SelectedPreset == SettingsService.Presets.First() || searchOptions?.ForceDialog == true || info.Type == InfoType.Playlist)
                 {
                     // TCS ile UI thread işinin bitmesini bekle
                     var ftcs = new TaskCompletionSource<FormatSelectionResult?>();
@@ -135,9 +137,12 @@ namespace LechYTDLP.Controllers
                     {
                         App.DownloadService.Enqueue(
                             result.Url,
+                            result.Type,
                             result.VideoInfo,
-                            result.SelectedFormat);
-                    } else
+                            result.SelectedFormats
+                        );
+                    }
+                    else
                     {
                         Debug.WriteLine("User canceled the download dialog.");
                     }
@@ -151,13 +156,15 @@ namespace LechYTDLP.Controllers
                     };
                     App.DownloadService.Enqueue(
                         url,
+                        info.Type,
                         info,
-                        selectedFormat);
+                        [selectedFormat]
+                     );
                 }
             }
             catch (Exception ex)
             {
-                KnownErrors.Check(ex);
+                await KnownErrors.Check(ex);
             }
             finally
             {

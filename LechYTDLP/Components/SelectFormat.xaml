@@ -4,8 +4,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:classes="using:LechYTDLP.Classes"
              xmlns:local="using:LechYTDLP.Components"
+             xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+             xmlns:ui="using:CommunityToolkit.WinUI"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             Unloaded="Dialog_Unloaded"
              mc:Ignorable="d">
 
     <UserControl.Resources>
@@ -14,12 +17,24 @@
         <x:Double x:Key="SettingsCardSpacing">4</x:Double>
     </UserControl.Resources>
 
+
     <StackPanel Orientation="Vertical"
                 Spacing="10"
                 MaxWidth="{Binding ActualWidth, ElementName=VideoInfoGrid}">
 
+        <StackPanel.ChildrenTransitions>
+            <EntranceThemeTransition FromVerticalOffset="50" />
+            <RepositionThemeTransition IsStaggeringEnabled="False" />
+        </StackPanel.ChildrenTransitions>
+
         <StackPanel Spacing="10"
                     Margin="0,0,0,6">
+
+            <StackPanel.ChildrenTransitions>
+                <EntranceThemeTransition FromVerticalOffset="50" />
+                <RepositionThemeTransition IsStaggeringEnabled="False" />
+            </StackPanel.ChildrenTransitions>
+
             <!--Video Info-->
             <Grid ColumnSpacing="12"
                   x:Name="VideoInfoGrid">
@@ -110,7 +125,8 @@
             </Grid>
 
             <!--Presets-->
-            <Grid ColumnSpacing="12">
+            <Grid ColumnSpacing="12"
+                  x:Name="PresetsGrid">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
@@ -120,7 +136,7 @@
                           x:Uid="Preset"
                           DisplayMemberPath="Text"
                           PlaceholderText="Select"
-                          SelectionChanged="Format_SelectionChanged" />
+                          SelectionChanged="SelectionChanged" />
                 <TextBlock Grid.Column="1"
                            x:Name="PresetInfo"
                            VerticalAlignment="Bottom"
@@ -134,6 +150,20 @@
                 BorderBrush="{StaticResource DividerStrokeColorDefaultBrush}"
                 Background="#FFFFFFFF"
                 x:Name="FormatBorder" />
+
+        <!--<controls:Segmented x:Name="segmentedControl"
+                            HorizontalAlignment="Stretch"
+                            SelectedIndex="0">
+            <controls:SegmentedItem Content="Square"
+                                    Icon="{ui:FontIcon Glyph=&#xE739;}"
+                                    Tag="square" />
+            <controls:SegmentedItem Content="Circle"
+                                    Icon="{ui:FontIcon Glyph=&#xEA3A;}"
+                                    Tag="circle" />
+            <controls:SegmentedItem Content="Rectangle"
+                                    Icon="{ui:FontIcon Glyph=&#xE7FB;}"
+                                    Tag="rect" />
+        </controls:Segmented>-->
 
         <!--Video-->
         <Grid ColumnSpacing="12"
@@ -149,7 +179,7 @@
                       x:Uid="ResolutionSelect"
                       DisplayMemberPath="Text"
                       PlaceholderText="Select"
-                      SelectionChanged="Format_SelectionChanged" />
+                      SelectionChanged="SelectionChanged" />
 
             <ComboBox Grid.Column="1"
                       x:Name="CodecSelect"
@@ -157,7 +187,7 @@
                       DisplayMemberPath="Text"
                       Opacity="0"
                       PlaceholderText="Select"
-                      SelectionChanged="Format_SelectionChanged" />
+                      SelectionChanged="SelectionChanged" />
 
             <TextBlock Grid.Column="2"
                        x:Name="VideoInfo"
@@ -179,7 +209,7 @@
                       x:Uid="AudioSelect"
                       DisplayMemberPath="Text"
                       PlaceholderText="Select"
-                      SelectionChanged="Format_SelectionChanged" />
+                      SelectionChanged="SelectionChanged" />
 
             <TextBlock Grid.Column="1"
                        x:Name="AudioInfo"
@@ -187,6 +217,123 @@
                        TextWrapping="Wrap"
                        Style="{ThemeResource CaptionTextBlockStyle}"
                        Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+        </Grid>
+
+        <!--Playlist video selection-->
+        <Grid ColumnSpacing="12"
+              x:Name="PlaylistVideoSelectionGrid"
+              Visibility="Collapsed">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <ListView Grid.Column="0"
+                      x:Name="PlaylistVideoSelection"
+                      MaxHeight="300"
+                      MaxWidth="{Binding ActualWidth, ElementName=VideoInfoGrid}"
+                      SelectionChanged="SelectionChanged"
+                      SelectionMode="Multiple">
+
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <ItemsStackPanel>
+                            <ItemsStackPanel.ChildrenTransitions>
+                                <RepositionThemeTransition IsStaggeringEnabled="False" />
+                            </ItemsStackPanel.ChildrenTransitions>
+                        </ItemsStackPanel>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="classes:PlaylistVideoInfo">
+                        <Expander IsExpanded="False"
+                                  ExpandDirection="Down"
+                                  HorizontalAlignment="Stretch">
+                            <Expander.Header>
+                                <TextBlock Text="{x:Bind NumberedTitle}"
+                                           TextTrimming="CharacterEllipsis" />
+                            </Expander.Header>
+                            <Expander.Content>
+                                <Grid ColumnSpacing="12" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                                    <Grid.ColumnDefinitions>
+                                        <!-- Resim -->
+                                        <ColumnDefinition Width="Auto" />
+                                        <!-- Metinler (Kalan yer) -->
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!--<Border CornerRadius="{StaticResource ControlCornerRadius}"
+                                            Height="50"
+                                            Width="89"
+                                            MaxWidth="80"
+                                            MinWidth="85"
+                                            Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                                            Grid.Column="0">
+                                        <Image x:Name="PlaylistVideoThumbnail"
+                                               Height="50"
+                                               Width="89"
+                                               Stretch="UniformToFill"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Source="{x:Bind BestThumbnailUrl}"
+                                               MaxWidth="90"
+                                               MinWidth="50" />
+                                    </Border>-->
+
+                                    <Grid Padding="0,6"
+                                          ColumnSpacing="4"
+                                          Grid.Column="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <ComboBox DisplayMemberPath="Text"
+                                                  Grid.Column="1"
+                                                  SelectedItem="{Binding SelectedPreset, Mode=TwoWay}"
+                                                  ItemsSource="{Binding Presets}"
+                                                  x:Name="PresetComboBox"
+                                                  IsEnabled="False"
+                                                  PlaceholderText="Select" />
+                                                  <!--IsEnabled="{Binding IsSelectEnabled}"-->
+                                    </Grid>
+                                    <!--<StackPanel Padding="0,6" Orientation="Vertical" Spacing="6">
+</StackPanel>-->
+                                </Grid>
+                            </Expander.Content>
+                        </Expander>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+
+        <Border BorderThickness="1"
+                BorderBrush="{StaticResource DividerStrokeColorDefaultBrush}"
+                Background="#FFFFFFFF"
+                x:Name="PlaylistOptionsBorder"
+                Visibility="Collapsed" />
+
+
+        <!--Video selection options grid-->
+        <Grid ColumnSpacing="12"
+              x:Name="VideoSelectionOptionsGrid"
+              Visibility="Collapsed">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0"
+                    x:Name="SelectAllButton"
+                    Click="Click" />
+
+            <ComboBox Grid.Column="1"
+                      x:Name="ChangeAllPresetsComboBox"
+                      DisplayMemberPath="Text"
+                      PlaceholderText="Preset for all videos"
+                      SelectionChanged="SelectionChanged" />
         </Grid>
     </StackPanel>
 </UserControl>

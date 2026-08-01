@@ -218,9 +218,10 @@ namespace LechYTDLP.Views
                 CurrentMediaContainer.Visibility = Visibility.Visible;
                 NoQueueContainer.Visibility = Visibility.Collapsed;
 
-                if (!(CurrentThumbnailImage.Source is BitmapImage bmp && bmp.UriSource != null && bmp.UriSource.ToString() == (info.Thumbnail ?? "https://placehold.co/320x180.png?text=No+Thumbnail")))
+                string thumbUrl = string.IsNullOrEmpty(currentDownload.Info.BestThumbnailUrl) ? "https://placehold.co/320x180.png?text=No+Thumbnail" : currentDownload.Info.BestThumbnailUrl;
+                if (!(CurrentThumbnailImage.Source is BitmapImage bmp && bmp.UriSource != null && bmp.UriSource.ToString() == thumbUrl))
                 {
-                    CurrentThumbnailImage.Source = new BitmapImage(new Uri(info.Thumbnail ?? "https://placehold.co/320x180.png?text=No+Thumbnail"));
+                    CurrentThumbnailImage.Source = new BitmapImage(new Uri(thumbUrl));
                 }
 
                 CurrentVideoTitle.Text = info.Title ?? App.LocalizationService.Get("UnknownTitle");
@@ -233,11 +234,28 @@ namespace LechYTDLP.Views
 
                 //CurrentVideoUploaderAndSavingTo.Text = $"{info.uploader ?? "Unknown Uploader"} - Saving to {SettingsService.DownloadPath}";
 
+                //// Metadata
+                //var metadataItem = new List<string>();
+
+                //if (currentDownload.Type == InfoType.Playlist)
+                //{
+                //    metadataItem.Add(App.LocalizationService.Get("DownloadingItemOf", currentDownload.Meta.PlaylistCurrentIndex, currentDownload.Info.PlaylistCount ?? 0));
+                //}
+
+                //if (metadataItem.Count > 0)
+                //{
+                //    CurrentVideoMetadata.Visibility = Visibility.Visible;
+                //    CurrentVideoMetadata.Text = string.Join(" • ", metadataItem);
+                //}
+                //else CurrentVideoMetadata.Visibility = Visibility.Collapsed;
+
                 CurrentVideoStatus.Text = currentDownload.State switch
                 {
                     DownloadState.Queued => App.LocalizationService.Get("StatusQueued"),
-                    DownloadState.Downloading => App.LocalizationService.Get("StatusDownloading"),
+                    DownloadState.Downloading => currentDownload.Type == InfoType.Video ?
+                        App.LocalizationService.Get("StatusDownloading") : App.LocalizationService.Get("StatusDownloadingOf", currentDownload.Meta.PlaylistCurrentIndex, currentDownload.Info.PlaylistCount ?? 0),
                     DownloadState.Completed => App.LocalizationService.Get("StatusCompleted"),
+                    DownloadState.PartiallyCompleted => App.LocalizationService.Get("StatusPartiallyCompleted"),
                     DownloadState.Failed => App.LocalizationService.Get("StatusFailed"),
                     DownloadState.Paused => App.LocalizationService.Get("StatusPaused"),
                     DownloadState.Resuming => App.LocalizationService.Get("StatusResuming"),
@@ -283,18 +301,38 @@ namespace LechYTDLP.Views
                     {
                         string filePath = dataContext.FilePath;
 
-                        if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
+                        // Show the file in File Explorer
+                        if (dataContext.Type == InfoType.Video)
                         {
-                            KnownErrors.ShowGenericError(KnownErrors.GenericError.NoFileOrDirectory);
-                            return;
-                        }
+                            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
+                            {
+                                KnownErrors.ShowGenericError(KnownErrors.GenericError.NoFileOrDirectory);
+                                return;
+                            }
 
-                        Process.Start(new ProcessStartInfo
+                            Process.Start(new ProcessStartInfo
+                            {
+                                FileName = "explorer.exe",
+                                Arguments = $"/select,\"{filePath}\"",
+                                UseShellExecute = true
+                            });
+                        }
+                        // We show downloaded playlist folder instead
+                        else if (dataContext.Type == InfoType.Playlist)
                         {
-                            FileName = "explorer.exe",
-                            Arguments = $"/select,\"{filePath}\"",
-                            UseShellExecute = true
-                        });
+                            if (string.IsNullOrEmpty(filePath) || !Directory.Exists(filePath))
+                            {
+                                KnownErrors.ShowGenericError(KnownErrors.GenericError.NoFileOrDirectory);
+                                return;
+                            }
+
+                            Process.Start(new ProcessStartInfo
+                            {
+                                FileName = "explorer.exe",
+                                Arguments = $"\"{filePath}\"",
+                                UseShellExecute = true
+                            });
+                        }
                     }
                     else if (flyout.Name.StartsWith("Copy"))
                     {
@@ -302,9 +340,16 @@ namespace LechYTDLP.Views
 
                         if (flyout.Name == "CopyMedia")
                         {
-                            var file = Windows.Storage.StorageFile.GetFileFromPathAsync(dataContext.FilePath).GetAwaiter().GetResult();
-                            var fileList = new List<Windows.Storage.IStorageItem> { file };
-                            package.SetStorageItems(fileList);
+                            if (dataContext.Type == InfoType.Video)
+                            {
+                                var file = Windows.Storage.StorageFile.GetFileFromPathAsync(dataContext.FilePath).GetAwaiter().GetResult();
+                                var fileList = new List<Windows.Storage.IStorageItem> { file };
+                                package.SetStorageItems(fileList);
+                            }
+                            else if (dataContext.Type == InfoType.Playlist)
+                            {
+                                package.SetText(dataContext.FilePath);
+                            }
                         }
                         else if (flyout.Name == "CopyLink") package.SetText(dataContext.Url);
                         else if (flyout.Name == "CopyFilepath") package.SetText(dataContext.FilePath);
@@ -348,13 +393,8 @@ namespace LechYTDLP.Views
                     {
                         try
                         {
-                            if (!File.Exists(dataContext.FilePath))
-                            {
-                                KnownErrors.ShowGenericError(KnownErrors.GenericError.NoFileOrDirectory);
-                                return;
-                            }
                             App.DownloadService.RemoveFromHistory(dataContext);
-                            File.Delete(dataContext.FilePath);
+                            if (File.Exists(dataContext.FilePath)) File.Delete(dataContext.FilePath);
                             App.InfoBarService.Show(new InfoBarMessage
                             {
                                 Title = App.LocalizationService.Get("DeletedFile"),

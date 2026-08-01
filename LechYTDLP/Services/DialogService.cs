@@ -46,8 +46,9 @@ namespace LechYTDLP.Services
     public class FormatSelectionResult
     {
         public string Url { get; set; } = default!;
+        public InfoType Type { get; set; } = default!;
         public VideoInfo VideoInfo { get; set; } = default!;
-        public SelectedFormat SelectedFormat { get; set; } = default!;
+        public SelectedFormat[] SelectedFormats { get; set; } = [];
     }
 
     public class DialogService
@@ -247,7 +248,7 @@ namespace LechYTDLP.Services
 
                     var dialog = new ContentDialog
                     {
-                        Title = App.LocalizationService.Get("SelectFormat"),
+                        Title = content.Title,
                         Content = content,
                         PrimaryButtonText = App.LocalizationService.Get("Download"),
                         PrimaryButtonStyle = Application.Current.Resources["AccentButtonStyle"] as Style,
@@ -269,8 +270,9 @@ namespace LechYTDLP.Services
                         tcs.TrySetResult(new FormatSelectionResult
                         {
                             Url = url,
+                            Type = videoInfo.Type,
                             VideoInfo = videoInfo,
-                            SelectedFormat = content.SelectedFormat
+                            SelectedFormats = content.SelectedFormats
                         });
                     }
                     else

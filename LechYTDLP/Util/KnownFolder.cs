@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -47,6 +48,18 @@ namespace LechYTDLP.Util
         private static extern string SHGetKnownFolderPath(
             [MarshalAs(UnmanagedType.LPStruct)] Guid rfid, uint dwFlags,
             nint hToken = 0);
+
+        // Returns the path to the user's Documents folder
+        public static string GetDocumentRootPath() => GetPath(LechKnownFolder.Documents) + "\\LechYTDLP";
+
+        // Returns the path to the user's Documents\LechYTDLP\Database folder
+        public static string GetDatabasePath() => Path.Combine(GetDocumentRootPath(), "Database");
+
+        // Returns the path to the user's Documents\LechYTDLP\InfoJson folder
+        public static string GetInfoJsonPath() => Path.Combine(GetDocumentRootPath(), "InfoJson");
+
+        // Returns the path to the user's Documents\LechYTDLP\Logs folder
+        public static string GetLogsPath() => Path.Combine(GetDocumentRootPath(), "Logs");
     }
 
 }

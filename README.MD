@@ -29,13 +29,31 @@ Another **[YT-DLP](https://github.com/yt-dlp/yt-dlp)** Gui application for **Win
 </a>
 <img alt="AppShowcase" src="https://raw.githubusercontent.com/lechixy/LechYTDLP/refs/heads/main/Assets/lechytdlp_showcase.png" />
 
-This is my first project with Win UI 3 trying to do my best 💖
+# Features
+- Download videos from YouTube, Instagram, TikTok, Twitter and <b><a href="https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md"> many more platforms. </a></b>
+- <b>Win UI 3</b> design for a modern look and feel.
+- No ads, no tracking, and no telemetry.
+- Provides a simple and user-friendly interface for downloading videos.
+- Supports downloading videos in 4K, 8K, 1080p, 720p, 480p, 360p and 240p.
+- Presets for downloading videos in different formats (e.g., high quality, low quality, audio only).
+- Playlist support for downloading multiple videos at once.
+- Supports downloading videos with cookies for users who are logged in to a website.
+- Download videos with custom file names and folder structures.
+- Built-in update checker to keep the application up-to-date with the latest version of YT-DLP.
+- Built-in log viewer to view the download progress and any errors that may occur during the download process.
+- Supports downloading videos with subtitles and metadata.
+- Supports downloading videos with custom command-line arguments for advanced users.
+- <b> Ready to use, no installation required.</b>
 
-<h3 align="center">
+> A feature is missing? Please open an issue or create a pull request to contribute to the project.
+<br>See [Contributing section](#contributing) for more information.
+
+<h3 >
 <a font-size="50" href="https://www.notion.so/lechixy/2dc9ce1d06e580d0824fe51030fe51f9?v=2dc9ce1d06e580f38b45000ca867db36&source=copy_link">🗺 Here is the roadmap and to-do list for this project 📌</a>
 </h3>
 
-## How to install 📥
+This is my first project with Win UI 3 trying to do my best 💖
+# How to install 📥
 ### Which version should you choose? 
 - **Microsoft Store version** provides automatic updates. **(Suggested)**
 - **GitHub version** is free and open-source, but requires manual updates. Installing the GitHub version is a bit more complicated than the Microsoft Store version.
@@ -56,12 +74,19 @@ This is my first project with Win UI 3 trying to do my best 💖
 8. The App Installer will pop up, press **"Install"**, or **"Update"** if you've installed Lech YT-DLP before
 
 # Contributing
+A feature is missing? Please open an issue or create a pull request to contribute to the project.
+
 There is a Türkçe saying for this, Google it:
 > _"Bir elin nesi var, iki elin sesi var."_
 
-<p>Just open a pull request, your help is <strong>always welcomed (●'◡'●)</strong>💕</p>
-
+<p>Your help is <strong>always welcomed (●'◡'●)</strong>💕</p>
 <br>
+
+# Language Support
+- **English** by [@lechixy](https://github.com/lechixy)
+- **Turkish** (Türkçe) by [@lechixy](https://github.com/lechixy)
+
+> If you want to contribute to the project by adding a new language, i'll gladly accept your pull request.
 
 # FAQ (Frequently Asked Questions)
 I will try to answer some of the most common questions here. If you have any other questions, please feel free to ask.

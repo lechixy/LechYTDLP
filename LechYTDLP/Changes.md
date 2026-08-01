@@ -1,6 +1,13 @@
-﻿# Features
+﻿# v2.0.0
+- Updated yt-dlp to stable@2026.06.09
+# Features
+- Adding Playlist support to the app (Download all videos from a playlist)
+- Changing the width and height of the main window to be more compact and user-friendly (1000x800)
+- Refactoring GetVideoInfo for Playlist support
+- Adding enter animations to Select Format Dialog
 
 # Fixes
+- Fixing the issue sometimes API not pasting the URL to the download textbox (because of threading issues)
 
 ---------------
 # v1.6.5

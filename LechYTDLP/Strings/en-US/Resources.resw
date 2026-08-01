@@ -588,6 +588,9 @@
   <data name="StatusDownloading" xml:space="preserve">
     <value>Downloading</value>
   </data>
+  <data name="StatusDownloadingOf" xml:space="preserve">
+    <value>Downloading {0} of {1}</value>
+  </data>
   <data name="StatusCompleted" xml:space="preserve">
     <value>Completed</value>
   </data>
@@ -943,6 +946,9 @@ The changes will be applied after restarting. (You can do it later if you want, 
   <data name="Video" xml:space="preserve">
     <value>Video</value>
   </data>
+  <data name="Video2" xml:space="preserve">
+    <value>video</value>
+  </data>
   <data name="Playlist" xml:space="preserve">
     <value>Playlist</value>
   </data>
@@ -1011,5 +1017,44 @@ The changes will be applied after restarting. (You can do it later if you want, 
   </data>
   <data name="ForceOverwritesSetting.Description" xml:space="preserve">
     <value>Overwrite all video and metadata files (this option includes --no-continue)</value>
+  </data>
+  <data name="DownloadPlaylist" xml:space="preserve">
+    <value>Select playlist</value>
+  </data>
+  <data name="DeselectAll" xml:space="preserve">
+    <value>Deselect all</value>
+  </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>Select all</value>
+  </data>
+  <data name="Presets2160p" xml:space="preserve">
+    <value>2160p</value>
+  </data>
+  <data name="Presets1440p" xml:space="preserve">
+    <value>1440p</value>
+  </data>
+  <data name="Presets1080p" xml:space="preserve">
+    <value>1080p</value>
+  </data>
+  <data name="Presets480p" xml:space="preserve">
+    <value>480p</value>
+  </data>
+  <data name="Presets360p" xml:space="preserve">
+    <value>360p</value>
+  </data>
+  <data name="Presets720p" xml:space="preserve">
+    <value>720p</value>
+  </data>
+  <data name="Custom" xml:space="preserve">
+    <value>Custom</value>
+  </data>
+  <data name="StatusPartiallyCompleted" xml:space="preserve">
+    <value>Partially Completed</value>
+  </data>
+  <data name="UnavailableVideos" xml:space="preserve">
+    <value>{0} unavailable videos</value>
+  </data>
+  <data name="DownloadingItemOf" xml:space="preserve">
+    <value>{0} of {1}</value>
   </data>
 </root>

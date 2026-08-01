@@ -53,28 +53,13 @@ namespace LechYTDLP.Services
         public async Task InitializeAsync()
         {
             await _semaphore.WaitAsync();
+
             try
             {
                 using var connection = new SqliteConnection(_connectionString);
                 await connection.OpenAsync();
 
-                var command = connection.CreateCommand();
-                command.CommandText =
-                @"
-                CREATE TABLE IF NOT EXISTS Downloads (
-                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    GuidId TEXT NOT NULL,
-                    Url TEXT NOT NULL,
-                    InfoJson TEXT NOT NULL,
-                    State INTEGER NOT NULL,
-                    Progress INTEGER NOT NULL,
-                    SelectedFormatJson TEXT NOT NULL,
-                    FilePath TEXT NOT NULL,
-                    CreatedAt TEXT NOT NULL
-                );
-            ";
-
-                await command.ExecuteNonQueryAsync();
+                await RunMigrationsAsync(connection);
             }
             finally
             {
@@ -94,9 +79,9 @@ namespace LechYTDLP.Services
                 command.CommandText =
                 @"
                 INSERT INTO Downloads
-                (GuidId, Url, InfoJson, State, Progress, SelectedFormatJson, FilePath, CreatedAt)
+                (GuidId, Url, InfoJson, State, Progress, SelectedFormatJson, SelectedFormatsJson, FilePath, Meta, CreatedAt)
                 VALUES
-                ($guidid, $url, $info, $state, $progress, $format, $filePath, $createdAt);
+                ($guidid, $url, $info, $state, $progress, $format, $selectedFormats, $filePath, $meta, $createdAt);
             ";
 
                 command.Parameters.AddWithValue("$guidid", item.Id.ToString());
@@ -105,7 +90,9 @@ namespace LechYTDLP.Services
                 command.Parameters.AddWithValue("$state", (int)item.State);
                 command.Parameters.AddWithValue("$progress", item.Progress);
                 command.Parameters.AddWithValue("$format", JsonSerializer.Serialize(item.SelectedFormat, App.JsonSerializerOptions));
+                command.Parameters.AddWithValue("$selectedFormats", JsonSerializer.Serialize(item.SelectedFormats, App.JsonSerializerOptions));
                 command.Parameters.AddWithValue("$filePath", item.FilePath);
+                command.Parameters.AddWithValue("$meta", JsonSerializer.Serialize(item.Meta, App.JsonSerializerOptions));
                 command.Parameters.AddWithValue("$createdAt", DateTime.UtcNow.ToString("o"));
 
                 await command.ExecuteNonQueryAsync();
@@ -132,7 +119,7 @@ namespace LechYTDLP.Services
 
                 var command = connection.CreateCommand();
                 command.CommandText =
-                    "SELECT Id, GuidId, Url, InfoJson, State, Progress, SelectedFormatJson, FilePath FROM Downloads ORDER BY Id ASC;";
+                    "SELECT Id, GuidId, Url, InfoJson, State, Progress, SelectedFormatJson, SelectedFormatsJson, FilePath, Meta FROM Downloads ORDER BY Id ASC;";
 
                 using var reader = await command.ExecuteReaderAsync();
 
@@ -147,7 +134,9 @@ namespace LechYTDLP.Services
                         State = (DownloadState)reader.GetInt32(4),
                         Progress = reader.GetInt32(5),
                         SelectedFormat = JsonSerializer.Deserialize<SelectedFormat>(reader.GetString(6), App.JsonSerializerOptions)!,
-                        FilePath = reader.GetString(7)
+                        SelectedFormats = JsonSerializer.Deserialize<SelectedFormat[]>(reader.GetString(7), App.JsonSerializerOptions)!,
+                        FilePath = reader.GetString(8),
+                        Meta = JsonSerializer.Deserialize<DownloadItemMeta>(reader.GetString(9), App.JsonSerializerOptions)!
                     });
                 }
             }
@@ -161,6 +150,88 @@ namespace LechYTDLP.Services
             }
 
             return list;
+        }
+
+        private async Task RunMigrationsAsync(SqliteConnection connection)
+        {
+            var create = connection.CreateCommand();
+            create.CommandText = @"
+            CREATE TABLE IF NOT EXISTS Downloads (
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                GuidId TEXT NOT NULL,
+                Url TEXT NOT NULL,
+                InfoJson TEXT NOT NULL,
+                State INTEGER NOT NULL,
+                Progress INTEGER NOT NULL,
+                SelectedFormatJson TEXT NOT NULL,
+                SelectedFormatsJson TEXT NOT NULL,
+                FilePath TEXT NOT NULL,
+                Meta TEXT NOT NULL,
+                CreatedAt TEXT NOT NULL
+            );
+            ";
+
+            await create.ExecuteNonQueryAsync();
+
+            var versionCmd = connection.CreateCommand();
+            versionCmd.CommandText = "PRAGMA user_version;";
+            var version = Convert.ToInt32(await versionCmd.ExecuteScalarAsync());
+
+            // v2 Migration
+            if (version < 2)
+            {
+                if (!await ColumnExists(connection, "Downloads", "SelectedFormatsJson"))
+                {
+                    var cmd = connection.CreateCommand();
+                    cmd.CommandText =
+                        @"ALTER TABLE Downloads
+                  ADD COLUMN SelectedFormatsJson TEXT NOT NULL DEFAULT '[]';";
+
+                    await cmd.ExecuteNonQueryAsync();
+                }
+
+                var updateVersion = connection.CreateCommand();
+                updateVersion.CommandText = "PRAGMA user_version = 2;";
+                await updateVersion.ExecuteNonQueryAsync();
+
+                version = 2;
+            }
+
+            // v3 Migration
+            if (version < 3)
+            {
+                if (!await ColumnExists(connection, "Downloads", "Meta"))
+                {
+                    var cmd = connection.CreateCommand();
+                    cmd.CommandText =
+                        @"ALTER TABLE Downloads
+                  ADD COLUMN Meta TEXT NOT NULL DEFAULT '{}';";
+
+                    await cmd.ExecuteNonQueryAsync();
+                }
+
+                var updateVersion = connection.CreateCommand();
+                updateVersion.CommandText = "PRAGMA user_version = 3;";
+                await updateVersion.ExecuteNonQueryAsync();
+
+                version = 3;
+            }
+        }
+
+        private static async Task<bool> ColumnExists(SqliteConnection connection, string table, string column)
+        {
+            var cmd = connection.CreateCommand();
+            cmd.CommandText = $"PRAGMA table_info({table});";
+
+            using var reader = await cmd.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                if (reader.GetString(1).Equals(column, StringComparison.OrdinalIgnoreCase))
+                    return true;
+            }
+
+            return false;
         }
 
         public async Task DeleteByGuidIdAsync(string GuidId)

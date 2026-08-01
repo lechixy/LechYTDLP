@@ -52,7 +52,7 @@ namespace LechYTDLP
             var hWnd = WindowNative.GetWindowHandle(this);
             var windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
             AppWindow appWindow = AppWindow.GetFromWindowId(windowId);
-            appWindow.Resize(new Windows.Graphics.SizeInt32(800, 600));
+            appWindow.Resize(new Windows.Graphics.SizeInt32(1000, 800));
 
             // Apply theme to app and listen to events
             AppThemeChanged(SettingsService.AppTheme);

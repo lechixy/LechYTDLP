@@ -18,10 +18,10 @@
         <Grid ColumnSpacing="12"
               Padding="8">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
                 <!-- Resim -->
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
                 <!-- Metinler (Kalan yer) -->
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
             <!-- Resim Alanı: Sabit Boyutlandırma -->

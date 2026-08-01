@@ -588,6 +588,9 @@
   <data name="StatusDownloading" xml:space="preserve">
     <value>İndiriliyor</value>
   </data>
+  <data name="StatusDownloadingOf" xml:space="preserve">
+    <value>{1} öğeden {0} kadarı indiriliyor</value>
+  </data>
   <data name="StatusCompleted" xml:space="preserve">
     <value>Tamamlandı</value>
   </data>
@@ -943,6 +946,9 @@ Değişiklikler yeniden başlatıldıktan sonra aktif olacaktır. (İsterseniz s
   <data name="Video" xml:space="preserve">
     <value>Video</value>
   </data>
+  <data name="Video2" xml:space="preserve">
+    <value>video</value>
+  </data>
   <data name="Playlist" xml:space="preserve">
     <value>Oynatma listesi</value>
   </data>
@@ -1011,5 +1017,44 @@ Değişiklikler yeniden başlatıldıktan sonra aktif olacaktır. (İsterseniz s
   </data>
   <data name="ForceOverwritesSetting.Description" xml:space="preserve">
     <value>Tüm video ve metadata dosyalarının üzerine yaz (bu seçenek --no-continue içerir)</value>
+  </data>
+  <data name="DownloadPlaylist" xml:space="preserve">
+    <value>Oynatma listesini seçin</value>
+  </data>
+  <data name="DeselectAll" xml:space="preserve">
+    <value>Tüm seçimleri kaldır</value>
+  </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>Tümünü seç</value>
+  </data>
+  <data name="Presets2160p" xml:space="preserve">
+    <value>2160p</value>
+  </data>
+  <data name="Presets1440p" xml:space="preserve">
+    <value>1440p</value>
+  </data>
+  <data name="Presets1080p" xml:space="preserve">
+    <value>1080p</value>
+  </data>
+  <data name="Presets480p" xml:space="preserve">
+    <value>480p</value>
+  </data>
+  <data name="Presets360p" xml:space="preserve">
+    <value>360p</value>
+  </data>
+  <data name="Presets720p" xml:space="preserve">
+    <value>720p</value>
+  </data>
+  <data name="Custom" xml:space="preserve">
+    <value>Özel</value>
+  </data>
+  <data name="StatusPartiallyCompleted" xml:space="preserve">
+    <value>Kısmen Tamamlandı</value>
+  </data>
+  <data name="UnavailableVideos" xml:space="preserve">
+    <value>{0} mevcut olmayan video</value>
+  </data>
+  <data name="DownloadingItemOf" xml:space="preserve">
+    <value>{0} of {1}</value>
   </data>
 </root>

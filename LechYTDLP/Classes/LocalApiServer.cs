@@ -29,7 +29,7 @@ namespace LechYTDLP.Classes
         public static int Port => 3781;
 
         public event Action<RequestData>? DownloadRequested;
-        public event Action<string>? ServerStatusChanged;
+        //public event Action<string>? ServerStatusChanged;
 
         public LocalApiServer()
         {

@@ -38,9 +38,15 @@ namespace LechYTDLP.Services
             new() { DisplayName = App.LocalizationService.Get("PresetsBestQuality"), Value = "bestquality" },
             new() { DisplayName = App.LocalizationService.Get("PresetsBestQualityVideo"), Value = "bestvideo" },
             new() { DisplayName = App.LocalizationService.Get("PresetsBestQualityAudio"), Value = "bestaudio" },
-            new() { DisplayName = App.LocalizationService.Get("PresetsCompatible720pMP4"), Value = "compatible720pmp4" },
             new() { DisplayName = App.LocalizationService.Get("PresetsCompatible1080pMP4"), Value = "compatible1080pmp4" },
+            new() { DisplayName = App.LocalizationService.Get("PresetsCompatible720pMP4"), Value = "compatible720pmp4" },
             new() { DisplayName = App.LocalizationService.Get("PresetsExtractAudioMP3"), Value = "extractaudiomp3" },
+            new() { DisplayName = App.LocalizationService.Get("Presets2160p"), Value = "2160p" },
+            new() { DisplayName = App.LocalizationService.Get("Presets1440p"), Value = "1440p" },
+            new() { DisplayName = App.LocalizationService.Get("Presets1080p"), Value = "1080p" },
+            new() { DisplayName = App.LocalizationService.Get("Presets720p"), Value = "720p" },
+            new() { DisplayName = App.LocalizationService.Get("Presets480p"), Value = "480p" },
+            new() { DisplayName = App.LocalizationService.Get("Presets360p"), Value = "360p" },
         ];
         public static Setting SelectedPreset
         {
