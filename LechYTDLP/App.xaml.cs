@@ -47,7 +47,8 @@ namespace LechYTDLP
         /// Application version string in the format of "Major.Minor.Build", e.g. "1.0.0"
         /// </summary>
         /// https://stackoverflow.com/questions/28635208/retrieve-the-current-app-version-from-package
-        public static string GetAppVersion()
+        /// <param name="addVersionPrefix">Whether to add the "v" prefix to the version string. Default is false.</param>
+        public static string GetAppVersion(bool addVersionPrefix = false)
         {
             try
             {
@@ -56,7 +57,8 @@ namespace LechYTDLP
                 PackageId packageId = package.Id;
                 PackageVersion version = packageId.Version;
 
-                return $"{version.Major}.{version.Minor}.{version.Build}";
+                string versionString = $"{version.Major}.{version.Minor}.{version.Build}";
+                return addVersionPrefix ? $"v{versionString}" : versionString;
             }
             catch (InvalidOperationException)
             {
@@ -68,7 +70,8 @@ namespace LechYTDLP
                     return $"{assemblyVersion.Major}.{assemblyVersion.Minor}.{assemblyVersion.Build}";
                 }
 
-                return "1.0.0";
+                // 3. If all else fails, return a default version string
+                return addVersionPrefix ? "v1.0.0" : "1.0.0";
             }
         }
 
@@ -130,8 +133,8 @@ namespace LechYTDLP
         {
             Window = new MainWindow();
 
-            // Init Sentry if it is enabled and app in release mode
 #if !DEBUG
+            // Init Sentry if it is enabled and app in release mode
             if (IsSentryEnabled && !string.IsNullOrEmpty(DefaultSentryDsn))
             {
                 Debug.WriteLine("Initializing Sentry...");
@@ -142,8 +145,10 @@ namespace LechYTDLP
                         // A Sentry Data Source Name (DSN) is required.
                         // See https://docs.sentry.io/product/sentry-basics/dsn-explainer/
                         // You can set it in the SENTRY_DSN environment variable, or you can set it in code here.
-
                         options.Dsn = DefaultSentryDsn;
+
+                        // Set release version to the app version
+                        options.Release = $"lechytdlp@{GetAppVersion(true)}";
 
                         // When debug is enabled, the Sentry client will emit detailed debugging information to the console.
                         // This might be helpful, or might interfere with the normal operation of your application.
