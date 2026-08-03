@@ -353,6 +353,8 @@ namespace LechYTDLP
         public static async Task<string?> PickFolderAsync(Window window)
         {
             var picker = new FolderPicker();
+            picker.FileTypeFilter.Add("*");
+            picker.SuggestedStartLocation = PickerLocationId.Downloads;
             var hwnd = WindowNative.GetWindowHandle(window);
             InitializeWithWindow.Initialize(picker, hwnd);
             StorageFolder folder = await picker.PickSingleFolderAsync();

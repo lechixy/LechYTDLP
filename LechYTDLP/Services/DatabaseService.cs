@@ -21,6 +21,7 @@ namespace LechYTDLP.Services
     {
         private readonly string _connectionString;
         private readonly SemaphoreSlim _semaphore = new(1, 1);
+        private static readonly SemaphoreSlim _migrationLock = new(1, 1);
 
         public DatabaseService()
         {
@@ -169,67 +170,65 @@ namespace LechYTDLP.Services
 
         private async Task RunMigrationsAsync(SqliteConnection connection)
         {
-            var create = connection.CreateCommand();
-            create.CommandText = @"
-            CREATE TABLE IF NOT EXISTS Downloads (
-                Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                GuidId TEXT NOT NULL,
-                Url TEXT NOT NULL,
-                InfoJson TEXT NOT NULL,
-                State INTEGER NOT NULL,
-                Progress INTEGER NOT NULL,
-                SelectedFormatJson TEXT NOT NULL,
-                SelectedFormatsJson TEXT NOT NULL,
-                FilePath TEXT NOT NULL,
-                Meta TEXT NOT NULL,
-                CreatedAt TEXT NOT NULL
-            );
-            ";
-
-            await create.ExecuteNonQueryAsync();
-
-            var versionCmd = connection.CreateCommand();
-            versionCmd.CommandText = "PRAGMA user_version;";
-            var version = Convert.ToInt32(await versionCmd.ExecuteScalarAsync());
-
-            // v2 Migration
-            if (version < 2)
+            await _migrationLock.WaitAsync();
+            try
             {
-                if (!await ColumnExists(connection, "Downloads", "SelectedFormatsJson"))
-                {
-                    var cmd = connection.CreateCommand();
-                    cmd.CommandText =
-                        @"ALTER TABLE Downloads
-                  ADD COLUMN SelectedFormatsJson TEXT NOT NULL DEFAULT '[]';";
+                var create = connection.CreateCommand();
+                create.CommandText = @"
+                    CREATE TABLE IF NOT EXISTS Downloads (
+                        Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        GuidId TEXT NOT NULL,
+                        Url TEXT NOT NULL,
+                        InfoJson TEXT NOT NULL,
+                        State INTEGER NOT NULL,
+                        Progress INTEGER NOT NULL,
+                        SelectedFormatJson TEXT NOT NULL,
+                        SelectedFormatsJson TEXT NOT NULL,
+                        FilePath TEXT NOT NULL,
+                        Meta TEXT NOT NULL,
+                        CreatedAt TEXT NOT NULL
+                    );
+                ";
 
-                    await cmd.ExecuteNonQueryAsync();
+                await create.ExecuteNonQueryAsync();
+
+                var versionCmd = connection.CreateCommand();
+                versionCmd.CommandText = "PRAGMA user_version;";
+                var version = Convert.ToInt32(await versionCmd.ExecuteScalarAsync());
+
+                // v2 Migration
+                if (version < 2)
+                {
+                    if (!await ColumnExists(connection, "Downloads", "SelectedFormatsJson"))
+                    {
+                        await TryAddColumnAsync(connection, "ALTER TABLE Downloads ADD COLUMN SelectedFormatsJson TEXT NOT NULL DEFAULT '[]';");
+                    }
+
+                    var updateVersion = connection.CreateCommand();
+                    updateVersion.CommandText = "PRAGMA user_version = 2;";
+                    await updateVersion.ExecuteNonQueryAsync();
+
+                    version = 2;
                 }
 
-                var updateVersion = connection.CreateCommand();
-                updateVersion.CommandText = "PRAGMA user_version = 2;";
-                await updateVersion.ExecuteNonQueryAsync();
+                // v3 Migration
+                if (version < 3)
+                {
+                    if (!await ColumnExists(connection, "Downloads", "Meta"))
+                    {
+                        await TryAddColumnAsync(connection, "ALTER TABLE Downloads ADD COLUMN Meta TEXT NOT NULL DEFAULT '{}';");
+                    }
 
-                version = 2;
+                    var updateVersion = connection.CreateCommand();
+                    updateVersion.CommandText = "PRAGMA user_version = 3;";
+                    await updateVersion.ExecuteNonQueryAsync();
+
+                    version = 3;
+                }
             }
-
-            // v3 Migration
-            if (version < 3)
+            finally
             {
-                if (!await ColumnExists(connection, "Downloads", "Meta"))
-                {
-                    var cmd = connection.CreateCommand();
-                    cmd.CommandText =
-                        @"ALTER TABLE Downloads
-                  ADD COLUMN Meta TEXT NOT NULL DEFAULT '{}';";
-
-                    await cmd.ExecuteNonQueryAsync();
-                }
-
-                var updateVersion = connection.CreateCommand();
-                updateVersion.CommandText = "PRAGMA user_version = 3;";
-                await updateVersion.ExecuteNonQueryAsync();
-
-                version = 3;
+                _migrationLock.Release();
             }
         }
 
@@ -247,6 +246,21 @@ namespace LechYTDLP.Services
             }
 
             return false;
+        }
+
+        private static async Task TryAddColumnAsync(SqliteConnection connection, string alterSql)
+        {
+            try
+            {
+                var cmd = connection.CreateCommand();
+                cmd.CommandText = alterSql;
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (SqliteException ex) when (ex.SqliteErrorCode == 1 &&
+                ex.Message.Contains("duplicate column name", StringComparison.OrdinalIgnoreCase))
+            {
+                // Kolon zaten var yok say
+            }
         }
 
         public async Task DeleteByGuidIdAsync(string GuidId)

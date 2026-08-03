@@ -54,7 +54,9 @@ namespace LechYTDLP.Views
 
         private void OnLogChanged(LogItem item)
         {
-            DispatcherQueue.TryEnqueue(() =>
+            if (item ==  null) return;
+
+            DispatcherQueue?.TryEnqueue(() =>
             {
                 var existing = UiLogs.FirstOrDefault(x => x.Id == item.Id);
 
@@ -72,7 +74,7 @@ namespace LechYTDLP.Views
                     //Debug.WriteLine($"Log updated: {existing.Message} {existing.Id}");
                 }
 
-                if (SettingsService.AutoScrollLogs)
+                if (SettingsService.AutoScrollLogs && LogListView != null)
                     LogListView.ScrollIntoView(item);
             });
         }
@@ -83,7 +85,7 @@ namespace LechYTDLP.Views
             LogService.ResetLog();
         }
 
-        private void LogPage_Unloaded(object sender, RoutedEventArgs e)
+        private void OnUnloaded(object sender, RoutedEventArgs e)
         {
             LogService.LogChanged -= OnLogChanged;
         }
