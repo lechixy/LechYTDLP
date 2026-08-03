@@ -24,6 +24,11 @@
                 HorizontalAlignment="Center"
                 Spacing="16">
 
+        <StackPanel.ChildrenTransitions>
+            <EntranceThemeTransition FromVerticalOffset="50" />
+            <RepositionThemeTransition IsStaggeringEnabled="False" />
+        </StackPanel.ChildrenTransitions>
+
         <Grid HorizontalAlignment="Center"
               RowSpacing="6"
               VerticalAlignment="Stretch">

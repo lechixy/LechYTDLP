@@ -2,6 +2,7 @@
 using LechYTDLP.Components;
 using LechYTDLP.Util;
 using Microsoft.Data.Sqlite;
+using Sentry;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -23,31 +24,45 @@ namespace LechYTDLP.Services
 
         public DatabaseService()
         {
-            string dbPath = Path.Combine(LechKnownFolders.GetPath(LechKnownFolder.Documents), "LechYTDLP\\Database\\history.db");
-            string oldDbPath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "history.db");
+            string localDb = Path.Combine(ApplicationData.Current.LocalFolder.Path, "history.db");
+            string documentsDb = Path.Combine(LechKnownFolders.GetPath(LechKnownFolder.Documents), "LechYTDLP\\Database\\history.db");
 
             try
             {
-                if (!File.Exists(dbPath))
+                Directory.CreateDirectory(Path.GetDirectoryName(localDb)!);
+
+                if (!File.Exists(localDb))
                 {
                     // We check if the old database exists and copy it to the new location
                     // Start with v1.6.0, we moved the database to the Documents folder for better accessibility.
-                    if (File.Exists(oldDbPath))
+                    // Start with v2.0.1, we moved the database to the LocalFolder for better compatibility with UWP apps.
+                    if (File.Exists(documentsDb))
                     {
-                        File.Copy(oldDbPath, dbPath, true);
-                        File.Delete(oldDbPath);
-                    }
+                        File.Copy(documentsDb, localDb, true);
 
-                    Debug.WriteLine("Database file not found. Creating a new one.");
-                    Directory.CreateDirectory(Path.GetDirectoryName(dbPath) ?? Path.Combine(LechKnownFolders.GetPath(LechKnownFolder.Documents), "LechYTDLP\\Database"));
-                    File.Create(dbPath).Close();
+                        // If the copy was successful, we can delete the old database to free up space.
+                        if (File.Exists(localDb))
+                        {
+                            File.Delete(documentsDb);
+                        }
+                    }
+                    else
+                    {
+                        Debug.WriteLine("Database file not found. Creating a new one.");
+                        File.Create(localDb).Dispose();
+                    }
                 }
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
+                SentrySdk.CaptureException(ex);
                 Debug.WriteLine($"Error while checking/creating database file: {ex.Message}");
+                throw;
             }
 
-            _connectionString = $"Data Source={dbPath}";
+            SentrySdk.SetTag("DatabasePath", localDb);
+            Debug.WriteLine($"Database path: {localDb}");
+            _connectionString = $"Data Source={localDb}";
         }
 
         public async Task InitializeAsync()

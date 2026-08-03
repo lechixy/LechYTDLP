@@ -1,13 +1,19 @@
 ﻿# v2.0.0
-- Updated yt-dlp to stable@2026.06.09
+**Playlist support finally no more junk to download all that playlist. Just paste link select preset you want to use hit download 💖**
+
+- Updated yt-dlp to stable@2026.07.04
+
 # Features
 - Adding Playlist support to the app (Download all videos from a playlist)
 - Changing the width and height of the main window to be more compact and user-friendly (1000x800)
 - Refactoring GetVideoInfo for Playlist support
 - Adding enter animations to Select Format Dialog
+- Adding new presets: 4k, 2k, 1080p, 720p, 480p, 360p
 
 # Fixes
 - Fixing the issue sometimes API not pasting the URL to the download textbox (because of threading issues)
+
+**Full Changelog**: https://github.com/lechixy/LechYTDLP/compare/v1.6.5...v2.0.0
 
 ---------------
 # v1.6.5
