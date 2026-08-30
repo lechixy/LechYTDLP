@@ -50,125 +50,62 @@
                 </Button>
 
                 <!--Current Media Section-->
-                <Button x:Name="CurrentMediaContainer"
-                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                        CornerRadius="{ThemeResource OverlayCornerRadius}"
-                        Visibility="Collapsed"
-                        Click="OnClick"
-                        VerticalAlignment="Stretch"
-                        HorizontalAlignment="Stretch"
-                        HorizontalContentAlignment="Stretch"
-                        Padding="16">
-                    <Grid ColumnSpacing="12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <!--<Grid.ContextFlyout>
-                            <MenuFlyout>
-                                <MenuFlyoutItem Text="Download again"
-                                                Click="OnClick"
-                                                Icon="{ui:FontIcon Glyph=&#xE896;}"
-                                                Name="DownloadAgain" />
-                                <MenuFlyoutSubItem Text="Copy"
-                                                   Icon="{ui:FontIcon Glyph=&#xE8C8;}">
-                                    <MenuFlyoutItem Text="Copy title"
+                <ListView SelectionMode="None"
+                          x:Name="CurrentQueueListView"
+                          HorizontalContentAlignment="Stretch"
+                          Margin="0,6,0,0">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="services:DownloadItem">
+                            <Grid>
+                                <!--<Grid.ContextFlyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutItem Text="Download again"
                                                     Click="OnClick"
-                                                    Icon="{ui:FontIcon Glyph=&#xE8D2;}"
-                                                    Name="CopyTitle" />
-                                    <MenuFlyoutItem Text="Copy link"
+                                                    Icon="{ui:FontIcon Glyph=&#xE896;}"
+                                                    Name="DownloadAgain" />
+                                    <MenuFlyoutItem Text="Open in explorer"
                                                     Click="OnClick"
-                                                    Icon="{ui:FontIcon Glyph=&#xE71B;}"
-                                                    Name="CopyLink" />
-                                </MenuFlyoutSubItem>
-                                <MenuFlyoutItem Text="Delete"
-                                                Foreground="{ThemeResource SystemFillColorCriticalBrush}"
-                                                Click="OnClick"
-                                                Icon="{ui:FontIcon Glyph=&#xE74D;}"
-                                                Name="Delete" />
-                            </MenuFlyout>
-                        </Grid.ContextFlyout>-->
-
-                        <Border CornerRadius="{StaticResource ControlCornerRadius}"
-                                Height="100"
-                                Width="177"
-                                MaxWidth="180"
-                                MinWidth="170"
-                                Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}">
-                            <Image x:Name="CurrentThumbnailImage"
-                                   Height="100"
-                                   Width="177"
-                                   MaxWidth="180"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"
-                                   MinWidth="100"
-                                   Stretch="UniformToFill" />
-                        </Border>
-
-                        <Grid Grid.Column="1"
-                              RowSpacing="2"
-                              HorizontalAlignment="Stretch">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-
-                            <TextBlock Grid.Row="0"
-                                       x:Name="CurrentVideoTitle"
-                                       Style="{ThemeResource SubtitleTextBlockStyle}"
-                                       Foreground="{ThemeResource TextFillColorPrimary}"
-                                       TextWrapping="NoWrap" />
-
-                            <RichTextBlock Grid.Row="1"
-                                           x:Name="CurrentVideoUploaderAndSavingTo"
-                                           Style="{ThemeResource BodyRichTextBlockStyle}"
-                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                           TextWrapping="NoWrap" />
-
-                            <!--<TextBlock Grid.Row="2"
-                                       x:Name="CurrentVideoMetadata"
-                                       Style="{ThemeResource CaptionTextBlockStyle}"
-                                       Foreground="{ThemeResource TextFillColorPrimary}"
-                                       TextWrapping="NoWrap" />-->
-
-                            <Grid Grid.Row="2"
-                                  Margin="0,0,0,4"
-                                  VerticalAlignment="Bottom"
-                                  HorizontalAlignment="Stretch">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock Grid.Row="0"
-                                           x:Name="CurrentVideoStatus"
-                                           Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                                           Style="{ThemeResource CaptionTextBlockStyle}"
-                                           VerticalAlignment="Bottom"
-                                           TextWrapping="NoWrap" />
-
-                                <Button Grid.Row="1"
-                                        HorizontalAlignment="Right"
-                                        VerticalAlignment="Bottom"
-                                        Style="{StaticResource AccentButtonStyle}"
-                                        IsEnabled="False"
-                                        x:Name="PauseOrResumeButton"
-                                        Click="OnClick">
-                                    <SymbolIcon Symbol="Pause" />
-                                </Button>
+                                                    Icon="{ui:FontIcon Glyph=&#xEC50;}"
+                                                    Name="OpenInExplorer" />
+                                    <MenuFlyoutSubItem Text="Copy"
+                                                       Icon="{ui:FontIcon Glyph=&#xE8C8;}">
+                                        <MenuFlyoutItem Text="Copy title"
+                                                        Click="OnClick"
+                                                        Icon="{ui:FontIcon Glyph=&#xE8D2;}"
+                                                        Name="CopyTitle" />
+                                        <MenuFlyoutItem Text="Copy link"
+                                                        Click="OnClick"
+                                                        Icon="{ui:FontIcon Glyph=&#xE71B;}"
+                                                        Name="CopyLink" />
+                                        <MenuFlyoutItem Text="Copy file path"
+                                                        Click="OnClick"
+                                                        Icon="{ui:FontIcon Glyph=&#xE8B7;}"
+                                                        Name="CopyFilepath" />
+                                    </MenuFlyoutSubItem>
+                                    <MenuFlyoutItem Text="Delete"
+                                                    Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                                                    Click="OnClick"
+                                                    Icon="{ui:FontIcon Glyph=&#xE74D;}"
+                                                    Name="Delete" />
+                                </MenuFlyout>
+                            </Grid.ContextFlyout>-->
+                                <components:CurrentMediaItem Item="{x:Bind}"
+                                                      HorizontalAlignment="Stretch" />
                             </Grid>
-
-                            <ProgressBar x:Name="CurrentVideoProgress"
-                                         Visibility="Visible"
-                                         VerticalAlignment="Bottom"
-                                         HorizontalAlignment="Stretch"
-                                         Grid.Row="3" />
-                        </Grid>
-                    </Grid>
-                </Button>
-
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment"
+                                    Value="Stretch" />
+                            <Setter Property="Padding"
+                                    Value="0" />
+                            <Setter Property="Margin"
+                                    Value="0,6,0,6" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                </ListView>
+                
                 <!--In Queue Section-->
                 <TextBlock x:Uid="InQueue"
                            Style="{StaticResource TitleTextBlockStyle}"

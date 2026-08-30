@@ -30,7 +30,7 @@ namespace LechYTDLP.Views
     /// </summary>
     public sealed partial class DownloadsPage : Page
     {
-
+        public ObservableCollection<DownloadItem> CurrentQueueCollection { get; } = [];
         public ObservableCollection<DownloadItem> QueueCollection { get; } = [];
         public ObservableCollection<DownloadItem> HistoryCollection { get; } = [];
 
@@ -42,11 +42,15 @@ namespace LechYTDLP.Views
 
             if (App.DownloadService != null)
             {
-                App.DownloadService.QueueUpdated += QueueUpdated;
-                App.DownloadService.HistoryUpdated += HistoryUpdated;
-                App.DownloadService.CurrentMediaUpdated += CurrentMediaUpdated;
+                App.DownloadService.CurrentQueueUpdated += CurrentUpdated;
+                App.DownloadService.InQueueUpdated += InUpdated;
+                App.DownloadService.HistoryQueueUpdated += HistoryUpdated;
             }
 
+            if (CurrentQueueListView != null)
+            {
+                CurrentQueueListView.ItemsSource = CurrentQueueCollection;
+            }
             if (QueueListView != null)
             {
                 QueueListView.ItemsSource = QueueCollection;
@@ -57,9 +61,19 @@ namespace LechYTDLP.Views
             }
 
             // burda da çağırıyoruz ki sayfa açıldığında güncel veriler gelsin
-            UpdateCurrentVideo();
             UpdateCurrentQueue();
+            UpdateInQueue();
             DispatcherQueue.TryEnqueue(async () => await UpdateHistoryQueue(true));
+        }
+
+        private void CurrentUpdated()
+        {
+            DispatcherQueue.TryEnqueue(UpdateCurrentQueue);
+        }
+
+        private void InUpdated()
+        {
+            DispatcherQueue.TryEnqueue(UpdateInQueue);
         }
 
         private void HistoryUpdated(bool getHistoryFromDatabase)
@@ -67,17 +81,39 @@ namespace LechYTDLP.Views
             DispatcherQueue.TryEnqueue(() => _ = UpdateHistoryQueue(getHistoryFromDatabase));
         }
 
-        private void QueueUpdated()
-        {
-            DispatcherQueue.TryEnqueue(UpdateCurrentQueue);
-        }
-
-        private void CurrentMediaUpdated()
-        {
-            DispatcherQueue.TryEnqueue(UpdateCurrentVideo);
-        }
-
         public void UpdateCurrentQueue()
+        {
+            var currentDownloads = App.DownloadService.CurrentDownloads;
+
+            if (currentDownloads.Count == 0)
+            {
+                CurrentQueueListView.Visibility = Visibility.Collapsed;
+                NoQueueContainer.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                CurrentQueueListView.Visibility = Visibility.Visible;
+                NoQueueContainer.Visibility = Visibility.Collapsed;
+
+                try
+                {
+                    // Listeyi kopyalıyoruz (Thread Safety)
+                    var snapshot = App.DownloadService.CurrentDownloads.ToList();
+
+                    CurrentQueueCollection.Clear();
+                    foreach (var item in snapshot)
+                    {
+                        CurrentQueueCollection.Add(item);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Current Queue Error: {ex.Message}");
+                }
+            }
+        }
+
+        public void UpdateInQueue()
         {
             if (App.DownloadService?.Queue == null) return;
             Debug.WriteLine("QUEUE UPDATED");
@@ -89,8 +125,6 @@ namespace LechYTDLP.Views
 
                 if ((snapshot.Count - 1) > 0) QueueTitleText.Visibility = Visibility.Visible;
                 else QueueTitleText.Visibility = Visibility.Collapsed;
-
-                if (snapshot.Count != 0) snapshot.RemoveAt(0); // İlk öğe CurrentMedia olduğu için kaldırıyoruz
 
                 QueueCollection.Clear();
                 foreach (var item in snapshot)
@@ -179,97 +213,6 @@ namespace LechYTDLP.Views
             }
         }
 
-        public void UpdateCurrentVideo()
-        {
-            var currentDownload = App.DownloadService.CurrentMedia;
-
-            if (currentDownload != null)
-            {
-                var info = currentDownload.Info;
-
-                CurrentVideoStatus.Style = Application.Current.Resources["CaptionTextBlockStyle"] as Style;
-                CurrentVideoStatus.Foreground = Application.Current.Resources["AccentTextFillColorPrimaryBrush"] as SolidColorBrush;
-
-                if (currentDownload.State == DownloadState.Downloading)
-                {
-                    CurrentVideoProgress.ShowPaused = false;
-
-                    PauseOrResumeButton.IsEnabled = true;
-                    PauseOrResumeButton.Content = new SymbolIcon(Symbol.Pause);
-                }
-                else if (currentDownload.State == DownloadState.TestingFormat)
-                {
-                    CurrentVideoProgress.ShowPaused = true;
-                    CurrentVideoStatus.Foreground = Application.Current.Resources["SystemFillColorCautionBrush"] as SolidColorBrush;
-                }
-                else if (currentDownload.State == DownloadState.Paused || (CurrentVideoProgress.ShowPaused && currentDownload.State == DownloadState.Queued))
-                {
-                    CurrentVideoProgress.ShowPaused = true;
-                    CurrentVideoStatus.Foreground = Application.Current.Resources["SystemFillColorCautionBrush"] as SolidColorBrush;
-
-                    PauseOrResumeButton.IsEnabled = true;
-                    PauseOrResumeButton.Content = new SymbolIcon(Symbol.Play);
-                }
-                else
-                {
-                    PauseOrResumeButton.IsEnabled = false;
-                }
-
-                CurrentMediaContainer.Visibility = Visibility.Visible;
-                NoQueueContainer.Visibility = Visibility.Collapsed;
-
-                string thumbUrl = string.IsNullOrEmpty(currentDownload.Info.BestThumbnailUrl) ? "https://placehold.co/320x180.png?text=No+Thumbnail" : currentDownload.Info.BestThumbnailUrl;
-                if (!(CurrentThumbnailImage.Source is BitmapImage bmp && bmp.UriSource != null && bmp.UriSource.ToString() == thumbUrl))
-                {
-                    CurrentThumbnailImage.Source = new BitmapImage(new Uri(thumbUrl));
-                }
-
-                CurrentVideoTitle.Text = info.Title ?? App.LocalizationService.Get("UnknownTitle");
-
-                CurrentVideoUploaderAndSavingTo.Blocks.Clear();
-                var p = new Paragraph();
-                p.Inlines.Add(new Run { Text = $"@{info.Uploader}" ?? App.LocalizationService.Get("UnknownUploader") });
-                p.Inlines.Add(new Run { Text = $" • {App.LocalizationService.Get("SavingTo", SettingsService.DownloadPath)}" });
-                CurrentVideoUploaderAndSavingTo.Blocks.Add(p);
-
-                //CurrentVideoUploaderAndSavingTo.Text = $"{info.uploader ?? "Unknown Uploader"} - Saving to {SettingsService.DownloadPath}";
-
-                //// Metadata
-                //var metadataItem = new List<string>();
-
-                //if (currentDownload.Type == InfoType.Playlist)
-                //{
-                //    metadataItem.Add(App.LocalizationService.Get("DownloadingItemOf", currentDownload.Meta.PlaylistCurrentIndex, currentDownload.Info.PlaylistCount ?? 0));
-                //}
-
-                //if (metadataItem.Count > 0)
-                //{
-                //    CurrentVideoMetadata.Visibility = Visibility.Visible;
-                //    CurrentVideoMetadata.Text = string.Join(" • ", metadataItem);
-                //}
-                //else CurrentVideoMetadata.Visibility = Visibility.Collapsed;
-
-                CurrentVideoStatus.Text = currentDownload.State switch
-                {
-                    DownloadState.Queued => App.LocalizationService.Get("StatusQueued"),
-                    DownloadState.Downloading => currentDownload.Type == InfoType.Video ?
-                        App.LocalizationService.Get("StatusDownloading") : App.LocalizationService.Get("StatusDownloadingOf", currentDownload.Meta.PlaylistCurrentIndex, currentDownload.Info.PlaylistCount ?? 0),
-                    DownloadState.Completed => App.LocalizationService.Get("StatusCompleted"),
-                    DownloadState.PartiallyCompleted => App.LocalizationService.Get("StatusPartiallyCompleted"),
-                    DownloadState.Failed => App.LocalizationService.Get("StatusFailed"),
-                    DownloadState.Paused => App.LocalizationService.Get("StatusPaused"),
-                    DownloadState.Resuming => App.LocalizationService.Get("StatusResuming"),
-                    DownloadState.TestingFormat => App.LocalizationService.Get("StatusTestingFormat"),
-                    _ => App.LocalizationService.Get("StatusQueued")
-                };
-                CurrentVideoProgress.Value = currentDownload.Progress;
-            }
-            else
-            {
-                CurrentMediaContainer.Visibility = Visibility.Collapsed;
-                NoQueueContainer.Visibility = Visibility.Visible;
-            }
-        }
         private async void OnClick(object sender, RoutedEventArgs e)
         {
             if (sender is MenuFlyoutItem flyout)
@@ -340,15 +283,18 @@ namespace LechYTDLP.Views
 
                         if (flyout.Name == "CopyMedia")
                         {
-                            if (dataContext.Type == InfoType.Video)
+                            if (!string.IsNullOrEmpty(dataContext.FilePath))
                             {
-                                var file = Windows.Storage.StorageFile.GetFileFromPathAsync(dataContext.FilePath).GetAwaiter().GetResult();
-                                var fileList = new List<Windows.Storage.IStorageItem> { file };
-                                package.SetStorageItems(fileList);
-                            }
-                            else if (dataContext.Type == InfoType.Playlist)
-                            {
-                                package.SetText(dataContext.FilePath);
+                                if (dataContext.Type == InfoType.Video)
+                                {
+                                    var file = Windows.Storage.StorageFile.GetFileFromPathAsync(dataContext.FilePath).GetAwaiter().GetResult();
+                                    var fileList = new List<Windows.Storage.IStorageItem> { file };
+                                    package.SetStorageItems(fileList);
+                                }
+                                else if (dataContext.Type == InfoType.Playlist)
+                                {
+                                    package.SetText(dataContext.FilePath);
+                                }
                             }
                         }
                         else if (flyout.Name == "CopyLink") package.SetText(dataContext.Url);
@@ -419,22 +365,9 @@ namespace LechYTDLP.Views
             }
             else if (sender is Button btn)
             {
-                if (btn.Name == "PauseOrResumeButton")
+                if (btn.Name == "ClearHistoryButton")
                 {
-                    await App.DownloadService.PauseOrResume();
-                }
-                else if (btn.Name == "ClearHistoryButton")
-                {
-                    ClearHistoryButton_Click();
-                }
-                else if (btn.Name == "CurrentMediaContainer")
-                {
-                    var currentDownload = App.DownloadService.CurrentMedia;
-                    if (currentDownload != null)
-                    {
-                        var filePath = currentDownload.FilePath;
-                        Debug.WriteLine(filePath);
-                    }
+                    await ClearHistoryButton_Click();
                 }
                 else if (btn.Name == "NoQueueContainer")
                 {
@@ -443,7 +376,7 @@ namespace LechYTDLP.Views
             }
 
         }
-        private async void ClearHistoryButton_Click()
+        private async Task ClearHistoryButton_Click()
         {
             await App.DatabaseService.ClearAllAsync();
             await UpdateHistoryQueue(true);
@@ -458,9 +391,9 @@ namespace LechYTDLP.Views
 
         private void DownloadsPage_Unloaded(object sender, RoutedEventArgs e)
         {
-            App.DownloadService.QueueUpdated -= QueueUpdated;
-            App.DownloadService.HistoryUpdated -= HistoryUpdated;
-            App.DownloadService.CurrentMediaUpdated -= CurrentMediaUpdated;
+            App.DownloadService.CurrentQueueUpdated -= CurrentUpdated;
+            App.DownloadService.InQueueUpdated -= InUpdated;
+            App.DownloadService.HistoryQueueUpdated -= HistoryUpdated;
         }
     }
 }

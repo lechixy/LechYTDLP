@@ -23,7 +23,8 @@ namespace LechYTDLP.Services
         Warning,
         Error,
         ApiServer,
-        App
+        App,
+        Database
     }
 
     public class LogItem : INotifyPropertyChanged

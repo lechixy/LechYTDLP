@@ -37,6 +37,8 @@ namespace LechYTDLP.Util
         }
         public static async Task Check(Exception ex)
         {
+            if (ex == null || ex.Message == null) return;
+
             // There is no yt-dlp executable.
             if (ex.Message.Contains("An error occurred trying to start process"))
             {
@@ -163,6 +165,20 @@ namespace LechYTDLP.Util
                 //// JsChallengeProviderInvalidResponseLog = "JS Challenge Provider returned an invalid response: {0}";
                 //LogService.Add(App.LocalizationService.Get("JsChallengeProviderInvalidResponseLog", ex.Message), LogTag.Warning);
                 return;
+            }
+            // Cookie file is invalid maybe copied from browser incorrectly.
+            // google it: ytdlp 'utf-8' codec can't decode byte 0xfc in position 3998: invalid start byte
+            else if (ex.Message.Contains("'utf-8' codec can't decode byte:") && ex.Message.Contains("invalid start byte"))
+            {
+                // CookieFileInWrongEncodingLog = "Cookie file is invalid, it needs to be in UTF-8 encoding";
+                // CookieFileInWrongEncodingLog.Tr = "Çerez dosyası geçersiz, UTF-8 kodlamasında olması gerekiyor";
+                LogService.Add($"{App.LocalizationService.Get("CookieFileInWrongEncodingLog")}", LogTag.Error);
+                App.InfoBarService.Show(new InfoBarMessage
+                {
+                    Title = App.LocalizationService.Get("CookieFileInWrongEncoding"),
+                    Message = App.LocalizationService.Get("CookieFileInWrongEncodingMsg"),
+                    Severity = InfoBarSeverity.Error
+                });
             }
             // Unhandled exception.
             else

@@ -12,8 +12,8 @@
   <a href="https://github.com/lechixy/LechYTDLP/stargazers">
     <img src="https://img.shields.io/github/stars/lechixy/LechYTDLP?style=flat-square">
   </a>
-  <a href="https://github.com/OpenNBS/OpenNoteBlockStudio/blob/master/LICENSE">
-    <img src="https://img.shields.io/github/license/OpenNBS/OpenNoteBlockStudio">
+  <a href="https://github.com/lechixy/LechYTDLP/blob/master/LICENSE">
+    <img src="https://img.shields.io/github/license/lechixy/LechYTDLP">
   </a>
 </p>
 

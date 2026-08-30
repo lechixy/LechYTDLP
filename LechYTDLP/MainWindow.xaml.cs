@@ -116,7 +116,8 @@ namespace LechYTDLP
                 if (SettingsService.DownloadAfterPaste)
                 {
                     await App.DownloadController.SearchAsync(text);
-                } else
+                }
+                else
                 {
                     // TODO: Show a dialog asking user if they want to download the pasted text (if it's a valid URL) or just paste it in the main page's input box.
                 }
@@ -179,8 +180,7 @@ namespace LechYTDLP
                         IsCancelable = false
                     });
 
-                    var ytdlp = new YTDLP();
-                    var update = await ytdlp.CheckAndDownloadUpdate();
+                    var update = await App.YtDlp.CheckAndDownloadUpdate();
 
                     if (update.Status == UpdateStatus.Updated)
                     {
@@ -233,16 +233,27 @@ namespace LechYTDLP
 
         private void UpdateLogBadge(int count, string whichBadge)
         {
-            DispatcherQueue.TryEnqueue(() =>
+            var dispatcher = DispatcherQueue;
+
+            if (dispatcher == null)
+                return;
+
+            dispatcher.TryEnqueue(() =>
             {
                 if (whichBadge == "Log")
                 {
+                    if (LogBadge == null)
+                        return;
+
                     LogBadge.Value = count;
                     LogBadge.Visibility =
                         count > 0 ? Visibility.Visible : Visibility.Collapsed;
                 }
                 else if (whichBadge == "Downloads")
                 {
+                    if (DownloadsBadge == null)
+                        return;
+
                     DownloadsBadge.Value = count;
                     DownloadsBadge.Visibility =
                         count > 0 ? Visibility.Visible : Visibility.Collapsed;

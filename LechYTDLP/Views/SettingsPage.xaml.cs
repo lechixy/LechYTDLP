@@ -133,7 +133,9 @@ public sealed partial class SettingsPage : Page
 
     private async void CheckVersion()
     {
-        ApplicationStatusCheck.Description = App.LocalizationService.Get("ApplicationStatusCheck");
+        ApplicationStatusCheck.Description =
+            App.LocalizationService.Get("ApplicationStatusCheck");
+
         CheckDependsButton.IsEnabled = false;
         CheckDependsButton.Content = new ProgressRing
         {
@@ -143,22 +145,54 @@ public sealed partial class SettingsPage : Page
             VerticalAlignment = VerticalAlignment.Center,
             HorizontalAlignment = HorizontalAlignment.Center
         };
+
         try
         {
-            var YTdlpVersion = await YTDLP.CheckExecutable(YTDLP.CheckExecutableApp.YTDLP);
-            ApplicationStatusCheck.Description = $"✅ YT-DLP ({YTdlpVersion}) • {App.LocalizationService.Get("ApplicationStatusCheckCheckingFFmpeg")}";
-            var FFmpegVersion = await YTDLP.CheckExecutable(YTDLP.CheckExecutableApp.FFMPEG);
-            ApplicationStatusCheck.Description = $"✅ YT-DLP ({YTdlpVersion}) • ✅ FFmpeg ({FFmpegVersion})";
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex.Message);
-            var ErroredApp = ex.Message.Split('"')[1] == SettingsService.YTDLPPath ? "YT-DLP" : "FFmpeg";
-            ApplicationStatusCheck.Description = $"⚠️ {ErroredApp} {App.LocalizationService.Get("ApplicationStatusCheckNotWorking")}";
-        }
+            string YTdlpVersion;
 
-        CheckDependsButton.Content = App.LocalizationService.Get("Check");
-        CheckDependsButton.IsEnabled = true;
+            try
+            {
+                YTdlpVersion = await YTDLP.CheckExecutable(
+                    YTDLP.CheckExecutableApp.YTDLP);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+
+                ApplicationStatusCheck.Description =
+                    $"⚠️ YT-DLP {App.LocalizationService.Get("ApplicationStatusCheckNotWorking")}";
+
+                return;
+            }
+
+            ApplicationStatusCheck.Description =
+                $"✅ YT-DLP ({YTdlpVersion}) • " +
+                App.LocalizationService.Get("ApplicationStatusCheckCheckingFFmpeg");
+
+            try
+            {
+                var FFmpegVersion = await YTDLP.CheckExecutable(
+                    YTDLP.CheckExecutableApp.FFMPEG);
+
+                ApplicationStatusCheck.Description =
+                    $"✅ YT-DLP ({YTdlpVersion}) • ✅ FFmpeg ({FFmpegVersion})";
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+
+                ApplicationStatusCheck.Description =
+                    $"✅ YT-DLP ({YTdlpVersion}) • " +
+                    $"⚠️ FFmpeg {App.LocalizationService.Get("ApplicationStatusCheckNotWorking")}";
+            }
+        }
+        finally
+        {
+            CheckDependsButton.Content =
+                App.LocalizationService.Get("Check");
+
+            CheckDependsButton.IsEnabled = true;
+        }
     }
 
     private void Switch_Toggled(object sender, RoutedEventArgs e)
@@ -188,7 +222,8 @@ public sealed partial class SettingsPage : Page
         else if (toggleSwitch.Name == "ShowJavaScriptRuntimeNoticeSwitch")
         {
             SettingsService.ShowJavaScriptRuntimeNotice = toggleSwitch.IsOn;
-        } else if (toggleSwitch.Name == "DownloadAfterPasteSwitch")
+        }
+        else if (toggleSwitch.Name == "DownloadAfterPasteSwitch")
         {
             SettingsService.DownloadAfterPaste = toggleSwitch.IsOn;
         }
@@ -197,7 +232,12 @@ public sealed partial class SettingsPage : Page
     private async void PickFile(SettingType Which)
     {
         if (App.Window == null) return;
-        var path = await App.PickFileAsync([".exe"], App.Window);
+        string? path = null;
+        try
+        {
+            path = await App.PickFileAsync([".exe"], App.Window);
+        }
+        catch { }
         if (path == null) return;
 
         if (Which == SettingType.PathYTDLP)
@@ -230,8 +270,7 @@ public sealed partial class SettingsPage : Page
                     HorizontalAlignment = HorizontalAlignment.Center
                 };
 
-                var ytdlp = new YTDLP();
-                UpdateResult updateInfo = await ytdlp.CheckAndDownloadUpdate();
+                UpdateResult updateInfo = await App.YtDlp.CheckAndDownloadUpdate();
 
                 if (updateInfo.Status == UpdateStatus.UpToDate)
                 {

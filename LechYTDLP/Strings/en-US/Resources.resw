@@ -234,9 +234,6 @@
   <data name="WriteVideoInfoSetting.Description" xml:space="preserve">
     <value>Write yt-dlp --dump-json data to Desktop\lechytdlp_dump.json</value>
   </data>
-  <data name="About.Text" xml:space="preserve">
-    <value>About</value>
-  </data>
   <data name="GithubLink.Content" xml:space="preserve">
     <value>Source code - GitHub</value>
   </data>
@@ -435,8 +432,8 @@
   <data name="BrowserExtWontWork" xml:space="preserve">
     <value>Browser extension will not work • Failed to start Browser Extension HTTP listener: {0}</value>
   </data>
-  <data name="StartingYTdlpWithLog" xml:space="preserve">
-    <value>Starting YT-DLP with</value>
+  <data name="StartingToolWithLog" xml:space="preserve">
+    <value>Starting {0} with</value>
   </data>
   <data name="GettingVideoInfoLog" xml:space="preserve">
     <value>Getting video info</value>
@@ -543,14 +540,14 @@
   <data name="DrmProtectedMsg" xml:space="preserve">
     <value>Media is DRM protected. You can't download it.</value>
   </data>
-  <data name="YTdlpProcessExitedLog" xml:space="preserve">
-    <value>YT-DLP process exited.</value>
+  <data name="ToolProcessExitedLog" xml:space="preserve">
+    <value>{0} process exited.</value>
   </data>
   <data name="ExitCode" xml:space="preserve">
     <value>Exit code</value>
   </data>
-  <data name="YTdlpProcessNonZeroLog" xml:space="preserve">
-    <value>YT-DLP is exited with non-zero exit code, something may not be right.</value>
+  <data name="ToolProcessNonZeroLog" xml:space="preserve">
+    <value>{0} is exited with non-zero exit code, something may not be right.</value>
   </data>
   <data name="NoJsRuntime" xml:space="preserve">
     <value>No supported JavaScript</value>
@@ -997,8 +994,14 @@ The changes will be applied after restarting. (You can do it later if you want, 
   <data name="ConcurrentFragmentsSetting.Header" xml:space="preserve">
     <value>Concurrent fragments</value>
   </data>
+  <data name="ConcurrentDownloadsSetting.Header" xml:space="preserve">
+    <value>Concurrent downloads</value>
+  </data>
   <data name="ConcurrentFragmentsSetting.Description" xml:space="preserve">
     <value>Number of fragments of a DASH/HLSnative video that should be downloaded concurrently</value>
+  </data>
+  <data name="ConcurrentDownloadsSetting.Description" xml:space="preserve">
+    <value>Number of downloads of a video that should be processed concurrently (max)</value>
   </data>
   <data name="Other.Text" xml:space="preserve">
     <value>More</value>
@@ -1056,5 +1059,38 @@ The changes will be applied after restarting. (You can do it later if you want, 
   </data>
   <data name="DownloadingItemOf" xml:space="preserve">
     <value>{0} of {1}</value>
+  </data>
+  <data name="DownloadFinishedWithCode" xml:space="preserve">
+    <value>Download finished with code: {0}</value>
+  </data>
+  <data name="YtDlp" xml:space="preserve">
+    <value>YT-DLP</value>
+  </data>
+  <data name="GalleryDl" xml:space="preserve">
+    <value>Gallery-DL</value>
+  </data>
+  <data name="UrlProcessing" xml:space="preserve">
+    <value>1 link is being processed</value>
+  </data>
+  <data name="UrlsProcessing" xml:space="preserve">
+    <value>{0} links are being processed</value>
+  </data>
+  <data name="PresetsLetYtDlpDecide" xml:space="preserve">
+    <value>Let YT-DLP Decide</value>
+  </data>
+  <data name="ProcessingTeachingTipTitle.Text" xml:space="preserve">
+    <value>Links being processed</value>
+  </data>
+  <data name="Cancelled" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
+  <data name="CookieFileInWrongEncodingLog" xml:space="preserve">
+    <value>Cookie file is invalid, it needs to be in UTF-8 encoding</value>
+  </data>
+  <data name="CookieFileInWrongEncoding" xml:space="preserve">
+    <value>Cookie file is invalid</value>
+  </data>
+  <data name="CookieFileInWrongEncodingMsg" xml:space="preserve">
+    <value>It needs to be in UTF-8 encoding</value>
   </data>
 </root>

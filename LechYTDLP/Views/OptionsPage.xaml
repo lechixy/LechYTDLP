@@ -150,6 +150,24 @@
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
                            x:Uid="Downloads" />
 
+                <controls:SettingsCard x:Uid="ConcurrentDownloadsSetting"
+                                       x:Name="ConcurrentDownloadsSetting"
+                                       HeaderIcon="{ui:FontIcon Glyph=&#xE896;}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Slider x:Name="ConcurrentDownloadsSettingSlider"
+                                ValueChanged="ValueChanged"
+                                Maximum="10"
+                                Minimum="1"
+                                Grid.Column="0"
+                                StepFrequency="1"
+                                SnapsTo="StepValues" />
+                    </Grid>
+                </controls:SettingsCard>
+
                 <controls:SettingsCard x:Uid="ConcurrentFragmentsSetting"
                                        x:Name="ConcurrentFragmentsSetting"
                                        HeaderIcon="{ui:FontIcon Glyph=&#xE7BC;}">
@@ -165,10 +183,6 @@
                                 Grid.Column="0"
                                 StepFrequency="1"
                                 SnapsTo="StepValues" />
-                        <!--<TextBlock x:Name="ConcurrentFragmentsSettingText"
-                                   Text="1"
-                                   Grid.Column="1"
-                                   VerticalAlignment="Stretch" />-->
                     </Grid>
                 </controls:SettingsCard>
 

@@ -234,9 +234,6 @@
   <data name="WriteVideoInfoSetting.Description" xml:space="preserve">
     <value>yt-dlp --dump-json verisini Masaüstü\lechytdlp_dump.json dosyasına yaz</value>
   </data>
-  <data name="About.Text" xml:space="preserve">
-    <value>Hakkında</value>
-  </data>
   <data name="GithubLink.Content" xml:space="preserve">
     <value>Kaynak kodu - GitHub</value>
   </data>
@@ -435,8 +432,8 @@
   <data name="BrowserExtWontWork" xml:space="preserve">
     <value>Tarayıcı eklentisi çalışmayacak • Tarayıcı eklentisinin HTTP dinleyicisi başlatılamadı: {0}</value>
   </data>
-  <data name="StartingYTdlpWithLog" xml:space="preserve">
-    <value>YT-DLP bununla başlatılıyor</value>
+  <data name="StartingToolWithLog" xml:space="preserve">
+    <value>{0} bununla başlatılıyor</value>
   </data>
   <data name="GettingVideoInfoLog" xml:space="preserve">
     <value>Video bilgisi alınıyor</value>
@@ -543,14 +540,14 @@
   <data name="DrmProtectedMsg" xml:space="preserve">
     <value>Medya DRM korumalı. Bunu indiremezsin.</value>
   </data>
-  <data name="YTdlpProcessExitedLog" xml:space="preserve">
-    <value>YT-DLP sonlandı.</value>
+  <data name="ToolProcessExitedLog" xml:space="preserve">
+    <value>{0} sonlandı.</value>
   </data>
   <data name="ExitCode" xml:space="preserve">
     <value>Çıkış kodu</value>
   </data>
-  <data name="YTdlpProcessNonZeroLog" xml:space="preserve">
-    <value>YT-DLP sıfır (0) olmayan bir çıkış kodu ile sonlandı, bir şeyler doğru olmayabilir.</value>
+  <data name="ToolProcessNonZeroLog" xml:space="preserve">
+    <value>{0} sıfır (0) olmayan bir çıkış kodu ile sonlandı, bir şeyler doğru olmayabilir.</value>
   </data>
   <data name="NoJsRuntime" xml:space="preserve">
     <value>Desteklenen JavaScript yok</value>
@@ -997,8 +994,14 @@ Değişiklikler yeniden başlatıldıktan sonra aktif olacaktır. (İsterseniz s
   <data name="ConcurrentFragmentsSetting.Header" xml:space="preserve">
     <value>Eş zamanlı parçalar</value>
   </data>
+  <data name="ConcurrentDownloadsSetting.Header" xml:space="preserve">
+    <value>Eş zamanlı indirmeler</value>
+  </data>
   <data name="ConcurrentFragmentsSetting.Description" xml:space="preserve">
     <value>Aynı anda indirilmesi gereken DASH/HLSnative video parçası sayısı</value>
+  </data>
+  <data name="ConcurrentDownloadsSetting.Description" xml:space="preserve">
+    <value>Eş zamanlı olarak işlenmesi gereken video indirme sayısı (maksimum)</value>
   </data>
   <data name="Other.Text" xml:space="preserve">
     <value>Daha fazla</value>
@@ -1056,5 +1059,38 @@ Değişiklikler yeniden başlatıldıktan sonra aktif olacaktır. (İsterseniz s
   </data>
   <data name="DownloadingItemOf" xml:space="preserve">
     <value>{0} of {1}</value>
+  </data>
+  <data name="DownloadFinishedWithCode" xml:space="preserve">
+    <value>İndirme bu kod ile bitti: {0}</value>
+  </data>
+  <data name="YtDlp" xml:space="preserve">
+    <value>YT-DLP</value>
+  </data>
+  <data name="GalleryDl" xml:space="preserve">
+    <value>Gallery-DL</value>
+  </data>
+  <data name="UrlProcessing" xml:space="preserve">
+    <value>1 bağlantı işleniyor</value>
+  </data>
+  <data name="UrlsProcessing" xml:space="preserve">
+    <value>{0} bağlantı işleniyor</value>
+  </data>
+  <data name="PresetsLetYtDlpDecide" xml:space="preserve">
+    <value>YT-DLP karar versin</value>
+  </data>
+  <data name="ProcessingTeachingTipTitle.Text" xml:space="preserve">
+    <value>İşlenmekte olan bağlantılar</value>
+  </data>
+  <data name="Cancelled" xml:space="preserve">
+    <value>İptal edildi</value>
+  </data>
+  <data name="CookieFileInWrongEncodingLog" xml:space="preserve">
+    <value>Çerez dosyası geçersiz, UTF-8 kodlamasında olması gerekiyor</value>
+  </data>
+  <data name="CookieFileInWrongEncoding" xml:space="preserve">
+    <value>Çerez dosyası geçersiz</value>
+  </data>
+  <data name="CookieFileInWrongEncodingMsg" xml:space="preserve">
+    <value>UTF-8 kodlamasında olması gerekiyor</value>
   </data>
 </root>

@@ -128,6 +128,7 @@ namespace LechYTDLP.Components
                 DownloadState.Paused => App.LocalizationService.Get("StatusPaused"),
                 DownloadState.Resuming => App.LocalizationService.Get("StatusResuming"),
                 DownloadState.TestingFormat => App.LocalizationService.Get("StatusTestingFormat"),
+                DownloadState.Cancelled => App.LocalizationService.Get("Cancelled"),
                 _ => App.LocalizationService.Get("StatusQueued")
             };
 
@@ -139,7 +140,7 @@ namespace LechYTDLP.Components
                 // Hide "Retry" button for other statuses
                 QueueMediaItemRetryButton.Visibility = Visibility.Collapsed;
             }
-            else if (item.State == DownloadState.Failed)
+            else if (item.State == DownloadState.Failed || item.State == DownloadState.Cancelled)
             {
                 QueueMediaItemStatus.Foreground = Application.Current.Resources["SystemFillColorCriticalBrush"] as Brush;
 

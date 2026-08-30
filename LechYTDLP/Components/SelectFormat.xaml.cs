@@ -113,7 +113,7 @@ namespace LechYTDLP.Components
     public sealed partial class SelectFormat : UserControl
     {
         // Main info
-        public VideoInfo videoData = null!;
+        public YtDlpData videoData = null!;
         // Selected format
         public ObservableCollection<MergedVideoFormat> MergedFormats { get; } = [];
         public ObservableCollection<FilteredVideoFormat> FilteredFormats { get; } = [];
@@ -137,7 +137,7 @@ namespace LechYTDLP.Components
         private bool _ListViewInit = false;
         private bool _AllPresetWorking = false;
 
-        public SelectFormat(VideoInfo info)
+        public SelectFormat(YtDlpData info)
         {
             InitializeComponent();
 

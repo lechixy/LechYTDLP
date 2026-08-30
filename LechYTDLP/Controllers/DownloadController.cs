@@ -6,179 +6,373 @@ using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppNotifications;
 using Microsoft.Windows.AppNotifications.Builder;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LechYTDLP.Controllers
 {
+    public sealed class SearchRequest
+    {
+        public Guid Id { get; } = Guid.NewGuid();
+        public string Url { get; }
+        public Uri UrlUri { get; }
+        public CancellationTokenSource CancellationTokenSource { get; } = new();
+        public CancellationToken CancellationToken =>
+            CancellationTokenSource.Token;
+        public DateTime StartedAt { get; } = DateTime.Now;
+        public SearchRequest(string url)
+        {
+            Url = url;
+            if (Uri.TryCreate(url, UriKind.Absolute, out var uri))
+            {
+                UrlUri = uri;
+            }
+            else
+            {
+                UrlUri = new Uri("http://invalid.url");
+            }
+        }
+
+        public SearchRequest(SearchRequest other)
+        {
+            Id = other.Id;
+            Url = other.Url;
+            UrlUri = other.UrlUri;
+            CancellationTokenSource = other.CancellationTokenSource;
+            StartedAt = other.StartedAt;
+        }
+
+        public void Cancel()
+        {
+            CancellationTokenSource.Cancel();
+        }
+    }
+
     public class SearchOptions
     {
-        public VideoInfo? VideoInfo { get; set; }
-        public bool? ForceDialog { get; set; } = false;
+        public YtDlpData? VideoInfo { get; set; }
+        public bool ForceDialog { get; set; }
     }
 
     public class DownloadController
     {
-        public event Action<bool, string>? BusyChanged;
-        public event Action<string, VideoInfo>? VideoInfoReady;
+        public event Action<SearchRequest>? SearchStarted;
+        public event Action<SearchRequest>? SearchFinished;
+        public event Action<SearchRequest>? SearchCanceled;
+        public event Action<SearchRequest, Exception>? SearchFailed;
+        public event Action? RequestsChanged;
 
-        private bool _isBusy;
-        private string _currentUrl = string.Empty;
-        private RequestData? _requestData = null;
+        private readonly ConcurrentDictionary<Guid, SearchRequest> _requests = new();
 
-        public bool IsBusy => _isBusy;
-        public string CurrentUrl => _currentUrl;
-        public RequestData? RequestData => _requestData;
+        public IReadOnlyCollection<SearchRequest> ActiveRequests =>
+            _requests.Values
+                .Select(x => new SearchRequest(x))
+                .ToArray();
 
-        public async Task<string> CheckSearch(string url)
+        public int ActiveRequestCount => _requests.Count;
+
+        public async Task<Guid?> SearchAsync(
+            string url,
+            SearchOptions? searchOptions = null)
         {
-            // https://www.youtube.com/watch?v=jJR9v1WwIuI&list=RDjJR9v1WwIuI&start_radio=1
-            // We check if the url is from because youtube keeps current video in v param, playlist in list param
-            // YTdlp treats this is a playlist url but it is not, so we need to ask user if they want to download the video or the playlist
-            if (url.Contains("youtube", StringComparison.OrdinalIgnoreCase) &&
-                url.Contains("list=", StringComparison.OrdinalIgnoreCase) &&
-                url.Contains("v=", StringComparison.OrdinalIgnoreCase))
-            {
-                var radioDialog = new BasicDialog(App.LocalizationService.Get("VideoOrPlaylistDialogContent"));
-                var dialog = await App.DialogService.ShowAsync(new DialogOptions
-                {
-                    Title = App.LocalizationService.Get("VideoOrPlaylistDialog"),
-                    Content = radioDialog,
-                    PrimaryButtonText = App.LocalizationService.Get("Video"),
-                    PrimaryButtonStyle = Application.Current.Resources["AccentButtonStyle"] as Style,
-                    CloseButtonText = App.LocalizationService.Get("Playlist"),
-                });
+            if (string.IsNullOrWhiteSpace(url))
+                return null;
 
-                // If the user clicks the primary button, we download the video, otherwise we download the playlist
-                if (dialog == DialogResult.Primary)
+            var request = new SearchRequest(url);
+
+            if (!_requests.TryAdd(request.Id, request))
+                return null;
+
+            SearchStarted?.Invoke(request);
+            RequestsChanged?.Invoke();
+
+            _ = ProcessRequestAsync(request, searchOptions);
+
+            return request.Id;
+        }
+
+
+        private async Task ProcessRequestAsync(
+            SearchRequest request,
+            SearchOptions? searchOptions)
+        {
+            string url = request.Url;
+
+            try
+            {
+                request.CancellationToken.ThrowIfCancellationRequested();
+
+                url = await CheckSearchAsync(
+                    url,
+                    request.CancellationToken);
+
+                request.CancellationToken.ThrowIfCancellationRequested();
+
+                var selectedPreset = SettingsService.SelectedPreset;
+
+                YtDlpData? info = searchOptions?.VideoInfo;
+
+                if (info == null)
                 {
-                    return "https://www.youtube.com/watch?v=" + url.Split("v=")[1].Split('&')[0];
+                    var ytdlpResult =
+                        await App.YtDlp.GetVideoInfoAsync(
+                            url,
+                            request.CancellationToken);
+
+                    request.CancellationToken.ThrowIfCancellationRequested();
+
+                    if (ytdlpResult.VideoInfo != null &&
+                        ytdlpResult.Code == ResultCode.Success)
+                    {
+                        info = ytdlpResult.VideoInfo;
+                    }
+                }
+
+                if (info == null)
+                {
+                    LogService.Add(
+                        "Video information could not be retrieved.",
+                        LogTag.Warning);
+
+                    return;
+                }
+
+                bool showFormatDialog =
+                    selectedPreset == SettingsService.Presets.First() ||
+                    searchOptions?.ForceDialog == true ||
+                    info.Type == InfoType.Playlist;
+
+
+                if (showFormatDialog)
+                {
+                    request.CancellationToken.ThrowIfCancellationRequested();
+
+                    var result = await ShowFormatDialogAsync(
+                        url,
+                        info,
+                        request.CancellationToken);
+
+                    request.CancellationToken.ThrowIfCancellationRequested();
+
+                    if (result == null)
+                    {
+                        Debug.WriteLine(
+                            $"User canceled format dialog: {url}");
+
+                        return;
+                    }
+
+                    App.DownloadService.Enqueue(
+                        result.Url,
+                        result.Type,
+                        result.VideoInfo,
+                        result.SelectedFormats);
                 }
                 else
                 {
-                    return url;
+                    var selectedFormat = new SelectedFormat
+                    {
+                        Preset = selectedPreset
+                    };
+
+                    App.DownloadService.Enqueue(
+                        url,
+                        info.Type,
+                        info,
+                        [selectedFormat]);
                 }
             }
+            catch (OperationCanceledException)
+            {
+                var info = new SearchRequest(request);
+                Debug.WriteLine($"Search canceled catch: {info.Url}");
 
-            return string.Empty;
+                SearchCanceled?.Invoke(info);
+            }
+            catch (Exception ex)
+            {
+                var info = new SearchRequest(request);
+
+                SearchFailed?.Invoke(info, ex);
+
+                await KnownErrors.Check(ex);
+            }
+            finally
+            {
+                _requests.TryRemove(request.Id, out _);
+
+                RequestsChanged?.Invoke();
+
+                SearchFinished?.Invoke(
+                    new SearchRequest(request));
+
+                request.CancellationTokenSource.Dispose();
+            }
         }
 
-        public async Task SearchAsync(string url, SearchOptions? searchOptions = null)
+        public bool Cancel(Guid requestId)
         {
-            if (_isBusy) return;
+            if (!_requests.TryGetValue(requestId, out var request))
+                return false;
 
-            // TCS ile UI thread işinin bitmesini bekle
-            var tcs = new TaskCompletionSource<string>();
+            request.Cancel();
+
+            return true;
+        }
+
+        public void CancelAll()
+        {
+            foreach (var request in _requests.Values)
+            {
+                request.Cancel();
+            }
+        }
+
+        public void PauseDownload(DownloadItem item)
+        {
+            App.DownloadService.PauseDownload(item);
+        }
+
+        public void ResumeDownload(DownloadItem item)
+        {
+            App.DownloadService.ResumeDownload(item);
+        }
+
+        public void CancelDownload(DownloadItem item)
+        {
+            App.DownloadService.CancelDownload(item);
+        }
+
+        public bool TryGetRequest(
+            Guid id,
+            out SearchRequest? requestInfo)
+        {
+            if (_requests.TryGetValue(id, out var request))
+            {
+                requestInfo = new SearchRequest(request);
+                return true;
+            }
+
+            requestInfo = null;
+            return false;
+        }
+
+        private async Task<string> CheckSearchAsync(
+            string url,
+            CancellationToken cancellationToken)
+        {
+            if (url.Contains(
+                    "youtube",
+                    StringComparison.OrdinalIgnoreCase) &&
+                url.Contains(
+                    "list=",
+                    StringComparison.OrdinalIgnoreCase) &&
+                url.Contains(
+                    "v=",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                var tcs =
+                    new TaskCompletionSource<string>(
+                        TaskCreationOptions.RunContinuationsAsynchronously);
+
+                App.UIThreadDispatcherQueue.TryEnqueue(async () =>
+                {
+                    try
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                        var radioDialog = new BasicDialog(
+                            App.LocalizationService.Get(
+                                "VideoOrPlaylistDialogContent"));
+
+                        var dialog =
+                            await App.DialogService.ShowAsync(
+                                new DialogOptions
+                                {
+                                    Title = App.LocalizationService.Get(
+                                        "VideoOrPlaylistDialog"),
+
+                                    Content = radioDialog,
+
+                                    PrimaryButtonText =
+                                        App.LocalizationService.Get(
+                                            "Video"),
+
+                                    PrimaryButtonStyle =
+                                        Application.Current.Resources[
+                                            "AccentButtonStyle"] as Style,
+
+                                    CloseButtonText =
+                                        App.LocalizationService.Get(
+                                            "Playlist")
+                                });
+
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                        if (dialog == DialogResult.Primary)
+                        {
+                            var videoId =
+                                url.Split("v=")[1]
+                                   .Split('&')[0];
+
+                            tcs.TrySetResult(
+                                "https://www.youtube.com/watch?v=" +
+                                videoId);
+                        }
+                        else
+                        {
+                            tcs.TrySetResult(url);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        tcs.TrySetException(ex);
+                    }
+                });
+
+                return await tcs.Task;
+            }
+
+            return url;
+        }
+
+        private async Task<FormatSelectionResult?> ShowFormatDialogAsync(
+            string url,
+            YtDlpData info,
+            CancellationToken cancellationToken)
+        {
+            var tcs =
+                new TaskCompletionSource<FormatSelectionResult?>(
+                    TaskCreationOptions.RunContinuationsAsynchronously);
 
             App.UIThreadDispatcherQueue.TryEnqueue(async () =>
             {
                 try
                 {
-                    var checkResult = await CheckSearch(url);
-                    tcs.SetResult(checkResult == string.Empty ? url : checkResult);
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    var result =
+                        await App.DialogService.ShowAsync(
+                            url,
+                            info);
+
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    tcs.TrySetResult(result);
                 }
                 catch (Exception ex)
                 {
-                    tcs.SetException(ex);
+                    tcs.TrySetException(ex);
                 }
             });
 
-            url = await tcs.Task;
-            SetBusy(true, url);
-
-            var videoInfo = searchOptions?.VideoInfo;
-
-            try
-            {
-                VideoInfo? info = null;
-
-                if (videoInfo == null)
-                {
-                    var ytdlp = new YTDLP();
-                    info = await ytdlp.GetVideoInfoAsync(url);
-                }
-                else info = videoInfo;
-
-                // If info is null, it means the video information couldn't be retrieved, so we exit the method.
-                if (info == null)
-                {
-                    return;
-                }
-
-                VideoInfoReady?.Invoke(url, info);
-
-                // If the selected preset is "illchose" show format dialog service
-                // If the options are set to force the dialog, show format dialog service
-                // If the info is a playlist, show format dialog service
-                if (SettingsService.SelectedPreset == SettingsService.Presets.First() || searchOptions?.ForceDialog == true || info.Type == InfoType.Playlist)
-                {
-                    // TCS ile UI thread işinin bitmesini bekle
-                    var ftcs = new TaskCompletionSource<FormatSelectionResult?>();
-
-                    App.UIThreadDispatcherQueue.TryEnqueue(async () =>
-                    {
-                        try
-                        {
-                            var dialogResult = await App.DialogService.ShowAsync(url, info);
-                            ftcs.SetResult(dialogResult);
-                        }
-                        catch (Exception ex)
-                        {
-                            ftcs.SetException(ex);
-                        }
-                    });
-
-                    var result = await ftcs.Task;
-                    if (result != null)
-                    {
-                        App.DownloadService.Enqueue(
-                            result.Url,
-                            result.Type,
-                            result.VideoInfo,
-                            result.SelectedFormats
-                        );
-                    }
-                    else
-                    {
-                        Debug.WriteLine("User canceled the download dialog.");
-                    }
-                }
-                // Otherwise, enqueue the download with the selected preset
-                else
-                {
-                    var selectedFormat = new SelectedFormat
-                    {
-                        Preset = SettingsService.SelectedPreset,
-                    };
-                    App.DownloadService.Enqueue(
-                        url,
-                        info.Type,
-                        info,
-                        [selectedFormat]
-                     );
-                }
-            }
-            catch (Exception ex)
-            {
-                await KnownErrors.Check(ex);
-            }
-            finally
-            {
-                _requestData = null;
-                SetBusy(false, url);
-            }
-        }
-
-        public void SetBusy(bool value, string Url)
-        {
-            _isBusy = value;
-            _currentUrl = Url;
-            BusyChanged?.Invoke(value, Url);
+            return await tcs.Task;
         }
     }
-
 }

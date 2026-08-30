@@ -1,6 +1,5 @@
 ﻿using LechYTDLP.Classes;
 using LechYTDLP.Controllers;
-using LechYTDLP.Core;
 using LechYTDLP.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.UI;
@@ -19,6 +18,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
@@ -79,6 +79,10 @@ namespace LechYTDLP
 
         // Api Server for browser extension
         public static LocalApiServer ApiServer { get; private set; } = null!;
+
+        // Tools
+        public static YTDLP YtDlp { get; } = new();
+        //public static GalleryDL GalleryDL { get; } = new();
 
         // Services
         public static SettingsService SettingsService => ServiceContainer.Get<SettingsService>();
@@ -183,27 +187,76 @@ namespace LechYTDLP
 
                     AppDomain.CurrentDomain.UnhandledException += (_, e) =>
                     {
-                        if (e.ExceptionObject is Exception ex)
+                        try
                         {
-                            SentrySdk.CaptureException(ex);
-                            SentrySdk.Flush(TimeSpan.FromSeconds(3));
+                            if (e.ExceptionObject is Exception ex)
+                            {
+                                SentrySdk.CaptureException(ex);
+                                SentrySdk.Flush(TimeSpan.FromSeconds(3));
+                            }
                         }
+                        catch { }
                     };
                     TaskScheduler.UnobservedTaskException += (_, e) =>
                     {
-                        SentrySdk.CaptureException(e.Exception);
-                        SentrySdk.Flush(TimeSpan.FromSeconds(3));
+                        try
+                        {
+                            SentrySdk.CaptureException(e.Exception);
+                            SentrySdk.Flush(TimeSpan.FromSeconds(3));
+                        }
+                        catch { }
                     };
 
-                    this.UnhandledException += (_, e) =>
+                    UnhandledException += (_, e) =>
                     {
-                        SentrySdk.CaptureException(e.Exception);
-                        SentrySdk.Flush(TimeSpan.FromSeconds(3));
+                        try
+                        {
+                            var exception = e.Exception;
+
+                            using (SentrySdk.PushScope())
+                            {
+                                SentrySdk.ConfigureScope(scope =>
+                                {
+                                    scope.SetTag(
+                                        "exception.source",
+                                        "WinUI.UnhandledException"
+                                    );
+
+                                    scope.SetExtra(
+                                        "ExceptionType",
+                                        exception.GetType().FullName
+                                    );
+
+                                    scope.SetExtra(
+                                        "Message",
+                                        exception.Message
+                                    );
+
+                                    scope.SetExtra(
+                                        "StackTrace",
+                                        exception.StackTrace ?? "NULL"
+                                    );
+
+                                    scope.SetExtra(
+                                        "HResult",
+                                        $"0x{exception.HResult:X8}"
+                                    );
+                                });
+
+                                SentrySdk.CaptureException(exception);
+                                SentrySdk.Flush(TimeSpan.FromSeconds(3));
+                            }
+                        }
+                        catch
+                        {
+                        }
                     };
-                } catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     Debug.WriteLine($"Error initializing Sentry: {ex.Message}");
-                } finally
+                }
+                finally
                 {
                     Debug.WriteLine("Sentry initialized.");
                 }
@@ -250,15 +303,18 @@ namespace LechYTDLP
             // We don't need to ensure yt-dlp here because will check in MainWindow CheckForUpdatesOnStartupAsync();
             // ToolPathService.Ensure(ToolPathService.Tool.YtDlp);
             ToolPathService.Ensure(ToolPathService.Tool.FFmpeg);
+            //ToolPathService.Ensure(ToolPathService.Tool.GalleryDL);
 
             // Load filename_dumpdata.json for filename template preview in options page
             var path = Path.Combine(AppContext.BaseDirectory, "Assets", "filename_dumpdata.json");
             var jsonString = File.ReadAllText(path);
             SampleJson = JsonDocument.Parse(jsonString).RootElement;
 
+            // Start API server
             ApiServer = new LocalApiServer();
             ApiServer.Start();
 
+            // First log <3
             LogService.Add(LocalizationService.Get("FirstLog"), LogTag.Lechixy, false);
 
             // Listen for download requests from the browser extension
@@ -323,31 +379,40 @@ namespace LechYTDLP
             await DownloadController.SearchAsync(data.Url, new SearchOptions { ForceDialog = true });
         }
 
-        public static async Task<string?> PickFileAsync(string[] FilterExtensions, Window window)
+        public static async Task<string?> PickFileAsync(
+            string[] filterExtensions,
+            Window window)
         {
+            if (window == null)
+                throw new ArgumentNullException(nameof(window));
+
+            if (filterExtensions == null || filterExtensions.Length == 0)
+                throw new ArgumentException(
+                    "At least one file extension is required.",
+                    nameof(filterExtensions));
+
             var picker = new FileOpenPicker();
 
-            for (int i = 0; i < FilterExtensions.Length; i++)
+            foreach (var extension in filterExtensions)
             {
-                var filter = FilterExtensions[i].Trim().ToLower();
+                var filter = extension.Trim().ToLowerInvariant();
+
                 if (!filter.StartsWith('.'))
-                {
                     filter = "." + filter;
-                }
+
                 picker.FileTypeFilter.Add(filter);
             }
 
             var hwnd = WindowNative.GetWindowHandle(window);
+
+            if (hwnd == IntPtr.Zero)
+                throw new InvalidOperationException("Window HWND is invalid.");
+
             InitializeWithWindow.Initialize(picker, hwnd);
 
-            StorageFile file = await picker.PickSingleFileAsync();
+            var file = await picker.PickSingleFileAsync();
 
-            if (file != null)
-            {
-                return file.Path;
-            }
-
-            return null;
+            return file?.Path;
         }
 
         public static async Task<string?> PickFolderAsync(Window window)

@@ -38,6 +38,7 @@ namespace LechYTDLP.Services
             new() { DisplayName = App.LocalizationService.Get("PresetsBestQuality"), Value = "bestquality" },
             new() { DisplayName = App.LocalizationService.Get("PresetsBestQualityVideo"), Value = "bestvideo" },
             new() { DisplayName = App.LocalizationService.Get("PresetsBestQualityAudio"), Value = "bestaudio" },
+            new() { DisplayName = App.LocalizationService.Get("PresetsLetYtDlpDecide"), Value = "letytdlpdecide" },
             new() { DisplayName = App.LocalizationService.Get("PresetsCompatible1080pMP4"), Value = "compatible1080pmp4" },
             new() { DisplayName = App.LocalizationService.Get("PresetsCompatible720pMP4"), Value = "compatible720pmp4" },
             new() { DisplayName = App.LocalizationService.Get("PresetsExtractAudioMP3"), Value = "extractaudiomp3" },
@@ -110,6 +111,12 @@ namespace LechYTDLP.Services
             set => Settings.Values[nameof(EmbedSubs)] = value;
         }
         // Downloads
+        public static int ConcurrentDownloads
+        {
+            get => (int?)Settings.Values[nameof(ConcurrentDownloads)]
+                   ?? 3;
+            set => Settings.Values[nameof(ConcurrentDownloads)] = value;
+        }
         public static int ConcurrentFragments
         {
             get => (int?)Settings.Values[nameof(ConcurrentFragments)]
@@ -159,6 +166,12 @@ namespace LechYTDLP.Services
                    ?? Path.Combine(BasePath, "Tools", "ffmpeg.exe");
 
             set => Settings.Values[nameof(FFmpegPath)] = value;
+        }
+        public static string GalleryDLPath
+        {
+            get => (string?)Settings.Values[nameof(GalleryDLPath)]
+                   ?? Path.Combine(BasePath, "Tools", "gallery-dl.exe");
+            set => Settings.Values[nameof(GalleryDLPath)] = value;
         }
         public static string JavaScriptRuntime
         {
@@ -506,7 +519,10 @@ namespace LechYTDLP.Services
             if (string.IsNullOrEmpty(file))
             {
                 if (App.Window == null) return;
-                filePath = await App.PickFileAsync([".xml"], App.Window);
+                try
+                {
+                    filePath = await App.PickFileAsync([".xml"], App.Window);
+                } catch { }
             }
 
             if (string.IsNullOrEmpty(filePath)) return;

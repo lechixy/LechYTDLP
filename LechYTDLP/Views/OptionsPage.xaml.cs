@@ -102,6 +102,7 @@ public sealed partial class OptionsPage : Page
         EmbedSubsSettingSwitch.IsOn = SettingsService.EmbedSubs;
 
         // Downloads
+        ConcurrentDownloadsSettingSlider.Value = SettingsService.ConcurrentDownloads;
         ConcurrentFragmentsSettingSlider.Value = SettingsService.ConcurrentFragments;
 
         // Account
@@ -290,7 +291,12 @@ public sealed partial class OptionsPage : Page
     private async void PickFile(OptionType Which)
     {
         if (App.Window == null) return;
-        var path = await App.PickFileAsync([".txt"], App.Window);
+        string? path = null;
+        try
+        {
+            path = await App.PickFileAsync([".txt"], App.Window);
+        }
+        catch { }
         if (path == null) return;
 
         if (Which == OptionType.CookiesFile)
@@ -358,10 +364,13 @@ public sealed partial class OptionsPage : Page
 
         if (sender is Slider slider)
         {
-            if (slider.Name == "ConcurrentFragmentsSettingSlider")
+            if (slider.Name == "MaxConcurrentDownloadsSlider")
+            {
+                SettingsService.ConcurrentDownloads = (int)slider.Value;
+            }
+            else if (slider.Name == "ConcurrentFragmentsSettingSlider")
             {
                 SettingsService.ConcurrentFragments = (int)slider.Value;
-                //ConcurrentFragmentsSettingText.Text = $"{slider.Value}";
             }
         }
     }

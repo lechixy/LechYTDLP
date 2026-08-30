@@ -47,7 +47,7 @@ namespace LechYTDLP.Services
     {
         public string Url { get; set; } = default!;
         public InfoType Type { get; set; } = default!;
-        public VideoInfo VideoInfo { get; set; } = default!;
+        public YtDlpData VideoInfo { get; set; } = default!;
         public SelectedFormat[] SelectedFormats { get; set; } = [];
     }
 
@@ -102,7 +102,7 @@ namespace LechYTDLP.Services
 
         #region Format Dialog
 
-        public async Task<FormatSelectionResult?> ShowAsync(string url, VideoInfo videoInfo)
+        public async Task<FormatSelectionResult?> ShowAsync(string url, YtDlpData videoInfo)
         {
             var tcs = new TaskCompletionSource<FormatSelectionResult?>();
 
@@ -234,7 +234,7 @@ namespace LechYTDLP.Services
             return await tcs.Task;
         }
 
-        private async Task<FormatSelectionResult?> ShowFormatDialogInternalAsync(string url, VideoInfo videoInfo)
+        private async Task<FormatSelectionResult?> ShowFormatDialogInternalAsync(string url, YtDlpData videoInfo)
         {
             var xamlRoot = await GetXamlRootAsync();
 

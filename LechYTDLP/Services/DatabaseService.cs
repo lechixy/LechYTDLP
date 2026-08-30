@@ -146,7 +146,7 @@ namespace LechYTDLP.Services
                     {
                         Id = Guid.Parse(reader.GetString(1)),
                         Url = reader.GetString(2),
-                        Info = JsonSerializer.Deserialize<VideoInfo>(reader.GetString(3), App.JsonSerializerOptions)!,
+                        Info = JsonSerializer.Deserialize<YtDlpData>(reader.GetString(3), App.JsonSerializerOptions)!,
                         State = (DownloadState)reader.GetInt32(4),
                         Progress = reader.GetInt32(5),
                         SelectedFormat = JsonSerializer.Deserialize<SelectedFormat>(reader.GetString(6), App.JsonSerializerOptions)!,
@@ -277,6 +277,20 @@ namespace LechYTDLP.Services
 
                 await command.ExecuteNonQueryAsync();
             }
+            catch (SqliteException ex) when (ex.SqliteErrorCode == 13)
+            {
+                LogService.Add(
+                    $"Could not update history database because the disk is full.",
+                    LogTag.Database
+                );
+            }
+            catch (Exception ex)
+            {
+                LogService.Add(
+                    $"Failed to delete item from history: {ex}",
+                    LogTag.Database
+                );
+            }
             finally
             {
                 _semaphore.Release();
@@ -293,6 +307,20 @@ namespace LechYTDLP.Services
                 var command = connection.CreateCommand();
                 command.CommandText = "DELETE FROM Downloads;";
                 await command.ExecuteNonQueryAsync();
+            }
+            catch (SqliteException ex) when (ex.SqliteErrorCode == 13)
+            {
+                LogService.Add(
+                    $"Could not update history database because the disk is full.",
+                    LogTag.Database
+                );
+            }
+            catch (Exception ex)
+            {
+                LogService.Add(
+                    $"Failed to clear items from history: {ex}",
+                    LogTag.Database
+                );
             }
             finally
             {

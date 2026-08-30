@@ -1,6 +1,7 @@
 ﻿using LechYTDLP.Classes;
 using LechYTDLP.Components;
 using LechYTDLP.Util;
+using Microsoft.Data.Sqlite;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.AppNotifications;
@@ -15,6 +16,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using Windows.Media.Playlists;
@@ -32,21 +34,71 @@ namespace LechYTDLP.Services
         Paused,
         Resuming,
         TestingFormat,
+        Cancelled
     }
 
     public class DownloadItem
     {
         public Guid Id { get; set; } = Guid.Empty;
         public string Url { get; set; } = string.Empty;
-        public VideoInfo Info { get; set; } = null!;
+        public YtDlpData Info { get; set; } = null!;
         public InfoType Type => Info.Type;
+        private DownloadState _state = DownloadState.Queued;
+        public DownloadState State
+        {
+            get => _state;
+            set
+            {
+                if (_state == value)
+                    return;
 
-        public DownloadState State { get; set; } = DownloadState.Queued;
-        public int Progress { get; set; } = 0;
+                _state = value;
+                NotifyChanged();
+            }
+        }
+        private int _progress = 0;
+        public int Progress
+        {
+            get => _progress;
+            set
+            {
+                if (_progress == value)
+                    return;
+
+                _progress = value;
+                NotifyChanged();
+            }
+        }
         public SelectedFormat SelectedFormat { get; set; } = new();
         public SelectedFormat[] SelectedFormats { get; set; } = [];
         public string FilePath { get; set; } = string.Empty;
         public DownloadItemMeta Meta { get; set; } = null!;
+        public event EventHandler? Changed;
+        public void NotifyChanged()
+        {
+            Changed?.Invoke(this, EventArgs.Empty);
+        }
+        public bool WantedToPause { get; set; } = false;
+        public bool WantedToResume { get; set; } = false;
+        public bool WantedToCancel { get; set; } = false;
+        public CancellationTokenSource CancellationTokenSource { get; private set; } = new();
+        public CancellationToken CancellationToken =>
+            CancellationTokenSource.Token;
+        public void Cancel()
+        {
+            CancellationTokenSource.Cancel();
+        }
+        public void RenewCancel()
+        {
+            if (CancellationTokenSource.IsCancellationRequested)
+            {
+                CancellationTokenSource.Dispose();
+                // Create a new CancellationTokenSource
+                var newCts = new CancellationTokenSource();
+                // Use reflection to set the private field
+                CancellationTokenSource = newCts;
+            }
+        }
     }
 
     public class DownloadItemMeta
@@ -63,59 +115,34 @@ namespace LechYTDLP.Services
 
     public partial class DownloadsService
     {
+        private readonly List<DownloadItem> _currentQueue = new();
         private readonly Queue<DownloadItem> _queue = new();
         private static readonly List<DownloadItem> downloadItems = [];
         private readonly List<DownloadItem> _history = downloadItems;
 
-        private bool _isRunning;
+        private int _currentDownloads = 0;
         private bool _isPaused;
 
         private readonly YTDLP _ytdlp = new();
 
+        public IReadOnlyCollection<DownloadItem> CurrentDownloads => _currentQueue;
         public bool IsPaused => _isPaused;
-        public DownloadItem? CurrentMedia => _queue.Count == 0 ? null : _queue.Peek();
 
         // EVENTS
-        public event Action? QueueUpdated;
-        public event Action<bool>? HistoryUpdated;
-        public event Action? CurrentMediaUpdated;
+        public event Action? CurrentQueueUpdated;
+        public event Action? InQueueUpdated;
+        public event Action<bool>? HistoryQueueUpdated;
 
+        public IReadOnlyCollection<DownloadItem> CurrentQueue => [.. _currentQueue];
         public IReadOnlyCollection<DownloadItem> Queue => [.. _queue];
         public IReadOnlyCollection<DownloadItem> History => [.. _history];
 
 
         // Downloads count should be updated when _queue count changes
-        public int DownloadsCount => _queue.Count;
+        public int DownloadsCount => _currentQueue.Count + _queue.Count;
         public static Action<int, string>? OnBadgeChanged;
 
-
-        public async Task<bool> PauseOrResume()
-        {
-            var tcs = new TaskCompletionSource<bool>();
-
-            if (_isPaused)
-            {
-                // Resume
-                _isPaused = false;
-                LogService.Add("Resuming download.", LogTag.YTDLP);
-                TryStartNext();
-                tcs.SetResult(true);
-            }
-            else
-            {
-                // Pause
-                _isPaused = true;
-                LogService.Add("Pausing download.", LogTag.YTDLP);
-                await _ytdlp.StopYTDLPAsync();
-                CurrentMedia!.State = DownloadState.Paused;
-                CurrentMediaUpdated?.Invoke();
-                tcs.SetResult(true);
-            }
-
-            return await tcs.Task;
-        }
-
-        public void Enqueue(string url, InfoType type, VideoInfo videoInfo, SelectedFormat[] selectedFormats)
+        public void Enqueue(string url, InfoType type, YtDlpData videoInfo, SelectedFormat[] selectedFormats)
         {
             //if (selectedFormat == null)
             //{
@@ -158,8 +185,7 @@ namespace LechYTDLP.Services
 
             AppNotificationManager.Default.Show(notification.BuildNotification());
 
-            if (_queue.Count == 1) CurrentMediaUpdated?.Invoke();
-            else QueueUpdated?.Invoke();
+            InQueueUpdated?.Invoke();
 
             OnBadgeChanged?.Invoke(DownloadsCount, "Downloads");
 
@@ -168,182 +194,182 @@ namespace LechYTDLP.Services
 
         private async void TryStartNext()
         {
-            if (_isRunning || IsPaused)
+            if (_currentDownloads > SettingsService.ConcurrentDownloads)
                 return;
 
             if (_queue.Count == 0)
                 return;
 
-            _isRunning = true;
+            _currentDownloads++;
             _isPaused = false;
 
-            var item = _queue.Peek();
-            var info = item.Info;
+            var item = _queue.Dequeue();
+            _currentQueue.Add(item);
+
             item.State = DownloadState.Queued;
-            CurrentMediaUpdated?.Invoke();
+            CurrentQueueUpdated?.Invoke();
             OnBadgeChanged?.Invoke(DownloadsCount, "Downloads");
 
-            _ytdlp.OutputReceived += HandleYTDLPOutput;
-            _ytdlp.ErrorReceived += HandleYTDLPError;
+            await RunDownloadAsync(item);
+        }
 
-            // We need to delete the file if it already exists, otherwise yt-dlp will rewrite it and json file will be wrong
+        // item'ın zaten _currentQueue'da olduğunu ve _currentDownloads'a sayıldığını varsayar.
+        // Hem TryStartNext hem de ResumeDownload buradan çağırır.
+        private async Task RunDownloadAsync(DownloadItem item)
+        {
+            var info = item.Info;
+
+            // We want to delete the previous info.json file if it exists, because we will create a new one for this download.
             var printToFilePath = Path.Combine(LechKnownFolders.GetPath(LechKnownFolder.Documents), $"LechYTDLP\\Logs\\{info.Id}.info.json");
             if (File.Exists(printToFilePath))
             {
-                try
-                {
-                    File.Delete(printToFilePath);
-                }
-                catch
-                {
-                    Debug.WriteLine($"Failed to delete {printToFilePath}");
-                }
+                try { File.Delete(printToFilePath); }
+                catch { Debug.WriteLine($"Failed to delete {printToFilePath}"); }
             }
 
-            // Arguments for yt-dlp download (this is last argument)
-            var args = new YTDLPDownloadArgs
+            var args = new DlArgs
             {
-                // # Required arguments
+                Type = DlArgsType.YTDLP,
                 Url = item.Url,
                 SelectedFormat = item.SelectedFormat,
                 OutputPath = Path.Combine(SettingsService.DownloadPath, SettingsService.FilenameTemplate),
                 FFmpegLocation = SettingsService.FFmpegPath,
                 PrintToFile = $"\"video:%()j\" \"{printToFilePath}\"",
-
                 Newline = true,
                 NoColor = true,
                 ProgressTemplate = "P|%(progress._percent_str)s",
-
-                // Optional arguments
                 EmbedThumbnail = SettingsService.EmbedThumbnail,
                 EmbedSubs = SettingsService.EmbedSubs
             };
 
             if (item.Type == InfoType.Playlist)
             {
-                // We add one to each index because yt-dlp starts index 1
                 args.PlaylistItems = string.Join(",", item.SelectedFormats.Select(f => f.Index + 1));
-
-                // Might be useful to add a playlist template in the future, but for now, we'll just use the same template for all videos in the playlist.
-                //args.OutputPath = Path.Combine(SettingsService.DownloadPath, SettingsService.FilenameTemplatePlaylist);
             }
 
-            // TODO: In future, we might add every video in playlist (because in yt-dlp can't pass arguments to individual videos) 
-            // If we want to do that, we need to change the way we handle the queue, it's currently designed to download playlist just in one format.
-            //foreach (var video in playlist.Entries)
-            //{
-            //    var args = video.SelectedPreset.ToDownloadArgs();
-
-            //    await YTDLP.DownloadVideoAsync(video.Url, args);
-            //}
-
-            // Start the download
-            var processCode = await _ytdlp.DownloadVideo(args, info);
-            LogService.Add($"Download finished with code: {processCode}", LogTag.YTDLP);
-            Debug.WriteLine($"Download finished with code: {processCode}");
-
-
-            // Eğer indirme sürerken 'Pause' denildiyse, aşağıdaki işlemleri atla
-            if (this.IsPaused && processCode == -1)
+            Action<string?> handleOutput = data =>
             {
-                Debug.WriteLine("Download was paused. Exiting without updating queue.");
-                _isRunning = false;
+                if (string.IsNullOrWhiteSpace(data)) return;
+
+                if (data.StartsWith("P|"))
+                {
+                    var percentText = data.Substring(2).Replace("%", "").Trim();
+                    if (double.TryParse(percentText, NumberStyles.Any, CultureInfo.InvariantCulture, out var percent))
+                    {
+                        item.State = DownloadState.Downloading;
+                        item.Progress = (int)percent;
+                    }
+                    return;
+                }
+
+                if (data.StartsWith("[download] Downloading item"))
+                {
+                    var match = Regex.Match(data, @"\[download\] Downloading item (\d+) of (\d+)");
+                    if (match.Success)
+                        item.Meta.PlaylistCurrentIndex = int.Parse(match.Groups[1].Value);
+                    return;
+                }
+            };
+
+            Action<string?> handleError = data =>
+            {
+                if (string.IsNullOrWhiteSpace(data)) return;
+
+                if (data.Contains("unavailable videos are hidden"))
+                {
+                    var match = Regex.Match(data, @"(\d+) unavailable videos are hidden");
+                    if (match.Success)
+                        item.Meta.PlaylistUnavailableVideoCount = int.Parse(match.Groups[1].Value);
+                }
+            };
+
+            var downloadResult = await _ytdlp.DownloadVideo(args, item, handleOutput, handleError, item.CancellationToken);
+            LogService.Add(App.LocalizationService.Get("DownloadFinishedWithCode", downloadResult.Code), LogTag.YTDLP);
+
+            // Pause durumu: item _currentQueue'da kalır, history'e düşmez, sayaç azalır ve döner.
+            if (item.WantedToPause && downloadResult.Code == ResultCode.Cancelled)
+            {
+                item.WantedToPause = false; // tüketildi, bir sonraki cancel yanlışlıkla pause sayılmasın
+                item.State = DownloadState.Paused;
+                CurrentQueueUpdated?.Invoke();
+                _currentDownloads--;
+                TryStartNext(); // kuyrukta bekleyen varsa onun yerine başlasın
                 return;
             }
-            else if (processCode == 1)
+
+            // Cancel durumu: item _currentQueue'da kalır, history'e düşmez, sayaç azalır ve döner.
+            if (item.WantedToCancel && downloadResult.Code == ResultCode.Cancelled)
             {
-                Debug.WriteLine("Download failed with an error. Checking if it's a partially failed download or completely failed.");
+                item.WantedToCancel = false; // tüketildi, bir sonraki cancel yanlışlıkla cancel sayılmasın
+                item.State = DownloadState.Cancelled;
             }
+            // Normal tamamlanma veya hata durumu: item _currentQueue'dan çıkarılır, history'e düşer, sayaç azalır ve döner.
             else
             {
-                Debug.WriteLine("Download completed. Updating queue and history.");
+                item.State = downloadResult.Code == ResultCode.Success ? DownloadState.Completed :
+                    (item.Meta.PlaylistUnavailableVideoCount > 0 ? DownloadState.PartiallyCompleted : DownloadState.Failed);
             }
 
-            item.State = processCode == 0 ? DownloadState.Completed : (item.Meta.PlaylistUnavailableVideoCount > 0 ? DownloadState.PartiallyCompleted : DownloadState.Failed);
-            CurrentMediaUpdated?.Invoke();
-
-            if (_queue.Count > 0) _queue.Dequeue();
+            _currentQueue.Remove(item);
             _history.Add(item);
 
-            // İndirme tamamlandıktan sonra geçmişi dosyaya kaydet
+            CurrentQueueUpdated?.Invoke();
             await App.DatabaseService.AddOrUpdateAsync(item);
-
-            QueueUpdated?.Invoke();
-            // Update history with new items from database
-            HistoryUpdated?.Invoke(true);
+            InQueueUpdated?.Invoke();
+            HistoryQueueUpdated?.Invoke(true);
             OnBadgeChanged?.Invoke(DownloadsCount, "Downloads");
-            _isRunning = false;
-
-            _ytdlp.OutputReceived -= HandleYTDLPOutput;
-            _ytdlp.ErrorReceived -= HandleYTDLPError;
+            _currentDownloads--;
 
             TryStartNext();
         }
 
-        private void HandleYTDLPOutput(string data)
+        public void PauseDownload(DownloadItem item)
         {
-            if (string.IsNullOrWhiteSpace(data))
-                return;
-
-            // Progress
-            if (data.StartsWith("P|"))
-            {
-                var percentText = data.Substring(2).Replace("%", "").Trim();
-
-                if (double.TryParse(percentText,
-                    NumberStyles.Any,
-                    CultureInfo.InvariantCulture,
-                    out var percent))
-                {
-                    CurrentMedia!.State = DownloadState.Downloading;
-                    CurrentMedia.Progress = (int)percent;
-                    CurrentMediaUpdated?.Invoke();
-                }
-
-                return;
-            }
-
-            if (data.StartsWith("[download] Downloading item"))
-            {
-                var match = Regex.Match(data, @"\[download\] Downloading item (\d+) of (\d+)");
-                if (CurrentMedia != null && match.Success)
-                {
-                    CurrentMedia.Meta.PlaylistCurrentIndex = int.Parse(match.Groups[1].Value);
-                }
-                return;
-            }
-
-            //// Dosya gerçekten oluştuysa tamam
-            //if (CurrentMedia?.FilePath != null &&
-            //    File.Exists(CurrentMedia.FilePath))
-            //{
-            //    CurrentMedia.State = DownloadState.Completed;
-            //    CurrentMediaUpdated?.Invoke();
-            //}
+            item.WantedToPause = true;
+            item.WantedToResume = false;
+            item.Cancel();
         }
 
-        private void HandleYTDLPError(string data)
+        public void ResumeDownload(DownloadItem item)
         {
-            if (string.IsNullOrWhiteSpace(data))
+            if (item.State != DownloadState.Paused)
                 return;
 
-            if (data.Contains("unavailable videos are hidden"))
+            item.WantedToPause = false;
+            item.WantedToResume = true;
+            item.RenewCancel();
+
+            item.State = DownloadState.Resuming;
+
+            // Item zaten _currentQueue'da duruyor (pause sırasında hiç çıkarılmamıştı).
+            // Eşzamanlı indirme limiti doluysa gerçek bir kuyruğa gönderiyoruz,
+            // değilse doğrudan pipeline'a sokuyoruz.
+            if (_currentDownloads > SettingsService.ConcurrentDownloads)
             {
-                var match = Regex.Match(data, @"(\d+) unavailable videos are hidden");
-
-                if (CurrentMedia != null && match.Success)
-                {
-                    CurrentMedia.Meta.PlaylistUnavailableVideoCount = int.Parse(match.Groups[1].Value);
-                }
+                _currentQueue.Remove(item);
+                _queue.Enqueue(item);
+                item.State = DownloadState.Queued;
+                InQueueUpdated?.Invoke();
+                TryStartNext();
                 return;
-
             }
+
+            _currentDownloads++;
+            _ = RunDownloadAsync(item);
         }
 
-        public async void RemoveFromHistory(DownloadItem item)
+        public void CancelDownload(DownloadItem item)
+        {
+            item.WantedToPause = false;
+            item.WantedToResume = false;
+            item.WantedToCancel = true;
+            item.Cancel();
+        }
+
+        public async Task RemoveFromHistory(DownloadItem item)
         {
             await App.DatabaseService.DeleteByGuidIdAsync(item.Id.ToString());
-            HistoryUpdated?.Invoke(true);
+            HistoryQueueUpdated?.Invoke(true);
         }
     }
 }

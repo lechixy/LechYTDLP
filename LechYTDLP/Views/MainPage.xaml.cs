@@ -1,5 +1,6 @@
 ﻿using LechYTDLP.Classes;
 using LechYTDLP.Components;
+using LechYTDLP.Controllers;
 using LechYTDLP.Services;
 using LechYTDLP.Util;
 using Microsoft.UI.Dispatching;
@@ -41,140 +42,253 @@ public sealed partial class MainPage : Page
     public string Text => _textboxText;
     public string SetText(string text) => _textboxText = text;
 
-    public ObservableCollection<string> QueueCollection { get; } = [];
+    public ObservableCollection<SearchRequest> ActiveSearchRequests { get; } = [];
 
     public MainPage()
     {
         InitializeComponent();
+
         LinkTextBox.PlaceholderText = Main.GetDynamicSearchBoxPlaceholder();
-
-        DispatcherQueue.TryEnqueue(() =>
-        {
-            bool success = LinkTextBox.Focus(FocusState.Programmatic);
-            Debug.WriteLine(success);
-        });
-
         PresetComboBox.ItemsSource = SettingsService.Presets;
         PresetComboBox.SelectedItem = SettingsService.SelectedPreset;
+        ProcessingListView.ItemsSource = ActiveSearchRequests;
+
         _initialized = true;
 
-        if (App.DownloadController.IsBusy)
-        {
-            DownloadButton.IsEnabled = false;
-            DownloadButton.Content = new ProgressRing
-            {
-                IsActive = true,
-                Width = 20,
-                Height = 20,
-                VerticalAlignment = VerticalAlignment.Center,
-                HorizontalAlignment = HorizontalAlignment.Center
-            };
-            LinkTextBox.Text = App.DownloadController.CurrentUrl;
-            LinkTextBox.IsEnabled = false;
-            PasteTextButton.IsEnabled = false;
-            PresetComboBox.IsEnabled = false;
-        }
-        else
-        {
-            LinkTextBox.Text = Text;
-            PresetComboBox.IsEnabled = true;
-
-            if (Text.Length == 0)
-                DownloadButton.IsEnabled = false;
-            else
-                DownloadButton.IsEnabled = true;
-        }
-
+        LinkTextBox.Text = Text;
         UpdateTextDependingOnLink(Text);
 
-        App.DownloadController.BusyChanged += OnBusyChanged;
-        // App.DownloadController.VideoInfoReady += OnVideoInfoReady;
-    }
+        App.DownloadController.RequestsChanged += OnRequestsChanged;
+        App.DownloadController.SearchStarted += OnSearchStarted;
+        App.DownloadController.SearchFinished += OnSearchFinished;
+        App.DownloadController.SearchCanceled += OnSearchCanceled;
+        App.DownloadController.SearchFailed += OnSearchFailed;
 
-    private void OnBusyChanged(bool isBusy, string Url)
-    {
-        Debug.WriteLine("Busy changed: " + isBusy + ", Url: " + Url);
+        foreach (var request in App.DownloadController.ActiveRequests)
+        {
+            ActiveSearchRequests.Add(request);
+        }
+
+        //var mockRequests = new[]
+        //{
+        //    new SearchRequest("aadklşgkrw30ık9-6y0w36b906290690246b90*234069b23klsklşhsklşfh"),
+        //    new SearchRequest("blskdfhklşisflşikh35byı0*eı0yıopetohlşkdflkşhe6yı*36o35op63o6"),
+        //    new SearchRequest("asklhklşsadklşighaslşdkig30*e56350*ykoetrkye6390*6490*390*630c")
+        //};
+
+        //foreach (var request in mockRequests)
+        //{
+        //    ActiveSearchRequests.Add(request);
+        //}
+
+        UpdateGlobalInfoBar();
+
         DispatcherQueue.TryEnqueue(() =>
         {
-            DownloadButton.IsEnabled = !isBusy;
-            LinkTextBox.IsEnabled = !isBusy;
-            LinkTextBox.Text = Url;
-            PasteTextButton.IsEnabled = !isBusy;
-            PresetComboBox.IsEnabled = !isBusy;
-
-            if (isBusy)
-            {
-                DownloadButton.Content = new ProgressRing
-                {
-                    IsActive = true,
-                    Width = 20,
-                    Height = 20,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    HorizontalAlignment = HorizontalAlignment.Center
-                };
-            }
-            else
-            {
-                DownloadButton.Content = new SymbolIcon(Symbol.Download);
-            }
+            LinkTextBox.Focus(FocusState.Programmatic);
         });
     }
 
-    private async void OnClick(object sender, RoutedEventArgs e)
+    /**
+     * Controller Events
+     */
+
+    private void OnSearchStarted(
+        SearchRequest request)
+    {
+        DispatcherQueue.TryEnqueue(() =>
+        {
+            if (!ActiveSearchRequests.Any(
+                    x => x.Id == request.Id))
+            {
+                ActiveSearchRequests.Add(request);
+            }
+
+            UpdateGlobalInfoBar();
+        });
+    }
+
+    private void OnSearchFinished(
+        SearchRequest request)
+    {
+        DispatcherQueue.TryEnqueue(() =>
+        {
+            RemoveRequest(request.Id);
+
+            UpdateGlobalInfoBar();
+        });
+    }
+
+
+    private void OnSearchCanceled(
+        SearchRequest request)
+    {
+        DispatcherQueue.TryEnqueue(() =>
+        {
+            RemoveRequest(request.Id);
+
+            UpdateGlobalInfoBar();
+        });
+    }
+
+
+    private void OnSearchFailed(
+        SearchRequest request,
+        Exception exception)
+    {
+        Debug.WriteLine(
+            $"Search failed: {request.Url}");
+
+        Debug.WriteLine(
+            exception);
+
+        DispatcherQueue.TryEnqueue(() =>
+        {
+            RemoveRequest(request.Id);
+
+            UpdateGlobalInfoBar();
+        });
+    }
+
+    private void OnRequestsChanged()
+    {
+        DispatcherQueue.TryEnqueue(() =>
+        {
+            var requests =
+                App.DownloadController.ActiveRequests;
+
+            ActiveSearchRequests.Clear();
+
+            foreach (var request in requests)
+            {
+                ActiveSearchRequests.Add(request);
+            }
+
+            UpdateGlobalInfoBar();
+        });
+    }
+
+    private void RemoveRequest(Guid requestId)
+    {
+        var request =
+            ActiveSearchRequests.FirstOrDefault(
+                x => x.Id == requestId);
+
+        if (request != null)
+        {
+            ActiveSearchRequests.Remove(request);
+        }
+    }
+
+    private void UpdateGlobalInfoBar()
+    {
+        int count =
+            ActiveSearchRequests.Count;
+
+        if (count <= 0)
+        {
+            ProcessingButton.Visibility = Visibility.Collapsed;
+            ProcessingTeachingTip.IsOpen = false;
+            return;
+        }
+
+        if (ProcessingButton.Visibility != Visibility.Visible) ProcessingButton.Visibility = Visibility.Visible;
+
+        ProcessingButtonText.Text =
+            count == 1
+                ? App.LocalizationService.Get("UrlProcessing")
+                : App.LocalizationService.Get("UrlsProcessing", count);
+    }
+
+    public void CancelSearch(Guid requestId)
+    {
+        bool canceled =
+            App.DownloadController.Cancel(requestId);
+
+        Debug.WriteLine(
+            $"Cancel search {requestId}: {canceled}");
+    }
+
+    private void CancelAllSearches()
+    {
+        App.DownloadController.CancelAll();
+    }
+
+    /**
+     * UI Events
+     */
+
+    private void OnClick(object sender, RoutedEventArgs e)
     {
         if (sender is not Button button)
             return;
 
         if (button.Name == "DownloadButton")
         {
-            await App.DownloadController.SearchAsync(Text);
+            StartSearch();
+            return;
         }
         else if (button.Name == "PasteTextButton")
         {
-            try
-            {
-                var package = Clipboard.GetContent();
-
-                if (package.Contains(StandardDataFormats.Text))
-                {
-                    var text = await package.GetTextAsync();
-                    LinkTextBox.Text = text;
-                }
-
-                if (SettingsService.DownloadAfterPaste)
-                {
-                    await App.DownloadController.SearchAsync(LinkTextBox.Text);
-                } else
-                {
-                    // TODO: Add some kind of notification that the text was pasted and that the user can start the download by clicking the download button
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Error pasting text: " + ex.Message);
-            }
+            _ = PasteAndSearchAsync();
+        }
+        else if (button.Name == "ProcessingButton")
+        {
+            ProcessingTeachingTip.IsOpen = !ProcessingTeachingTip.IsOpen;
+        }
+        else if (button.Name == "ProcessingCancelButton")
+        {
+            CancelSearch(((SearchRequest)button.Tag).Id);
         }
     }
 
-    //enum DownloadButtonStatus
-    //{
-    //    Download,
-    //    Reset
-    //}
+    private void StartSearch()
+    {
+        var url =
+            LinkTextBox.Text.Trim();
 
-    //private async void SetDownloadButtonStatus(DownloadButtonStatus status)
-    //{
-    //    if (status == DownloadButtonStatus.Download)
-    //    {
-    //        _isSearching = true;
-    //    }
-    //    else if (status == DownloadButtonStatus.Reset)
-    //    {
-    //        DownloadButton.Content = new SymbolIcon(Symbol.Download);
-    //        _isSearching = false;
-    //        DownloadButton.IsEnabled = true;
-    //    }
-    //}
+        if (string.IsNullOrWhiteSpace(url))
+            return;
+
+        LinkTextBox.Text = string.Empty;
+
+        foreach (var singleUrl in url.Split(' '))
+        {
+            _ = App.DownloadController.SearchAsync(singleUrl.Trim());
+        }
+    }
+
+    private async Task PasteAndSearchAsync()
+    {
+        try
+        {
+            var package = Clipboard.GetContent();
+
+            if (!package.Contains(StandardDataFormats.Text))
+                return;
+
+            var text = await package.GetTextAsync();
+
+            LinkTextBox.Text = text;
+
+            if (SettingsService.DownloadAfterPaste)
+            {
+                var url = LinkTextBox.Text.Trim();
+
+                if (!string.IsNullOrWhiteSpace(url))
+                {
+                    LinkTextBox.Text = string.Empty;
+
+                    _ = App.DownloadController.SearchAsync(url);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(
+                "Error pasting text: " + ex.Message);
+        }
+    }
 
     private void UpdateTextDependingOnLink(string link)
     {
@@ -193,22 +307,22 @@ public sealed partial class MainPage : Page
         else YTDLPText.Foreground = App.Current.Resources["AccentTextFillColorPrimaryBrush"] as SolidColorBrush;
     }
 
-    private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+    private void TextChanged(object sender, TextChangedEventArgs e)
     {
         if (sender is TextBox textBox)
         {
-            SetText(textBox.Text);
-            UpdateTextDependingOnLink(textBox.Text);
+            if (textBox.Name == "LinkTextBox")
+            {
+                SetText(textBox.Text);
+                UpdateTextDependingOnLink(textBox.Text);
 
-            if (App.DownloadController.IsBusy) return;
-
-            if (Text.Length == 0)
-                DownloadButton.IsEnabled = false;
-            else
-                DownloadButton.IsEnabled = true;
+                if (Text.Length == 0)
+                    DownloadButton.IsEnabled = false;
+                else
+                    DownloadButton.IsEnabled = true;
+            }
         }
     }
-
 
     private void SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
@@ -226,18 +340,37 @@ public sealed partial class MainPage : Page
             SettingsService.SelectedPreset = preset;
         }
     }
-    protected override void OnNavigatedFrom(NavigationEventArgs e)
-    {
-        base.OnNavigatedFrom(e);
-        App.DownloadController.BusyChanged -= OnBusyChanged;
-        // App.DownloadController.VideoInfoReady -= OnVideoInfoReady;
-    }
 
     private void ElementLoaded(object sender, RoutedEventArgs e)
     {
         if (sender is TextBox textBox)
         {
-            textBox.Focus(FocusState.Programmatic);
+            if (textBox.Name == "LinkTextBox")
+            {
+                textBox.Focus(FocusState.Programmatic);
+            }
         }
+    }
+
+    private void OnKeyDown(object sender, KeyRoutedEventArgs e)
+    {
+        if (sender is TextBox textBox)
+        {
+            if (textBox.Name == "LinkTextBox" && e.Key == VirtualKey.Enter && DownloadButton.IsEnabled)
+            {
+                e.Handled = true;
+                OnClick(DownloadButton, new RoutedEventArgs());
+            }
+        }
+    }
+    protected override void OnNavigatedFrom(NavigationEventArgs e)
+    {
+        base.OnNavigatedFrom(e);
+
+        App.DownloadController.RequestsChanged -= OnRequestsChanged;
+        App.DownloadController.SearchStarted -= OnSearchStarted;
+        App.DownloadController.SearchFinished -= OnSearchFinished;
+        App.DownloadController.SearchCanceled -= OnSearchCanceled;
+        App.DownloadController.SearchFailed -= OnSearchFailed;
     }
 }
