@@ -12,6 +12,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
+using Sentry;
 using System;
 using System.Collections;
 using System.Diagnostics;
@@ -81,6 +82,8 @@ namespace LechYTDLP
             _ = CheckForUpdatesOnStartupAsync();
 
             RootGrid.AddHandler(UIElement.KeyDownEvent, new KeyEventHandler(Global_KeyDown), true);
+
+            AppFrame.Navigated += (s, e) => SentrySdk.AddBreadcrumb($"Navigated to {e.SourcePageType.Name}", "navigation");
         }
 
         private void Global_KeyDown(object sender, KeyRoutedEventArgs e)
@@ -240,23 +243,31 @@ namespace LechYTDLP
 
             dispatcher.TryEnqueue(() =>
             {
-                if (whichBadge == "Log")
+                try
                 {
-                    if (LogBadge == null)
-                        return;
+                    if (whichBadge == "Log")
+                    {
+                        if (LogBadge == null)
+                            return;
 
-                    LogBadge.Value = count;
-                    LogBadge.Visibility =
-                        count > 0 ? Visibility.Visible : Visibility.Collapsed;
+                        LogBadge.Value = count;
+                        LogBadge.Visibility =
+                            count > 0 ? Visibility.Visible : Visibility.Collapsed;
+                    }
+                    else if (whichBadge == "Downloads")
+                    {
+                        if (DownloadsBadge == null)
+                            return;
+
+                        DownloadsBadge.Value = count;
+                        DownloadsBadge.Visibility =
+                            count > 0 ? Visibility.Visible : Visibility.Collapsed;
+                    }
                 }
-                else if (whichBadge == "Downloads")
+                catch (Exception ex)
                 {
-                    if (DownloadsBadge == null)
-                        return;
-
-                    DownloadsBadge.Value = count;
-                    DownloadsBadge.Visibility =
-                        count > 0 ? Visibility.Visible : Visibility.Collapsed;
+                    LogService.Add($"Error updating {whichBadge} badge: {ex.Message}", LogTag.Error);
+                    SentrySdk.CaptureException(ex);
                 }
             });
         }
@@ -290,83 +301,100 @@ namespace LechYTDLP
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                var root = (FrameworkElement)this.Content;
-
-                ElementTheme newThemeValue = newTheme.Value switch
+                try
                 {
-                    "light" => ElementTheme.Light,
-                    "dark" => ElementTheme.Dark,
-                    "system" => ElementTheme.Default,
-                    _ => ElementTheme.Default
-                };
+                    var root = (FrameworkElement)this.Content;
 
-                bool isChanged = root.RequestedTheme != newThemeValue;
-
-                if (isChanged)
-                {
-                    root.RequestedTheme = newThemeValue;
-
-                    // Show info bar only when theme is changed and not during initialization to avoid showing it on app launch.
-                    if (IsInitTheme)
+                    ElementTheme newThemeValue = newTheme.Value switch
                     {
-                        IsInitTheme = false;
-                        return;
+                        "light" => ElementTheme.Light,
+                        "dark" => ElementTheme.Dark,
+                        "system" => ElementTheme.Default,
+                        _ => ElementTheme.Default
+                    };
+
+                    bool isChanged = root.RequestedTheme != newThemeValue;
+
+                    if (isChanged)
+                    {
+                        root.RequestedTheme = newThemeValue;
+
+                        // Show info bar only when theme is changed and not during initialization to avoid showing it on app launch.
+                        if (IsInitTheme)
+                        {
+                            IsInitTheme = false;
+                            return;
+                        }
+
+                        App.InfoBarService.Show(new InfoBarMessage
+                        {
+                            Title = App.LocalizationService.Get("ThemeChanged", newTheme.DisplayName),
+                            Message = "",
+                            Severity = InfoBarSeverity.Success,
+                            DurationMs = 3000,
+                            IsCancelable = true
+                        });
                     }
-
-                    App.InfoBarService.Show(new InfoBarMessage
-                    {
-                        Title = App.LocalizationService.Get("ThemeChanged", newTheme.DisplayName),
-                        Message = "",
-                        Severity = InfoBarSeverity.Success,
-                        DurationMs = 3000,
-                        IsCancelable = true
-                    });
                 }
+                catch (Exception ex)
+                {
+                    LogService.Add($"Error changing theme to {newTheme.DisplayName}: {ex.Message}", LogTag.Error);
+                    SentrySdk.CaptureException(ex);
+                }
+                ;
             });
         }
         public void AppBackdropChanged(Setting newBackdrop, bool _isInitializingTheme = false)
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                string currentBackdrop = SystemBackdrop switch
+                try
                 {
-                    MicaBackdrop mica => mica.Kind switch
+                    string currentBackdrop = SystemBackdrop switch
                     {
-                        MicaKind.BaseAlt => "micaalt",
-                        _ => "mica"
-                    },
-                    DesktopAcrylicBackdrop => "acrylic",
-                    null => "none",
-                    _ => "unknown"
-                };
-                bool isChanged = currentBackdrop != newBackdrop.Value;
+                        MicaBackdrop mica => mica.Kind switch
+                        {
+                            MicaKind.BaseAlt => "micaalt",
+                            _ => "mica"
+                        },
+                        DesktopAcrylicBackdrop => "acrylic",
+                        null => "none",
+                        _ => "unknown"
+                    };
+                    bool isChanged = currentBackdrop != newBackdrop.Value;
 
-                switch (newBackdrop.Value)
-                {
-                    case "mica":
-                        TrySetMicaBackdrop(false);
-                        break;
-                    case "micaalt":
-                        TrySetMicaBackdrop(true);
-                        break;
-                    case "acrylic":
-                        TrySetDesktopAcrylicBackdrop();
-                        break;
-                    default:
-                        SystemBackdrop = null;
-                        break;
-                }
-                if (isChanged && !_isInitializingTheme)
-                    App.InfoBarService.Show(new InfoBarMessage
+                    switch (newBackdrop.Value)
                     {
-                        Title = isChanged
-                       ? App.LocalizationService.Get("BackdropChanged", newBackdrop.DisplayName)
-                       : App.LocalizationService.Get("BackdropChangedFailed", newBackdrop.DisplayName),
-                        Message = "",
-                        Severity = isChanged ? InfoBarSeverity.Success : InfoBarSeverity.Error,
-                        DurationMs = 3000,
-                        IsCancelable = true
-                    });
+                        case "mica":
+                            TrySetMicaBackdrop(false);
+                            break;
+                        case "micaalt":
+                            TrySetMicaBackdrop(true);
+                            break;
+                        case "acrylic":
+                            TrySetDesktopAcrylicBackdrop();
+                            break;
+                        default:
+                            SystemBackdrop = null;
+                            break;
+                    }
+                    if (isChanged && !_isInitializingTheme)
+                        App.InfoBarService.Show(new InfoBarMessage
+                        {
+                            Title = isChanged
+                           ? App.LocalizationService.Get("BackdropChanged", newBackdrop.DisplayName)
+                           : App.LocalizationService.Get("BackdropChangedFailed", newBackdrop.DisplayName),
+                            Message = "",
+                            Severity = isChanged ? InfoBarSeverity.Success : InfoBarSeverity.Error,
+                            DurationMs = 3000,
+                            IsCancelable = true
+                        });
+                }
+                catch (Exception ex)
+                {
+                    LogService.Add($"Error changing backdrop to {newBackdrop.DisplayName}: {ex.Message}", LogTag.Error);
+                    SentrySdk.CaptureException(ex);
+                }
             });
         }
 

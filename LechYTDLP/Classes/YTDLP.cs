@@ -1,8 +1,10 @@
 ﻿using LechYTDLP.Components;
 using LechYTDLP.Services;
 using LechYTDLP.Util;
+using Microsoft.Diagnostics.Tracing.AutomatedAnalysis;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Controls;
+using Sentry;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -285,6 +287,7 @@ namespace LechYTDLP.Classes
             // If there is update arg we don't add mustHaveArgs because update process may not work properly with some of those args, and also update process doesn't require those args to work.
             // NEEDS REFACTOR: This is a bit of a hacky solution, we should find a better way to handle this in the future.
             string arguments = args.Update ? ytdlpArgs : $"{ytdlpArgs} {mustHaveArgs}";
+
 
             LogService.Add($"🚩 {App.LocalizationService.Get("StartingToolWithLog", App.LocalizationService.Get("YtDlp"))}:", LogTag.YTDLP);
             LogService.Add($"{SettingsService.YTDLPPath} {arguments}", LogTag.Normal);

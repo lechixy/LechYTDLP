@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Sentry;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -63,22 +64,66 @@ namespace LechYTDLP.Views
             // burda da çağırıyoruz ki sayfa açıldığında güncel veriler gelsin
             UpdateCurrentQueue();
             UpdateInQueue();
-            DispatcherQueue.TryEnqueue(async () => await UpdateHistoryQueue(true));
+            DispatcherQueue.TryEnqueue(async () =>
+            {
+                try
+                {
+                    await UpdateHistoryQueue(true);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error updating history: {ex.Message}");
+                    SentrySdk.CaptureException(ex);
+                }
+            });
         }
 
         private void CurrentUpdated()
         {
-            DispatcherQueue.TryEnqueue(UpdateCurrentQueue);
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                try
+                {
+                    UpdateCurrentQueue();
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error updating current queue: {ex.Message}");
+                    SentrySdk.CaptureException(ex);
+                }
+            });
         }
 
         private void InUpdated()
         {
-            DispatcherQueue.TryEnqueue(UpdateInQueue);
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                try
+                {
+                    UpdateInQueue();
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error updating in queue: {ex.Message}");
+                    SentrySdk.CaptureException(ex);
+                }
+            });
         }
 
         private void HistoryUpdated(bool getHistoryFromDatabase)
         {
-            DispatcherQueue.TryEnqueue(() => _ = UpdateHistoryQueue(getHistoryFromDatabase));
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                try
+                {
+                    _ = UpdateHistoryQueue(getHistoryFromDatabase);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error updating history queue: {ex.Message}");
+                    SentrySdk.CaptureException(ex);
+                }
+            });
         }
 
         public void UpdateCurrentQueue()

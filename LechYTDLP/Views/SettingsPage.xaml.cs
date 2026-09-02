@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using Sentry;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -255,38 +256,60 @@ public sealed partial class SettingsPage : Page
         else if (btn.Name == "PickFFmpegButton")
             PickFile(SettingType.PathFFMPEG);
         else if (btn.Name == "CheckDependsButton")
-            DispatcherQueue.TryEnqueue(CheckVersion);
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                try
+                {
+                    CheckVersion();
+                }
+                catch (Exception ex)
+                {
+                    LogService.Add($"Error checking dependencies: {ex.Message}", LogTag.Error);
+                    SentrySdk.CaptureException(ex);
+                }
+            });
         else if (btn.Name == "CheckYTdlpUpdateButton")
         {
             DispatcherQueue.TryEnqueue(async () =>
             {
-                CheckYTdlpUpdateButton.IsEnabled = false;
-                CheckYTdlpUpdateButton.Content = new ProgressRing
+                try
                 {
-                    IsActive = true,
-                    Width = 20,
-                    Height = 20,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    HorizontalAlignment = HorizontalAlignment.Center
-                };
+                    CheckYTdlpUpdateButton.IsEnabled = false;
+                    CheckYTdlpUpdateButton.Content = new ProgressRing
+                    {
+                        IsActive = true,
+                        Width = 20,
+                        Height = 20,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        HorizontalAlignment = HorizontalAlignment.Center
+                    };
 
-                UpdateResult updateInfo = await App.YtDlp.CheckAndDownloadUpdate();
+                    UpdateResult updateInfo = await App.YtDlp.CheckAndDownloadUpdate();
 
-                if (updateInfo.Status == UpdateStatus.UpToDate)
-                {
-                    YTdlpUpdateCheck.Description = $"✅ {App.LocalizationService.Get("YTdlpIsUpToDate")} ({updateInfo.Message})";
+                    if (updateInfo.Status == UpdateStatus.UpToDate)
+                    {
+                        YTdlpUpdateCheck.Description = $"✅ {App.LocalizationService.Get("YTdlpIsUpToDate")} ({updateInfo.Message})";
+                    }
+                    else if (updateInfo.Status == UpdateStatus.Updated)
+                    {
+                        YTdlpUpdateCheck.Description = $"✅ {App.LocalizationService.Get("YTdlpUpdatedSuccessfully")} ({updateInfo.Message})";
+                    }
+                    else
+                    {
+                        YTdlpUpdateCheck.Description = $"⚠️ {App.LocalizationService.Get("YTdlpUpdateCheckFailed")}";
+                    }
+
+                    CheckYTdlpUpdateButton.IsEnabled = true;
+                    CheckYTdlpUpdateButton.Content = App.LocalizationService.Get("Check");
                 }
-                else if (updateInfo.Status == UpdateStatus.Updated)
+                catch (Exception ex)
                 {
-                    YTdlpUpdateCheck.Description = $"✅ {App.LocalizationService.Get("YTdlpUpdatedSuccessfully")} ({updateInfo.Message})";
-                }
-                else
-                {
+                    LogService.Add($"Error checking for YT-DLP update: {ex.Message}", LogTag.Error);
+                    SentrySdk.CaptureException(ex);
                     YTdlpUpdateCheck.Description = $"⚠️ {App.LocalizationService.Get("YTdlpUpdateCheckFailed")}";
+                    CheckYTdlpUpdateButton.IsEnabled = true;
+                    CheckYTdlpUpdateButton.Content = App.LocalizationService.Get("Check");
                 }
-
-                CheckYTdlpUpdateButton.IsEnabled = true;
-                CheckYTdlpUpdateButton.Content = App.LocalizationService.Get("Check");
             });
         }
         else if (btn.Name == "ImportSettingsButton")

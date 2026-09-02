@@ -3,6 +3,7 @@ using LechYTDLP.Services;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Sentry;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -116,30 +117,38 @@ namespace LechYTDLP.Util
 
                     App.UIThreadDispatcherQueue.TryEnqueue(async () =>
                     {
-                        var noJavaScriptRuntimeDialog = new BasicDialog(App.LocalizationService.Get("NoJsRuntimeMsg"));
-                        var dialog = await App.DialogService.ShowAsync(new DialogOptions
+                        try
                         {
-                            Title = App.LocalizationService.Get("NoJsRuntime"),
-                            Content = noJavaScriptRuntimeDialog,
-                            PrimaryButtonText = App.LocalizationService.Get("LearnMore"),
-                            PrimaryButtonStyle = Application.Current.Resources["AccentButtonStyle"] as Style,
-                            CloseButtonText = App.LocalizationService.Get("DontShowAgain")
-                        });
-
-                        // If user chooses to not show the notice again, disable it in settings.
-                        // If user chooses to learn more, keep showing the notice until they choose to disable it.
-                        if (dialog != DialogResult.Primary) SettingsService.ShowJavaScriptRuntimeNotice = false;
-                        else
-                        {
-                            // Open the lechytdlp wiki page about this issue in the default browser.
-                            var uri = new Uri(Main.GetLink(Links.NoJsRuntime));
-                            var success = await Windows.System.Launcher.LaunchUriAsync(uri);
-                            if (!success)
+                            var noJavaScriptRuntimeDialog = new BasicDialog(App.LocalizationService.Get("NoJsRuntimeMsg"));
+                            var dialog = await App.DialogService.ShowAsync(new DialogOptions
                             {
-                                LogService.Add($"Failed to launch URI: {uri}", LogTag.Error);
+                                Title = App.LocalizationService.Get("NoJsRuntime"),
+                                Content = noJavaScriptRuntimeDialog,
+                                PrimaryButtonText = App.LocalizationService.Get("LearnMore"),
+                                PrimaryButtonStyle = Application.Current.Resources["AccentButtonStyle"] as Style,
+                                CloseButtonText = App.LocalizationService.Get("DontShowAgain")
+                            });
+
+                            // If user chooses to not show the notice again, disable it in settings.
+                            // If user chooses to learn more, keep showing the notice until they choose to disable it.
+                            if (dialog != DialogResult.Primary) SettingsService.ShowJavaScriptRuntimeNotice = false;
+                            else
+                            {
+                                // Open the lechytdlp wiki page about this issue in the default browser.
+                                var uri = new Uri(Main.GetLink(Links.NoJsRuntime));
+                                var success = await Windows.System.Launcher.LaunchUriAsync(uri);
+                                if (!success)
+                                {
+                                    LogService.Add($"Failed to launch URI: {uri}", LogTag.Error);
+                                }
                             }
+                            SettingsService._shownJsDialog = false;
                         }
-                        SettingsService._shownJsDialog = false;
+                        catch (Exception ex)
+                        {
+                            LogService.Add($"Error showing NoJsRuntime dialog: {ex.Message}", LogTag.Error);
+                            SentrySdk.CaptureException(ex);
+                        }
                     });
                 }
             }

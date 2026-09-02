@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.Windows.AppNotifications;
 using Microsoft.Windows.AppNotifications.Builder;
+using Sentry;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -85,7 +86,11 @@ public sealed partial class MainPage : Page
 
         DispatcherQueue.TryEnqueue(() =>
         {
-            LinkTextBox.Focus(FocusState.Programmatic);
+            try
+            {
+                LinkTextBox.Focus(FocusState.Programmatic);
+            }
+            catch { }
         });
     }
 
@@ -98,13 +103,22 @@ public sealed partial class MainPage : Page
     {
         DispatcherQueue.TryEnqueue(() =>
         {
-            if (!ActiveSearchRequests.Any(
-                    x => x.Id == request.Id))
+            try
             {
-                ActiveSearchRequests.Add(request);
-            }
+                if (!ActiveSearchRequests.Any(
+                    x => x.Id == request.Id))
+                {
+                    ActiveSearchRequests.Add(request);
+                }
 
-            UpdateGlobalInfoBar();
+                UpdateGlobalInfoBar();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(
+                    $"Error adding search request: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+            }
         });
     }
 
@@ -113,9 +127,17 @@ public sealed partial class MainPage : Page
     {
         DispatcherQueue.TryEnqueue(() =>
         {
-            RemoveRequest(request.Id);
-
-            UpdateGlobalInfoBar();
+            try
+            {
+                RemoveRequest(request.Id);
+                UpdateGlobalInfoBar();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(
+                    $"Error removing search request: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+            }
         });
     }
 
@@ -125,9 +147,17 @@ public sealed partial class MainPage : Page
     {
         DispatcherQueue.TryEnqueue(() =>
         {
-            RemoveRequest(request.Id);
-
-            UpdateGlobalInfoBar();
+            try
+            {
+                RemoveRequest(request.Id);
+                UpdateGlobalInfoBar();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(
+                    $"Error removing canceled search request: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+            }
         });
     }
 
@@ -144,9 +174,17 @@ public sealed partial class MainPage : Page
 
         DispatcherQueue.TryEnqueue(() =>
         {
-            RemoveRequest(request.Id);
-
-            UpdateGlobalInfoBar();
+            try
+            {
+                RemoveRequest(request.Id);
+                UpdateGlobalInfoBar();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(
+                    $"Error removing failed search request: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+            }
         });
     }
 
@@ -154,17 +192,24 @@ public sealed partial class MainPage : Page
     {
         DispatcherQueue.TryEnqueue(() =>
         {
-            var requests =
-                App.DownloadController.ActiveRequests;
-
-            ActiveSearchRequests.Clear();
-
-            foreach (var request in requests)
+            try
             {
-                ActiveSearchRequests.Add(request);
-            }
+                var requests = App.DownloadController.ActiveRequests;
+                ActiveSearchRequests.Clear();
 
-            UpdateGlobalInfoBar();
+                foreach (var request in requests)
+                {
+                    ActiveSearchRequests.Add(request);
+                }
+
+                UpdateGlobalInfoBar();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(
+                    $"Error updating search requests: {ex.Message}");
+                SentrySdk.CaptureException(ex);
+            }
         });
     }
 

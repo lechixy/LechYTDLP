@@ -9,6 +9,7 @@ using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using Sentry;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -54,28 +55,36 @@ namespace LechYTDLP.Views
 
         private void OnLogChanged(LogItem item)
         {
-            if (item ==  null) return;
+            if (item == null) return;
 
             DispatcherQueue?.TryEnqueue(() =>
             {
-                var existing = UiLogs.FirstOrDefault(x => x.Id == item.Id);
-
-                if (existing == null)
+                try
                 {
-                    UiLogs.Add(item);
+                    var existing = UiLogs.FirstOrDefault(x => x.Id == item.Id);
+
+                    if (existing == null)
+                    {
+                        UiLogs.Add(item);
+                    }
+                    else
+                    {
+                        // ! THIS CODE NEEDS REFACTORING BECAUSE IT NOT NICE TO REMOVING ADDING THINGS
+
+                        //UiLogs.Remove(item);
+                        //UiLogs.Add(item);
+
+                        //Debug.WriteLine($"Log updated: {existing.Message} {existing.Id}");
+                    }
+
+                    if (SettingsService.AutoScrollLogs && LogListView != null)
+                        LogListView.ScrollIntoView(item);
                 }
-                else
+                catch (Exception ex)
                 {
-                    // ! THIS CODE NEEDS REFACTORING BECAUSE IT NOT NICE TO REMOVING ADDING THINGS
-
-                    //UiLogs.Remove(item);
-                    //UiLogs.Add(item);
-
-                    //Debug.WriteLine($"Log updated: {existing.Message} {existing.Id}");
+                    LogService.Add($"Error updating log UI: {ex.Message}", LogTag.Error);
+                    SentrySdk.CaptureException(ex);
                 }
-
-                if (SettingsService.AutoScrollLogs && LogListView != null)
-                    LogListView.ScrollIntoView(item);
             });
         }
 

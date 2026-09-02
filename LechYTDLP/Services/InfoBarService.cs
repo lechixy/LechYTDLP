@@ -67,7 +67,11 @@ namespace LechYTDLP.Services
 
             _dispatcher.TryEnqueue(() =>
             {
-                TryShowNext();
+                try
+                {
+                    TryShowNext();
+                }
+                catch { }
             });
         }
 

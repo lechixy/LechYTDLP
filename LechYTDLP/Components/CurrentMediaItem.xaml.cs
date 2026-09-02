@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
+using Sentry;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -74,7 +75,15 @@ namespace LechYTDLP.Components
 
             DispatcherQueue.TryEnqueue(() =>
             {
-                UpdateUI(item);
+                try
+                {
+                    UpdateUI(item);
+                }
+                catch (Exception ex)
+                {
+                    LogService.Add($"Error updating UI for item {item.Info.Title}: {ex.Message}", LogTag.Error);
+                    SentrySdk.CaptureException(ex);
+                }
             });
         }
 

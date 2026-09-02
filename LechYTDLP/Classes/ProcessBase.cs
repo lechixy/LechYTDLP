@@ -1,4 +1,5 @@
 ﻿using LechYTDLP.Util;
+using Sentry;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -58,11 +59,13 @@ namespace LechYTDLP.Classes
 
             try
             {
+                SentrySdk.AddBreadcrumb($"Process started: {fileName} {arguments}", "process");
                 process.Start();
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();
 
                 await process.WaitForExitAsync(cancellationToken);
+                SentrySdk.AddBreadcrumb($"Process exited with code: {process.ExitCode}", "process");
 
                 return new ProcessResult
                 {
