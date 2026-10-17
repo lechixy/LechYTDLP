@@ -1,0 +1,1096 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="DownloadsC.Content" xml:space="preserve">
+    <value>Tải xuống</value>
+  </data>
+  <data name="ExtensionAddedMediaInfoBarMsg" xml:space="preserve">
+    <value>{0} tiện ích mở rộng đã thêm media</value>
+  </data>
+  <data name="ExtensionAddedMediaLog" xml:space="preserve">
+    <value>{0} tiện ích mở rộng đã thêm media: {1}</value>
+  </data>
+  <data name="FirstLog" xml:space="preserve">
+    <value>✨ Log sẽ hiển thị ở đây nhé fen &lt;3</value>
+  </data>
+  <data name="LechYTdlpSubtitle.Text" xml:space="preserve">
+    <value>Tải xuống bất kỳ video nào bạn thích.</value>
+  </data>
+  <data name="LechYTdlpTitle" xml:space="preserve">
+    <value>LechYTDLP</value>
+  </data>
+  <data name="LogsC.Content" xml:space="preserve">
+    <value>Logs</value>
+  </data>
+  <data name="MainNav.Content" xml:space="preserve">
+    <value>Tìm kiếm</value>
+  </data>
+  <data name="OptionsC.Content" xml:space="preserve">
+    <value>Tùy chọn</value>
+  </data>
+  <data name="Options.Text" xml:space="preserve">
+    <value>Tùy chọn</value>
+  </data>
+  <data name="ThemeChanged" xml:space="preserve">
+    <value>Theme đã được thay đổi thành {0}</value>
+  </data>
+  <data name="BackdropChanged" xml:space="preserve">
+    <value>Phông nền đã thay đổi thành {0}</value>
+  </data>
+  <data name="BackdropChangedFailed" xml:space="preserve">
+    <value>Không thể thay đổi hình nền, {0} có thể không được hỗ trợ trên hệ thống này.</value>
+  </data>
+  <data name="Settings.Text" xml:space="preserve">
+    <value>Cài đặt</value>
+  </data>
+  <data name="CustomizeYTDLP.Header" xml:space="preserve">
+    <value>Tùy chỉnh YT-DLP</value>
+  </data>
+  <data name="CustomizeYTDLP.Description" xml:space="preserve">
+    <value>YT-DLP nên đối xử với bạn như thế nào?</value>
+  </data>
+  <data name="YTdlpPathSetting.Header" xml:space="preserve">
+    <value>Đường dẫn của YT-DLP</value>
+  </data>
+  <data name="YTdlpPathSetting.Description" xml:space="preserve">
+    <value>Đường dẫn đến tệp thực thi yt-dlp (yt-dlp.exe)</value>
+  </data>
+  <data name="FFmpegPathSetting.Header" xml:space="preserve">
+    <value>Đường dẫn của FFmpeg</value>
+  </data>
+  <data name="FFmpegPathSetting.Description" xml:space="preserve">
+    <value>Đường dẫn đến tệp thực thi FFmpeg (ffmpeg.exe)</value>
+  </data>
+  <data name="CheckDepends.Description" xml:space="preserve">
+    <value>Hãy kiểm tra xem các thư viện phụ thuộc của bạn có hoạt động chính xác hay không.</value>
+  </data>
+  <data name="CheckDependsButton.Content" xml:space="preserve">
+    <value>Kiểm tra</value>
+  </data>
+  <data name="JsRuntimeSetting.Header" xml:space="preserve">
+    <value>Môi trường thực thi JavaScript</value>
+  </data>
+  <data name="JsRuntimeSetting.Description" xml:space="preserve">
+    <value>Thêm môi trường chạy JavaScript để kích hoạt</value>
+  </data>
+  <data name="JsRuntimeSettingCombo.PlaceholderText" xml:space="preserve">
+    <value>Chọn thời gian chạy</value>
+  </data>
+  <data name="Customization.Text" xml:space="preserve">
+    <value>Tùy chỉnh</value>
+  </data>
+  <data name="AppLanguageSetting.Header" xml:space="preserve">
+    <value>Ngôn ngữ hiện tại đang là Việt Nam</value>
+  </data>
+  <data name="AppLanguageSetting.Description" xml:space="preserve">
+    <value>Thay đổi ngôn ngữ ứng dụng</value>
+  </data>
+  <data name="AppLanguageSettingCombo.PlaceholderText" xml:space="preserve">
+    <value>Chọn ngôn ngữ</value>
+  </data>
+  <data name="AppThemeSetting.Header" xml:space="preserve">
+    <value>Theme</value>
+  </data>
+  <data name="AppThemeSetting.Description" xml:space="preserve">
+    <value>Ứng dụng nên có giao diện như thế nào?</value>
+  </data>
+  <data name="AppThemeSettingCombo.PlaceholderText" xml:space="preserve">
+    <value>Chọn theme</value>
+  </data>
+  <data name="AppBackdropSetting.Description" xml:space="preserve">
+    <value>Ứng dụng nên có giao diện như thế nào (một số tùy chọn không có sẵn trên mọi máy tính)?</value>
+  </data>
+  <data name="AppBackdropSettingCombo.PlaceholderText" xml:space="preserve">
+    <value>Chọn phông nền</value>
+  </data>
+  <data name="DeveloperOptions.Text" xml:space="preserve">
+    <value>Tùy chọn nhà phát triển</value>
+  </data>
+  <data name="BlobDataSetting.Header" xml:space="preserve">
+    <value>Use blob data</value>
+  </data>
+  <data name="BlobDataSetting.Description" xml:space="preserve">
+    <value>You can use blob data for testing, fill Desktop\lechytdlp_blob.json with yt-dlp --dump-json data</value>
+  </data>
+  <data name="WriteVideoInfoSetting.Header" xml:space="preserve">
+    <value>Write video info</value>
+  </data>
+  <data name="WriteVideoInfoSetting.Description" xml:space="preserve">
+    <value>Write yt-dlp --dump-json data to Desktop\lechytdlp_dump.json</value>
+  </data>
+  <data name="GithubLink.Content" xml:space="preserve">
+    <value>Mã nguồn - GitHub</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Phiên bản</value>
+  </data>
+  <data name="MadeBy" xml:space="preserve">
+    <value>🤍 Được làm bởi @lechixy</value>
+  </data>
+  <data name="AppBackdropSetting.Header" xml:space="preserve">
+    <value>Phông nền</value>
+  </data>
+  <data name="ApplicationStatusCheck" xml:space="preserve">
+    <value>Kiểm tra phiên bản YT-DLP và FFmpeg...</value>
+  </data>
+  <data name="ApplicationStatusCheckCheckingFFmpeg" xml:space="preserve">
+    <value>Kiểm tra phiên bản FFmpeg...</value>
+  </data>
+  <data name="ApplicationStatusCheckNotWorking" xml:space="preserve">
+    <value>Ứng dụng không hoạt động, hãy kiểm tra đường dẫn tệp thực thi.</value>
+  </data>
+  <data name="None" xml:space="preserve">
+    <value>Không</value>
+  </data>
+  <data name="System" xml:space="preserve">
+    <value>Theo hệ thống</value>
+  </data>
+  <data name="Light" xml:space="preserve">
+    <value>Sáng</value>
+  </data>
+  <data name="Dark" xml:space="preserve">
+    <value>Tối</value>
+  </data>
+  <data name="Acrylic" xml:space="preserve">
+    <value>Acrylic</value>
+  </data>
+  <data name="LanguageChangedInfoBar" xml:space="preserve">
+    <value>Ngôn ngữ đã được thay đổi thành {0}</value>
+  </data>
+  <data name="LanguageChangedInfoBarMsg" xml:space="preserve">
+    <value>Mở lại ứng dụng để xem các thay đổi</value>
+  </data>
+  <data name="File.Text" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="FileNameSettingsExpander.Header" xml:space="preserve">
+    <value>Mẫu tên file</value>
+  </data>
+  <data name="FileNameSettingsExpander.Description" xml:space="preserve">
+    <value>Tùy chỉnh mẫu tên file cho các tệp tải xuống của bạn.</value>
+  </data>
+  <data name="FileNameTextBox.PlaceholderText" xml:space="preserve">
+    <value>Định nghĩa mẫu tên file</value>
+  </data>
+  <data name="SaveToSetting.Header" xml:space="preserve">
+    <value>Lưu thư mục</value>
+  </data>
+  <data name="SaveToSetting.Description" xml:space="preserve">
+    <value>Bạn nên lưu tập tin đã tải xuống vào thư mục nào?</value>
+  </data>
+  <data name="SaveToTextBox.PlaceholderText" xml:space="preserve">
+    <value>Xác định thư mục</value>
+  </data>
+  <data name="EmbedThumbnailSetting.Header" xml:space="preserve">
+    <value>Nhúng hình thu nhỏ thumbnail</value>
+  </data>
+  <data name="EmbedThumbnailSetting.Description" xml:space="preserve">
+    <value>Chèn hình thu nhỏ vào phương tiện truyền thông làm ảnh bìa.</value>
+  </data>
+  <data name="EmbedSubsSetting.Header" xml:space="preserve">
+    <value>Nhúng phụ đề</value>
+  </data>
+  <data name="EmbedSubsSetting.Description" xml:space="preserve">
+    <value>Nhúng phụ đề vào video (chỉ áp dụng cho các định dạng: mp4, webm và mkv)</value>
+  </data>
+  <data name="Account.Text" xml:space="preserve">
+    <value>Tài khoản</value>
+  </data>
+  <data name="CookiesSetting.Header" xml:space="preserve">
+    <value>Tệp cookie</value>
+  </data>
+  <data name="CookiesFileHyperLink.Content" xml:space="preserve">
+    <value>Này! Tại sao tôi cần chuyển cookie của mình đến đây? Xem ở đây.</value>
+  </data>
+  <data name="CookiesFileTextBox.PlaceholderText" xml:space="preserve">
+    <value>Đường dẫn đến tệp cookie (.txt)</value>
+  </data>
+  <data name="Logs.Text" xml:space="preserve">
+    <value>Logs</value>
+  </data>
+  <data name="Copy.Text" xml:space="preserve">
+    <value>Sao chép</value>
+  </data>
+  <data name="Downloads.Text" xml:space="preserve">
+    <value>Tải xuống</value>
+  </data>
+  <data name="NoQueue.Text" xml:space="preserve">
+    <value>Hiện không có video nào đang chờ tải xuống, hãy vào phần tìm kiếm để tải thêm một số video.</value>
+  </data>
+  <data name="InQueue.Text" xml:space="preserve">
+    <value>Đang xếp hàng</value>
+  </data>
+  <data name="History.Text" xml:space="preserve">
+    <value>Lịch sử</value>
+  </data>
+  <data name="Clear.Content" xml:space="preserve">
+    <value>Xóa</value>
+  </data>
+  <data name="DownloadAgain.Text" xml:space="preserve">
+    <value>Tải xuống lại</value>
+  </data>
+  <data name="OpenInExplorer.Text" xml:space="preserve">
+    <value>Mở trong trình duyệt tệp explorer</value>
+  </data>
+  <data name="CopyTitle.Text" xml:space="preserve">
+    <value>Sao chép tiêu đề</value>
+  </data>
+  <data name="CopyLink.Text" xml:space="preserve">
+    <value>Sao chép liên kết link</value>
+  </data>
+  <data name="CopyFilePath.Text" xml:space="preserve">
+    <value>Sao chép đường dẫn tệp</value>
+  </data>
+  <data name="RemoveFromHistory.Text" xml:space="preserve">
+    <value>Loại bỏ</value>
+  </data>
+  <data name="Delete.Text" xml:space="preserve">
+    <value>Xóa</value>
+  </data>
+  <data name="UnknownTitle" xml:space="preserve">
+    <value>Tiêu đề không xác định</value>
+  </data>
+  <data name="UnknownUploader" xml:space="preserve">
+    <value>Người tải lên không xác định</value>
+  </data>
+  <data name="SavingTo" xml:space="preserve">
+    <value>Đang lưu vào {0}</value>
+  </data>
+  <data name="DownloadFailed" xml:space="preserve">
+    <value>Tải xuống thất bại</value>
+  </data>
+  <data name="FileCantBeOpened" xml:space="preserve">
+    <value>Không thể mở tập tin.</value>
+  </data>
+  <data name="FileCantBeOpenedMsg" xml:space="preserve">
+    <value>Hãy kiểm tra tệp tin, có thể nó đã bị di chuyển, đổi tên hoặc xóa.</value>
+  </data>
+  <data name="NoYTdlpExecutable" xml:space="preserve">
+    <value>Không có tệp yt-dlp.exe.</value>
+  </data>
+  <data name="NoFFmpegExecutable" xml:space="preserve">
+    <value>Không có tệp ffmpeg.exe.</value>
+  </data>
+  <data name="NoYTdlpExecutableLog" xml:space="preserve">
+    <value>Không tìm thấy tệp yt-dlp.exe! Vui lòng kiểm tra cài đặt vì chúng tôi không tìm thấy bất kỳ tệp thực thi nào. Chi tiết: {0}</value>
+  </data>
+  <data name="ERROR" xml:space="preserve">
+    <value>LỖI</value>
+  </data>
+  <data name="NoYTdlpExecutableMsg" xml:space="preserve">
+    <value>Hãy kiểm tra đường dẫn yt-dlp trong Cài đặt vì không tìm thấy bất kỳ tệp thực thi nào.</value>
+  </data>
+  <data name="NoFFmpegExecutableMsg" xml:space="preserve">
+    <value>Hãy kiểm tra đường dẫn FFmpeg trong phần Cài đặt vì không tìm thấy tệp thực thi nào.</value>
+  </data>
+  <data name="NoFFmpegExecutableLog" xml:space="preserve">
+    <value>Không tìm thấy ffmpeg.exe! Vui lòng kiểm tra Cài đặt vì không tìm thấy bất kỳ tệp thực thi nào. Chi tiết: {0}</value>
+  </data>
+  <data name="InvalidLink" xml:space="preserve">
+    <value>Liên kết không hợp lệ</value>
+  </data>
+  <data name="InvalidLinkMsg" xml:space="preserve">
+    <value>Liên kết được cung cấp không hợp lệ. Vui lòng kiểm tra lại và thử lại.</value>
+  </data>
+  <data name="InvalidLinkLog" xml:space="preserve">
+    <value>Liên kết được cung cấp không hợp lệ. Chi tiết: {0}</value>
+  </data>
+  <data name="UnhandledError" xml:space="preserve">
+    <value>Lỗi chưa được xử lý</value>
+  </data>
+  <data name="CopiedToClipboard" xml:space="preserve">
+    <value>Đã sao chép vào clipboard</value>
+  </data>
+  <data name="DeletedFromHistory" xml:space="preserve">
+    <value>Đã bị xóa khỏi lịch sử</value>
+  </data>
+  <data name="DeletedFile" xml:space="preserve">
+    <value>Tệp đã bị xóa</value>
+  </data>
+  <data name="DeleteFailed" xml:space="preserve">
+    <value>Xóa không thành công</value>
+  </data>
+  <data name="SavedTo" xml:space="preserve">
+    <value>Đã lưu vào {0}</value>
+  </data>
+  <data name="BrowserExtWontWork" xml:space="preserve">
+    <value>Tiện ích mở rộng trình duyệt không hoạt động • Không thể khởi động Browser Extension HTTP listener: {0}</value>
+  </data>
+  <data name="StartingToolWithLog" xml:space="preserve">
+    <value>Bắt đầu với {0}</value>
+  </data>
+  <data name="GettingVideoInfoLog" xml:space="preserve">
+    <value>Lấy thông tin video</value>
+  </data>
+  <data name="DownloadingVideoLog" xml:space="preserve">
+    <value>Đang tải video</value>
+  </data>
+  <data name="DontIncludeVideo" xml:space="preserve">
+    <value>Không bao gồm video</value>
+  </data>
+  <data name="DontIncludeAudio" xml:space="preserve">
+    <value>Không bao gồm âm thanh</value>
+  </data>
+  <data name="NoCodecInfo" xml:space="preserve">
+    <value>Không có thông tin codec</value>
+  </data>
+  <data name="SelectedVideoLog" xml:space="preserve">
+    <value>Định dạng video đã chọnId-codec</value>
+  </data>
+  <data name="SelectedAudioLog" xml:space="preserve">
+    <value>Định dạng âm thanh đã chọnId-codec</value>
+  </data>
+  <data name="OnlyOneCodec" xml:space="preserve">
+    <value>Chỉ có một codec duy nhất</value>
+  </data>
+  <data name="NotSuggested" xml:space="preserve">
+    <value>Không khuyến khích</value>
+  </data>
+  <data name="Saving" xml:space="preserve">
+    <value>Đang lưu</value>
+  </data>
+  <data name="SelectFormat" xml:space="preserve">
+    <value>Chọn định dạng</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Lưu</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Hủy bỏ</value>
+  </data>
+  <data name="ResolutionSelect.Header" xml:space="preserve">
+    <value>Độ phân giải</value>
+  </data>
+  <data name="Codec.Header" xml:space="preserve">
+    <value>Bộ mã hóa codec</value>
+  </data>
+  <data name="AudioSelect.Header" xml:space="preserve">
+    <value>Âm thanh</value>
+  </data>
+  <data name="SuggestAVC1" xml:space="preserve">
+    <value>Tương thích nhất • Kích thước tệp lớn hơn</value>
+  </data>
+  <data name="SuggestVP9" xml:space="preserve">
+    <value>Khả năng tương thích trung bình • Kích thước tệp trung bình</value>
+  </data>
+  <data name="SuggestAV1" xml:space="preserve">
+    <value>Khả năng tương thích thấp hơn • Kích thước tệp nhỏ hơn</value>
+  </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>Không rõ</value>
+  </data>
+  <data name="UnknownError" xml:space="preserve">
+    <value>Lỗi không xác định</value>
+  </data>
+  <data name="UnknownFilesize" xml:space="preserve">
+    <value>Kích thước tệp không xác định</value>
+  </data>
+  <data name="Placeholder0" xml:space="preserve">
+    <value>Dán đường dẫn video vào đây...</value>
+  </data>
+  <data name="Placeholder1" xml:space="preserve">
+    <value>Try me Beyonce... ✨</value>
+  </data>
+  <data name="Placeholder2" xml:space="preserve">
+    <value>Tôi muốn tải video chú mèo dễ thương đó xuống...</value>
+  </data>
+  <data name="Placeholder3" xml:space="preserve">
+    <value>Tôi đoán bạn có một số video hay để tải xuống...</value>
+  </data>
+  <data name="Placeholder4" xml:space="preserve">
+    <value>Đừng ngại, hãy dán đường dẫn vào đây...</value>
+  </data>
+  <data name="Placeholder5" xml:space="preserve">
+    <value>Liên kết video của bạn sẽ được đặt ở đây...</value>
+  </data>
+  <data name="Placeholder6" xml:space="preserve">
+    <value>Bạn có video nào muốn chia sẻ? Hãy dán nó vào đây...</value>
+  </data>
+  <data name="Placeholder7" xml:space="preserve">
+    <value>Sẵn sàng tải xuống? Dán đường dẫn...</value>
+  </data>
+  <data name="Placeholder8" xml:space="preserve">
+    <value>Tôi có thể tải video từ hơn 1000 trang web...</value>
+  </data>
+  <data name="Placeholder9" xml:space="preserve">
+    <value>Bạn đang tìm kiếm thứ gì đó?...</value>
+  </data>
+  <data name="DrmProtectedLog" xml:space="preserve">
+    <value>Phương tiện truyền thông này được bảo vệ bằng DRM. Chi tiết:</value>
+  </data>
+  <data name="DrmProtected" xml:space="preserve">
+    <value>Được bảo vệ bằng DRM</value>
+  </data>
+  <data name="DrmProtectedMsg" xml:space="preserve">
+    <value>Tệp đa phương tiện này được bảo vệ bằng DRM. Bạn không thể tải xuống.</value>
+  </data>
+  <data name="ToolProcessExitedLog" xml:space="preserve">
+    <value>Tiến trình {0} đã thoát.</value>
+  </data>
+  <data name="ExitCode" xml:space="preserve">
+    <value>Mã thoát</value>
+  </data>
+  <data name="ToolProcessNonZeroLog" xml:space="preserve">
+    <value>{0} thoát với mã thoát khác 0, có thể có điều gì đó không ổn.</value>
+  </data>
+  <data name="NoJsRuntime" xml:space="preserve">
+    <value>Không hỗ trợ JavaScript.</value>
+  </data>
+  <data name="NoJsRuntimeMsg" xml:space="preserve">
+    <value>Không tìm thấy môi trường thực thi JavaScript được hỗ trợ. Một số định dạng có thể không có trong danh sách. Nhấp vào nút "Tìm hiểu thêm" để biết thêm thông tin. (Quá trình tải xuống hiện tại của bạn có thể không bị ảnh hưởng bởi điều này)</value>
+  </data>
+  <data name="NoJsRuntimeLog" xml:space="preserve">
+    <value>Không tìm thấy môi trường thực thi JavaScript được hỗ trợ. Điều này là cần thiết để một số trình trích xuất hoạt động. Vui lòng truy cập trang này để biết thêm thông tin. (Bản tải xuống hiện tại của bạn có thể không bị ảnh hưởng bởi điều này)</value>
+  </data>
+  <data name="LearnMore" xml:space="preserve">
+    <value>Tìm hiểu thêm</value>
+  </data>
+  <data name="CheckYTdlpUpdateButton.Content" xml:space="preserve">
+    <value>Kiểm tra</value>
+  </data>
+  <data name="CheckYTdlpUpdate.Description" xml:space="preserve">
+    <value>Kiểm tra xem có bản cập nhật nào cho YT-DLP không, nếu có thì sẽ cập nhật.</value>
+  </data>
+  <data name="YTdlpCheckingForUpdates" xml:space="preserve">
+    <value>Kiểm tra cập nhật cho YT-DLP</value>
+  </data>
+  <data name="YTdlpIsUpToDate" xml:space="preserve">
+    <value>YT-DLP đã được cập nhật.</value>
+  </data>
+  <data name="UpdateCheckFailed" xml:space="preserve">
+    <value>Không thể kiểm tra bản cập nhật YT-DLP.</value>
+  </data>
+  <data name="FailedToStartYTdlpLog" xml:space="preserve">
+    <value>Không thể khởi động YT-DLP.</value>
+  </data>
+  <data name="StatusQueued" xml:space="preserve">
+    <value>Queued</value>
+  </data>
+  <data name="StatusDownloading" xml:space="preserve">
+    <value>Đang tải xuống</value>
+  </data>
+  <data name="StatusDownloadingOf" xml:space="preserve">
+    <value>Đang tải xuống {0} trong số {1}</value>
+  </data>
+  <data name="StatusCompleted" xml:space="preserve">
+    <value>Hoàn thành</value>
+  </data>
+  <data name="StatusFailed" xml:space="preserve">
+    <value>Thất bại</value>
+  </data>
+  <data name="StatusPaused" xml:space="preserve">
+    <value>Tạm dừng</value>
+  </data>
+  <data name="StatusResuming" xml:space="preserve">
+    <value>Tiếp tục</value>
+  </data>
+  <data name="StatusTestingFormat" xml:space="preserve">
+    <value>Định dạng kiểm thử (Testing Format)</value>
+  </data>
+  <data name="YTdlpVerboseSetting.Header" xml:space="preserve">
+    <value>Ghi nhật ký chi tiết (Verbose logging)</value>
+  </data>
+  <data name="YTdlpVerboseSetting.Description" xml:space="preserve">
+    <value>In ra thông tin chi tiết hơn về logs (các thông tin gỡ lỗi khác nhau)</value>
+  </data>
+  <data name="WARNING" xml:space="preserve">
+    <value>CẢNH BÁO</value>
+  </data>
+  <data name="Check" xml:space="preserve">
+    <value>Kiểm tra</value>
+  </data>
+  <data name="ScrollingToBottom" xml:space="preserve">
+    <value>Tự động cuộn</value>
+  </data>
+  <data name="ScrollingToBottomNot" xml:space="preserve">
+    <value>Không tự động cuộn</value>
+  </data>
+  <data name="YTdlpUpdatedSuccessfully" xml:space="preserve">
+    <value>YT-DLP đã được cập nhật</value>
+  </data>
+  <data name="YTdlpUpdatedSuccessfullyMsg" xml:space="preserve">
+    <value>Đã cập nhật lên {0}</value>
+  </data>
+  <data name="OtherOptions.Text" xml:space="preserve">
+    <value>Khác</value>
+  </data>
+  <data name="ImportExportSetting.Description" xml:space="preserve">
+    <value>Bạn có thể nhập/xuất các tùy chọn của mình</value>
+  </data>
+  <data name="ImportExportSetting.Header" xml:space="preserve">
+    <value>Cài đặt Nhập/Xuất</value>
+  </data>
+  <data name="ImportSettingsButton.Content" xml:space="preserve">
+    <value>Nhập</value>
+  </data>
+  <data name="ExportSettingsButton.Content" xml:space="preserve">
+    <value>Xuất</value>
+  </data>
+  <data name="SettingsImportSuccess" xml:space="preserve">
+    <value>Cài đặt đã được nhập</value>
+  </data>
+  <data name="SettingsImportSuccessMsg" xml:space="preserve">
+    <value>Cài đặt {0} đã được thay đổi</value>
+  </data>
+  <data name="SettingsImportFailed" xml:space="preserve">
+    <value>Không thể nhập cài đặt vào</value>
+  </data>
+  <data name="SettingsImportFailedMsg" xml:space="preserve">
+    <value>Kiểm tra xem nội dung tệp có hợp lệ hay không.</value>
+  </data>
+  <data name="SettingsExportFailed" xml:space="preserve">
+    <value>Xuất cài đặt thất bại</value>
+  </data>
+  <data name="CheckLogs" xml:space="preserve">
+    <value>Kiểm tra logs để xem thêm chi tiết.</value>
+  </data>
+  <data name="SettingsExportSuccess" xml:space="preserve">
+    <value>Cài đặt đã được xuất</value>
+  </data>
+  <data name="SettingImportSuccessNotice" xml:space="preserve">
+    <value>Mở lại để thay đổi</value>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>Nhập</value>
+  </data>
+  <data name="ImportOldSettings" xml:space="preserve">
+    <value>Đã tìm thấy tệp cài đặt cũ</value>
+  </data>
+  <data name="ImportOldSettingsMsg" xml:space="preserve">
+    <value>Bạn có muốn khôi phục các tùy chọn cũ của mình không?</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Có</value>
+  </data>
+  <data name="DownloadQueued" xml:space="preserve">
+    <value>Đang chờ tải xuống</value>
+  </data>
+  <data name="ProtocolActivation" xml:space="preserve">
+    <value>Đã mở ứng dụng với giao thức (Opened app with protocol)</value>
+  </data>
+  <data name="UnknownBrowser" xml:space="preserve">
+    <value>Trình duyệt không xác định</value>
+  </data>
+  <data name="UnknownVersion" xml:space="preserve">
+    <value>Phiên bản không xác định</value>
+  </data>
+  <data name="UnknownPreset" xml:space="preserve">
+    <value>Preset không xác định</value>
+  </data>
+  <data name="ImportOldSettingsNotice" xml:space="preserve">
+    <value>Đã tìm thấy tệp cài đặt cũ, đang hỏi có cần nhập cài đặt.</value>
+  </data>
+  <data name="FirstRun" xml:space="preserve">
+    <value>Lần chạy đầu tiên được phát hiện, Xin chào</value>
+  </data>
+  <data name="DevelopmentVersion" xml:space="preserve">
+    <value>Development version</value>
+  </data>
+  <data name="Debug" xml:space="preserve">
+    <value>Gỡ lỗi</value>
+  </data>
+  <data name="ReadingVideoInfoFromBlobDataLog" xml:space="preserve">
+    <value>Getting video info from Blob File(Desktop\lechytdlp_blob.json)</value>
+  </data>
+  <data name="WritingVideoInfoToJsonLog" xml:space="preserve">
+    <value>Writing video info (--dump-json) to Desktop\lechytdlp_dump.json file</value>
+  </data>
+  <data name="PresetsIllChoose" xml:space="preserve">
+    <value>✨ Tôi sẽ tự chọn việc mình muốn làm</value>
+  </data>
+  <data name="PresetsBestQuality" xml:space="preserve">
+    <value>Chất lượng tốt nhất (video + âm thanh)</value>
+  </data>
+  <data name="PresetsCompatible1080pMP4" xml:space="preserve">
+    <value>MP4 1080p (Tương thích nhất)</value>
+  </data>
+  <data name="PresetsBestQualityAudio" xml:space="preserve">
+    <value>Chất lượng âm thanh tốt nhất (Không cần chuyển đổi)</value>
+  </data>
+  <data name="PresetsBestQualityVideo" xml:space="preserve">
+    <value>Video chất lượng tốt nhất (Không cần chuyển đổi)</value>
+  </data>
+  <data name="PresetsExtractAudioMP3" xml:space="preserve">
+    <value>Trích xuất âm thanh (MP3)</value>
+  </data>
+  <data name="PresetsCompatible720pMP4" xml:space="preserve">
+    <value>MP4 720p (Tương thích nhất)</value>
+  </data>
+  <data name="DeleteDownloadHistorySetting.Description" xml:space="preserve">
+    <value>Đôi khi lịch sử tải xuống có thể bị lỗi (xóa cơ sở dữ liệu).</value>
+  </data>
+  <data name="DeleteDownloadHistorySetting.Header" xml:space="preserve">
+    <value>Lịch sử tải xuống trống</value>
+  </data>
+  <data name="DeleteDownloadHistoryButton.Content" xml:space="preserve">
+    <value>Xóa</value>
+  </data>
+  <data name="DialogLanguageChanged" xml:space="preserve">
+    <value>Ngôn ngữ đã thay đổi</value>
+  </data>
+  <data name="Restart" xml:space="preserve">
+    <value>Khởi động lại</value>
+  </data>
+  <data name="Later" xml:space="preserve">
+    <value>Để sau</value>
+  </data>
+  <data name="DialogLanguageChangedNotice" xml:space="preserve">
+    <value>Ứng dụng cần được khởi động lại để thay đổi ngôn ngữ có hiệu lực.
+Các thay đổi sẽ được áp dụng sau khi khởi động lại. (Bạn có thể thực hiện sau nếu muốn, nhưng ngôn ngữ có thể bị lẫn lộn ở một số chỗ.)</value>
+  </data>
+  <data name="FileNameSettings.Header" xml:space="preserve">
+    <value>Mẫu tên tệp</value>
+  </data>
+  <data name="FileNamePreviewSettingsCard.Description" xml:space="preserve">
+    <value>Tên tệp sẽ có dạng như thế này</value>
+  </data>
+  <data name="FileNameEmptyPlaceholder" xml:space="preserve">
+    <value>Placeholder can't be used empty</value>
+  </data>
+  <data name="FileNameInvalidCharacterPlaceholder" xml:space="preserve">
+    <value>Placeholder with invalid characters: {0}</value>
+  </data>
+  <data name="FileNameSettingsHyperLink.Header" xml:space="preserve">
+    <value>Ví dụ về mẫu đầu ra YT-DLP</value>
+  </data>
+  <data name="FileNameSettingsHyperLink.Description" xml:space="preserve">
+    <value>Không phải mọi tùy chọn trên trang đều có sẵn.</value>
+  </data>
+  <data name="YTdlpUpdateAvailable" xml:space="preserve">
+    <value>Bản cập nhật YT-DLP đã có sẵn.</value>
+  </data>
+  <data name="YTdlpUpdateNoticeMsg" xml:space="preserve">
+    <value>Bạn nên thường xuyên cập nhật YT-DLP để đảm bảo khả năng tương thích tốt nhất vì các nền tảng thường xuyên cập nhật API của chúng.</value>
+  </data>
+  <data name="MaybeLater" xml:space="preserve">
+    <value>Có lẽ sau này</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Cập nhật</value>
+  </data>
+  <data name="YTdlpUpdateFailed" xml:space="preserve">
+    <value>Quá trình cập nhật YT-DLP thất bại</value>
+  </data>
+  <data name="YTdlpUpdateVersionInfo" xml:space="preserve">
+    <value>Hiện tại: {0} &gt; Cập nhật: {1}</value>
+  </data>
+  <data name="YTdlpAutoUpdateCheckBox.Content" xml:space="preserve">
+    <value>Cập nhật khi có phiên bản mới.</value>
+  </data>
+  <data name="YTdlpAutoUpdate.Description" xml:space="preserve">
+    <value>Tự động kiểm tra cập nhật và cập nhật YT-DLP khi có bản cập nhật mới.</value>
+  </data>
+  <data name="YTdlpAutoUpdate.Header" xml:space="preserve">
+    <value>Tự động cập nhật YT-DLP</value>
+  </data>
+  <data name="Current" xml:space="preserve">
+    <value>Hiện tại</value>
+  </data>
+  <data name="New" xml:space="preserve">
+    <value>Mới</value>
+  </data>
+  <data name="YTdlpUpdating" xml:space="preserve">
+    <value>Cập nhật YT-DLP</value>
+  </data>
+  <data name="SaveLogOfEachDownloadSetting.Header" xml:space="preserve">
+    <value>Lưu log của mỗi lần tải xuống</value>
+  </data>
+  <data name="SaveLogOfEachDownloadSetting.Description" xml:space="preserve">
+    <value>Hãy lưu một tệp log cho mỗi lần tải xuống; tệp log này sẽ chứa kết quả đầu ra của yt-dlp cho lần tải xuống đó.</value>
+  </data>
+  <data name="Behavior.Text" xml:space="preserve">
+    <value>Hành vi</value>
+  </data>
+  <data name="OpenFilesInExternalPlayer.Header" xml:space="preserve">
+    <value>Mở trình phát đa phương tiện trong trình phát ngoài</value>
+  </data>
+  <data name="OpenFilesInExternalPlayer.Description" xml:space="preserve">
+    <value>Các tệp đa phương tiện đã tải xuống sẽ được mở bằng trình phát đa phương tiện mặc định thay vì trình phát tích hợp sẵn.</value>
+  </data>
+  <data name="AddPlaceholders.Content" xml:space="preserve">
+    <value>Add placeholder</value>
+  </data>
+  <data name="SaveButton.Content" xml:space="preserve">
+    <value>Lưu</value>
+  </data>
+  <data name="FileNameOkLooksGood" xml:space="preserve">
+    <value>Hợp lệ, trông ổn!</value>
+  </data>
+  <data name="FilenameTemplateInvalidPlaceholder" xml:space="preserve">
+    <value>Định dạng trình giữ chỗ không hợp lệ</value>
+  </data>
+  <data name="FilenameTemplateInvalidHalfPlaceholder" xml:space="preserve">
+    <value>Có một phần giữ chỗ chưa hoàn thiện.</value>
+  </data>
+  <data name="FilenameTemplateCannotBeEmpty" xml:space="preserve">
+    <value>Mẫu tên tệp không được để trống.</value>
+  </data>
+  <data name="P_Creator" xml:space="preserve">
+    <value>Người sáng tạo</value>
+  </data>
+  <data name="P_ReleaseDate" xml:space="preserve">
+    <value>Ngày phát hành</value>
+  </data>
+  <data name="P_Timestamp" xml:space="preserve">
+    <value>Dấu thời gian</value>
+  </data>
+  <data name="P_ID" xml:space="preserve">
+    <value>ID video</value>
+  </data>
+  <data name="P_ChannelName" xml:space="preserve">
+    <value>Tên kênh</value>
+  </data>
+  <data name="P_ChannelID" xml:space="preserve">
+    <value>ID kênh</value>
+  </data>
+  <data name="P_Title" xml:space="preserve">
+    <value>Tiêu đề</value>
+  </data>
+  <data name="P_Duration" xml:space="preserve">
+    <value>Khoảng thời gian</value>
+  </data>
+  <data name="P_PlaylistIndex" xml:space="preserve">
+    <value>Mục lục danh sách phát</value>
+  </data>
+  <data name="P_PlaylistTitle" xml:space="preserve">
+    <value>Tiêu đề danh sách phát</value>
+  </data>
+  <data name="P_Uploader" xml:space="preserve">
+    <value>Người tải lên</value>
+  </data>
+  <data name="P_UploadDate" xml:space="preserve">
+    <value>Ngày tải lên</value>
+  </data>
+  <data name="P_FullTitle" xml:space="preserve">
+    <value>Tên đầy đủ</value>
+  </data>
+  <data name="P_Extension" xml:space="preserve">
+    <value>Extension</value>
+  </data>
+  <data name="P_Extractor" xml:space="preserve">
+    <value>Extractor</value>
+  </data>
+  <data name="P_ExtractorKey" xml:space="preserve">
+    <value>Extractor key</value>
+  </data>
+  <data name="Saved" xml:space="preserve">
+    <value>Đã lưu</value>
+  </data>
+  <data name="Saved!" xml:space="preserve">
+    <value>Đã lưu!</value>
+  </data>
+  <data name="HistoryCleared" xml:space="preserve">
+    <value>Lịch sử đã được xóa</value>
+  </data>
+  <data name="UpdateCheckResult" xml:space="preserve">
+    <value>Đã kiểm tra {0} bản cập nhật. Phiên bản hiện tại: {1}, Phiên bản mới nhất: {2}</value>
+  </data>
+  <data name="UpdateCheckNoInternet" xml:space="preserve">
+    <value>Không thể kết nối với máy chủ cập nhật, vui lòng kiểm tra kết nối internet của bạn.</value>
+  </data>
+  <data name="UpdateCheckError" xml:space="preserve">
+    <value>Đã xảy ra lỗi trong quá trình kiểm tra cập nhật, vui lòng thử lại sau.</value>
+  </data>
+  <data name="BrowserExtension.Text" xml:space="preserve">
+    <value>Tiện ích mở rộng trình duyệt</value>
+  </data>
+  <data name="CustomizeBrowserExtension.Header" xml:space="preserve">
+    <value>Tùy chỉnh tiện ích mở rộng</value>
+  </data>
+  <data name="CustomizeBrowserExtension.Description" xml:space="preserve">
+    <value>Tiện ích mở rộng không hoạt động à?</value>
+  </data>
+  <data name="ExtensionServerStatus.Header" xml:space="preserve">
+    <value>Trạng thái máy chủ mở rộng</value>
+  </data>
+  <data name="BrowserExtWorkingAt" xml:space="preserve">
+    <value>Tiện ích mở rộng trình duyệt đang hoạt động tại: {0}</value>
+  </data>
+  <data name="ShowJavaScriptRuntimeNoticeSetting.Description" xml:space="preserve">
+    <value>Không hiển thị thông báo khi chạy JavaScript.</value>
+  </data>
+  <data name="DontShowAgain" xml:space="preserve">
+    <value>Đừng hiển thị lại</value>
+  </data>
+  <data name="DownloadAfterPasteSetting.Header" xml:space="preserve">
+    <value>Tải xuống sau khi dán URL</value>
+  </data>
+  <data name="DownloadAfterPasteSetting.Description" xml:space="preserve">
+    <value>Tự động bắt đầu tải xuống khi dán URL vào ứng dụng.</value>
+  </data>
+  <data name="VideoOrPlaylistDialog" xml:space="preserve">
+    <value>Tải video hay danh sách phát?</value>
+  </data>
+  <data name="VideoOrPlaylistDialogContent" xml:space="preserve">
+    <value>Liên kết của bạn chứa cả video và danh sách phát.</value>
+  </data>
+  <data name="Video" xml:space="preserve">
+    <value>Video</value>
+  </data>
+  <data name="Video2" xml:space="preserve">
+    <value>video</value>
+  </data>
+  <data name="Playlist" xml:space="preserve">
+    <value>Danh sách phát</value>
+  </data>
+  <data name="ConfirmLatestVersionLog" xml:space="preserve">
+    <value>Ứng dụng YT-DLP có thể đã lỗi thời, vui lòng xác nhận bạn đang sử dụng phiên bản mới nhất trong phần Cài đặt.</value>
+  </data>
+  <data name="ConfirmLatestVersion" xml:space="preserve">
+    <value>YT-DLP có thể đã lỗi thời.</value>
+  </data>
+  <data name="ConfirmLatestVersionMsg" xml:space="preserve">
+    <value>Vui lòng xác nhận bạn đang sử dụng phiên bản mới nhất trong Cài đặt.</value>
+  </data>
+  <data name="Retry.Text" xml:space="preserve">
+    <value>Thử lại</value>
+  </data>
+  <data name="AccountCookieNotice.Title" xml:space="preserve">
+    <value>Đừng chia sẻ cookie của bạn với bất kỳ ai khác.</value>
+  </data>
+  <data name="Preset.Header" xml:space="preserve">
+    <value>Preset</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>Tải xuống</value>
+  </data>
+  <data name="CopyMedia.Text" xml:space="preserve">
+    <value>Sao chép phương tiện</value>
+  </data>
+  <data name="InfoBarRetryTitle" xml:space="preserve">
+    <value>Đã thêm vào hàng đợi để thử lại</value>
+  </data>
+  <data name="Audio" xml:space="preserve">
+    <value>Âm thanh</value>
+  </data>
+  <data name="YTdlpUpdateCheckFailed" xml:space="preserve">
+    <value>Không thể kiểm tra bản cập nhật YT-DLP.</value>
+  </data>
+  <data name="UpdateNoticeMsg" xml:space="preserve">
+    <value>Bạn có thể tải xuống từ trang phát hành chính thức trên GitHub hoặc cập nhật từ Microsoft Store.</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Bản cập nhật Lech YT-DLP đã có sẵn!</value>
+  </data>
+  <data name="AppUpdated" xml:space="preserve">
+    <value>Ứng dụng đã được cập nhật</value>
+  </data>
+  <data name="ConcurrentFragmentsSetting.Header" xml:space="preserve">
+    <value>Các mảnh đồng thời</value>
+  </data>
+  <data name="ConcurrentDownloadsSetting.Header" xml:space="preserve">
+    <value>Tải xuống đồng thời</value>
+  </data>
+  <data name="ConcurrentFragmentsSetting.Description" xml:space="preserve">
+    <value>Số lượng đoạn video DASH/HLSnative cần được tải xuống đồng thời</value>
+  </data>
+  <data name="ConcurrentDownloadsSetting.Description" xml:space="preserve">
+    <value>Số lượng lượt tải xuống video tối đa cần được xử lý đồng thời.</value>
+  </data>
+  <data name="Other.Text" xml:space="preserve">
+    <value>Xem thêm</value>
+  </data>
+  <data name="CustomParamsSetting.Header" xml:space="preserve">
+    <value>Thông số YT-DLP tùy chỉnh</value>
+  </data>
+  <data name="CustomParamsSetting.Description" xml:space="preserve">
+    <value>Nếu bạn biết mình đang làm gì, bạn có thể thêm các tham số tùy chỉnh vào dòng lệnh. Ví dụ: --playlist-random (phân cách bằng dấu cách)</value>
+  </data>
+  <data name="CustomParamsTextBox.PlaceholderText" xml:space="preserve">
+    <value>Thêm các tham số tùy chỉnh...</value>
+  </data>
+  <data name="ForceOverwritesSetting.Header" xml:space="preserve">
+    <value>Buộc ghi đè</value>
+  </data>
+  <data name="ForceOverwritesSetting.Description" xml:space="preserve">
+    <value>Ghi đè tất cả các tệp video và siêu dữ liệu (tùy chọn này bao gồm --no-continue)</value>
+  </data>
+  <data name="DownloadPlaylist" xml:space="preserve">
+    <value>Chọn danh sách phát</value>
+  </data>
+  <data name="DeselectAll" xml:space="preserve">
+    <value>Bỏ chọn tất cả</value>
+  </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>Chọn tất cả</value>
+  </data>
+  <data name="Presets2160p" xml:space="preserve">
+    <value>2160p</value>
+  </data>
+  <data name="Presets1440p" xml:space="preserve">
+    <value>1440p</value>
+  </data>
+  <data name="Presets1080p" xml:space="preserve">
+    <value>1080p</value>
+  </data>
+  <data name="Presets480p" xml:space="preserve">
+    <value>480p</value>
+  </data>
+  <data name="Presets360p" xml:space="preserve">
+    <value>360p</value>
+  </data>
+  <data name="Presets720p" xml:space="preserve">
+    <value>720p</value>
+  </data>
+  <data name="Custom" xml:space="preserve">
+    <value>Tùy chọn (Custom)</value>
+  </data>
+  <data name="StatusPartiallyCompleted" xml:space="preserve">
+    <value>Đã hoàn thành một phần</value>
+  </data>
+  <data name="UnavailableVideos" xml:space="preserve">
+    <value>{0} video không khả dụng</value>
+  </data>
+  <data name="DownloadingItemOf" xml:space="preserve">
+    <value>{0} trong số {1}</value>
+  </data>
+  <data name="DownloadFinishedWithCode" xml:space="preserve">
+    <value>Quá trình tải xuống hoàn tất với mã: {0}</value>
+  </data>
+  <data name="YtDlp" xml:space="preserve">
+    <value>YT-DLP</value>
+  </data>
+  <data name="GalleryDl" xml:space="preserve">
+    <value>Gallery-DL</value>
+  </data>
+  <data name="UrlProcessing" xml:space="preserve">
+    <value>1 liên kết đang được xử lý</value>
+  </data>
+  <data name="UrlsProcessing" xml:space="preserve">
+    <value>{0} liên kết đang được xử lý</value>
+  </data>
+  <data name="PresetsLetYtDlpDecide" xml:space="preserve">
+    <value>Hãy để YT-DLP quyết định</value>
+  </data>
+  <data name="ProcessingTeachingTipTitle.Text" xml:space="preserve">
+    <value>Các liên kết đang được xử lý</value>
+  </data>
+  <data name="Cancelled" xml:space="preserve">
+    <value>Đã hủy</value>
+  </data>
+  <data name="CookieFileInWrongEncodingLog" xml:space="preserve">
+    <value>Tệp cookie không hợp lệ, nó cần được mã hóa UTF-8.</value>
+  </data>
+  <data name="CookieFileInWrongEncoding" xml:space="preserve">
+    <value>Tệp cookie không hợp lệ</value>
+  </data>
+  <data name="CookieFileInWrongEncodingMsg" xml:space="preserve">
+    <value>Nó cần được mã hóa bằng UTF-8.</value>
+  </data>
+</root>
