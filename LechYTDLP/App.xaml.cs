@@ -350,8 +350,13 @@ namespace LechYTDLP
                         DurationMs = 0
                     });
                 }
+
+                SettingsService._IsFirstRun = false;
             }
-            else if (ChangelogService.ShouldShowChangelog())
+            else if (!string.IsNullOrEmpty(SettingsService._LastUsedVersion) &&
+                     !string.Equals(ChangelogService.NormalizeVersion(SettingsService._LastUsedVersion),
+                                    ChangelogService.NormalizeVersion(GetAppVersion()),
+                                    StringComparison.OrdinalIgnoreCase))
             {
                 LogService.Add(LocalizationService.Get("AppUpdated"), LogTag.Lechixy, false);
             }

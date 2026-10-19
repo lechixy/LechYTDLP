@@ -1103,7 +1103,7 @@ The changes will be applied after restarting. (You can do it later if you want, 
     <value>Vietnamese</value>
   </data>
   <data name="WhatsNew" xml:space="preserve">
-    <value>What's New</value>
+    <value>What's new</value>
   </data>
   <data name="PublishedAt" xml:space="preserve">
     <value>Published: {0}</value>

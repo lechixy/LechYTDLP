@@ -23,7 +23,7 @@ namespace LechYTDLP.Services
             }
         };
 
-        private static string NormalizeVersion(string? version) =>
+        public static string NormalizeVersion(string? version) =>
             version?.Trim().TrimStart('v', 'V') ?? string.Empty;
 
         public static bool ShouldShowChangelog()
@@ -76,6 +76,13 @@ namespace LechYTDLP.Services
                     PrimaryButtonStyle = Application.Current.Resources["AccentButtonStyle"] as Style,
                     CloseButtonText = string.Empty // Hide close button so only OK is shown
                 };
+
+                // Pre-mark on startup so rapid restarts don't re-trigger dialog repeatedly
+                if (isStartup)
+                {
+                    SettingsService._LastUsedVersion = App.GetAppVersion();
+                    SettingsService._IsFirstRun = false;
+                }
 
                 // Show with isPriority = true so it is placed at the front of the queue
                 await App.DialogService.ShowAsync(dialogOptions, isPriority: true);
