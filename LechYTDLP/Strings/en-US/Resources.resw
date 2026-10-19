@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -1092,5 +1092,29 @@ The changes will be applied after restarting. (You can do it later if you want, 
   </data>
   <data name="CookieFileInWrongEncodingMsg" xml:space="preserve">
     <value>It needs to be in UTF-8 encoding</value>
+  </data>
+  <data name="English" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="Turkce" xml:space="preserve">
+    <value>Turkish</value>
+  </data>
+  <data name="Vietnamese" xml:space="preserve">
+    <value>Vietnamese</value>
+  </data>
+  <data name="WhatsNew" xml:space="preserve">
+    <value>What's New</value>
+  </data>
+  <data name="PublishedAt" xml:space="preserve">
+    <value>Published: {0}</value>
+  </data>
+  <data name="ViewOnGitHub" xml:space="preserve">
+    <value>View on GitHub</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="UpdateAvailableBadge" xml:space="preserve">
+    <value>Update Available</value>
   </data>
 </root>

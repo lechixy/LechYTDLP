@@ -303,6 +303,16 @@
                                                  NavigateUri="" />
                             </StackPanel>
                         </controls:SettingsCard>
+                        <controls:SettingsCard HorizontalContentAlignment="Left"
+                                               ContentAlignment="Left">
+                            <HyperlinkButton x:Name="WhatsNewButton"
+                                             Click="WhatsNewButton_Click">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <FontIcon Glyph="&#xE8EC;" FontSize="14" />
+                                    <TextBlock x:Name="WhatsNewButtonText" Text="What's New" />
+                                </StackPanel>
+                            </HyperlinkButton>
+                        </controls:SettingsCard>
                     </controls:SettingsExpander.Items>
                 </controls:SettingsExpander>
             </StackPanel>

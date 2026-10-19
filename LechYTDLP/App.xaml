@@ -15,7 +15,8 @@
                 <Setter Property="CornerRadius"
                         Value="0" />
             </Style>
-            
+
+            <x:Double x:Key="ContentDialogMaxWidth">750</x:Double>
             <local:LogTagToBrushConverter x:Key="LogTagToBrushConverter" />
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />

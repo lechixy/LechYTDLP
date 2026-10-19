@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.WinUI.Animations;
+using CommunityToolkit.WinUI.Animations;
 using LechYTDLP.Classes;
 using LechYTDLP.Components;
 using LechYTDLP.Controllers;
@@ -79,7 +79,7 @@ namespace LechYTDLP
             AppBackdropChanged(SettingsService.AppBackdrop, true);
             App.SettingsService.AppBackdropChanged += (backdrop) => AppBackdropChanged(backdrop);
 
-            _ = CheckForUpdatesOnStartupAsync();
+            _ = CheckStartupTasksAsync();
 
             RootGrid.AddHandler(UIElement.KeyDownEvent, new KeyEventHandler(Global_KeyDown), true);
 
@@ -127,6 +127,15 @@ namespace LechYTDLP
             }
         }
 
+        private async Task CheckStartupTasksAsync()
+        {
+            // 1. Show changelog / what's new dialog first (if updated or first run)
+            await ChangelogService.CheckAndShowChangelogOnStartupAsync();
+
+            // 2. Then check for available updates
+            await CheckForUpdatesOnStartupAsync();
+        }
+
         private async Task CheckForUpdatesOnStartupAsync()
         {
             try
@@ -138,12 +147,26 @@ namespace LechYTDLP
 
                 if (appResult.Success && appResult.IsUpdateAvailable)
                 {
-                    // "UpdateAvailable" = "Update available! Click here to download the latest version."
-                    var updateDialog = new UpdateDialog(appResult);
+                    var release = appResult.Release ?? await ChangelogService.GetReleaseForVersionAsync(appResult.NewestVersion);
+
+                    UserControl contentDialogContent;
+                    string dialogTitle;
+
+                    if (release != null)
+                    {
+                        contentDialogContent = new ChangelogDialog(release, ChangelogMode.UpdateAvailable, appResult.CurrentVersion);
+                        dialogTitle = !string.IsNullOrWhiteSpace(release.Name) ? release.Name : App.LocalizationService.Get("UpdateAvailable");
+                    }
+                    else
+                    {
+                        contentDialogContent = new UpdateDialog(appResult);
+                        dialogTitle = App.LocalizationService.Get("UpdateAvailable");
+                    }
+
                     var dialog = await App.DialogService.ShowAsync(new DialogOptions
                     {
-                        Title = App.LocalizationService.Get("UpdateAvailable"),
-                        Content = updateDialog,
+                        Title = dialogTitle,
+                        Content = contentDialogContent,
                         PrimaryButtonText = App.LocalizationService.Get("Update"),
                         PrimaryButtonStyle = Application.Current.Resources["AccentButtonStyle"] as Style,
                         CloseButtonText = App.LocalizationService.Get("MaybeLater")
@@ -159,9 +182,9 @@ namespace LechYTDLP
                 // YT-DLP version check
                 var ytDlpresult = await UpdateChecker.CheckForUpdateAsync(UpdateChecker.UpdateTarget.YtDlp, SettingsService._LastKnownYTdlpToolVersion);
 
-                if (ytDlpresult.Success && appResult.IsUpdateAvailable)
+                if (ytDlpresult.Success && ytDlpresult.IsUpdateAvailable)
                 {
-                    var updateDialog = new UpdateDialog(appResult);
+                    var updateDialog = new UpdateDialog(ytDlpresult);
                     var dialog = await App.DialogService.ShowAsync(new DialogOptions
                     {
                         Title = App.LocalizationService.Get("YTdlpUpdateAvailable"),

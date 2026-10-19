@@ -1,10 +1,11 @@
-﻿using CommunityToolkit.WinUI;
+using CommunityToolkit.WinUI;
 using LechYTDLP.Classes;
 using LechYTDLP.Components;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,6 +41,8 @@ namespace LechYTDLP.Services
 
         public bool IsPlayerDialog { get; set; } = false;
 
+        public double? MaxWidth { get; set; }
+
         public ContentDialogButton DefaultButton { get; set; } = ContentDialogButton.Primary;
     }
 
@@ -57,7 +60,9 @@ namespace LechYTDLP.Services
 
         private readonly SemaphoreSlim _processLock = new(1, 1);
 
-        private readonly ConcurrentQueue<Func<Task>> _dialogQueue = new();
+        private readonly LinkedList<Func<Task>> _dialogQueue = new();
+
+        private readonly object _queueLock = new();
 
         private bool _isProcessing;
 
@@ -70,11 +75,11 @@ namespace LechYTDLP.Services
 
         #region Normal Dialog
 
-        public async Task<DialogResult> ShowAsync(DialogOptions options)
+        public async Task<DialogResult> ShowAsync(DialogOptions options, bool isPriority = false)
         {
             var tcs = new TaskCompletionSource<DialogResult>();
 
-            _dialogQueue.Enqueue(async () =>
+            Func<Task> dialogTask = async () =>
             {
                 CurrentDialogType = DialogType.Normal;
 
@@ -91,7 +96,15 @@ namespace LechYTDLP.Services
                 {
                     CurrentDialogType = null;
                 }
-            });
+            };
+
+            lock (_queueLock)
+            {
+                if (isPriority)
+                    _dialogQueue.AddFirst(dialogTask);
+                else
+                    _dialogQueue.AddLast(dialogTask);
+            }
 
             await ProcessQueueAsync();
 
@@ -102,11 +115,11 @@ namespace LechYTDLP.Services
 
         #region Format Dialog
 
-        public async Task<FormatSelectionResult?> ShowAsync(string url, YtDlpData videoInfo)
+        public async Task<FormatSelectionResult?> ShowAsync(string url, YtDlpData videoInfo, bool isPriority = false)
         {
             var tcs = new TaskCompletionSource<FormatSelectionResult?>();
 
-            _dialogQueue.Enqueue(async () =>
+            Func<Task> dialogTask = async () =>
             {
                 CurrentDialogType = DialogType.Format;
 
@@ -124,7 +137,15 @@ namespace LechYTDLP.Services
                 {
                     CurrentDialogType = null;
                 }
-            });
+            };
+
+            lock (_queueLock)
+            {
+                if (isPriority)
+                    _dialogQueue.AddFirst(dialogTask);
+                else
+                    _dialogQueue.AddLast(dialogTask);
+            }
 
             await ProcessQueueAsync();
 
@@ -151,8 +172,22 @@ namespace LechYTDLP.Services
                 _processLock.Release();
             }
 
-            while (_dialogQueue.TryDequeue(out var dialogTask))
+            while (true)
             {
+                Func<Task>? dialogTask = null;
+
+                lock (_queueLock)
+                {
+                    if (_dialogQueue.Count > 0)
+                    {
+                        dialogTask = _dialogQueue.First!.Value;
+                        _dialogQueue.RemoveFirst();
+                    }
+                }
+
+                if (dialogTask == null)
+                    break;
+
                 try
                 {
                     await dialogTask();
@@ -193,6 +228,8 @@ namespace LechYTDLP.Services
                         XamlRoot = xamlRoot,
                         DefaultButton = options.DefaultButton
                     };
+
+                    ScrollViewer.SetHorizontalScrollBarVisibility(dialog, ScrollBarVisibility.Disabled);
 
                     if (options.Content != null)
                     {

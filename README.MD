@@ -18,11 +18,11 @@
 </p>
 
 <p align="center">
-<strong>English</strong> • <a href="https://github.com/lechixy/LechYTDLP/blob/main/README.tr.MD">Türkçe</a>
+<strong>English</strong> • <a href="https://github.com/lechixy/LechYTDLP/blob/main/README.tr.MD">Türkçe</a> • <a href="https://github.com/lechixy/LechYTDLP/blob/main/README.vi.MD">Tiếng Việt</a>
 </p>
 
 ---
-Another **[YT-DLP](https://github.com/yt-dlp/yt-dlp)** Gui application for **Windows** but it built with **Windows 11 Style (Win UI 3)**
+**[YT-DLP](https://github.com/yt-dlp/yt-dlp)** Gui application for **Windows** built with **Windows 11 Style (Win UI 3)**
 
 <a href="https://apps.microsoft.com/detail/9n28hrk3320g?referrer=appbadge&cid=GitHub_README&mode=full" target="_blank"  rel="noopener noreferrer">
 	<img src="https://get.microsoft.com/images/en-us%20dark.svg" width="200"/>
@@ -80,11 +80,11 @@ There is a Türkçe saying for this, Google it:
 > _"Bir elin nesi var, iki elin sesi var."_
 
 <p>Your help is <strong>always welcomed (●'◡'●)</strong>💕</p>
-<br>
 
 # Language Support
 - **English** by [@lechixy](https://github.com/lechixy)
-- **Turkish** (Türkçe) by [@lechixy](https://github.com/lechixy)
+- **Türkçe** (Turkish) by [@lechixy](https://github.com/lechixy)
+- **Tiếng Việt** (Vietnamese) by [@ahihidongoc-rgb](https://github.com/ahihidongoc-rgb)
 
 > If you want to contribute to the project by adding a new language, i'll gladly accept your pull request.
 

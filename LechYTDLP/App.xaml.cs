@@ -1,4 +1,4 @@
-﻿using LechYTDLP.Classes;
+using LechYTDLP.Classes;
 using LechYTDLP.Controllers;
 using LechYTDLP.Services;
 using Microsoft.Extensions.Configuration;
@@ -350,20 +350,10 @@ namespace LechYTDLP
                         DurationMs = 0
                     });
                 }
-
-                SettingsService._IsFirstRun = false;
             }
-
-            if (!SettingsService._IsFirstRun && GetAppVersion() != SettingsService._LastUsedVersion)
+            else if (ChangelogService.ShouldShowChangelog())
             {
                 LogService.Add(LocalizationService.Get("AppUpdated"), LogTag.Lechixy, false);
-                InfoBarService.Show(new InfoBarMessage
-                {
-                    Title = LocalizationService.Get("AppUpdated"),
-                    Message = "",
-                    Severity = InfoBarSeverity.Informational
-                });
-                SettingsService._LastUsedVersion = GetAppVersion();
             }
         }
 

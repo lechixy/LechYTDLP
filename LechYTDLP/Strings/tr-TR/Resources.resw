@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -1092,5 +1092,29 @@ Değişiklikler yeniden başlatıldıktan sonra aktif olacaktır. (İsterseniz s
   </data>
   <data name="CookieFileInWrongEncodingMsg" xml:space="preserve">
     <value>UTF-8 kodlamasında olması gerekiyor</value>
+  </data>
+  <data name="English" xml:space="preserve">
+    <value>İngilizce</value>
+  </data>
+  <data name="Turkce" xml:space="preserve">
+    <value>Türkçe</value>
+  </data>
+  <data name="Vietnamese" xml:space="preserve">
+    <value>Vietnamca</value>
+  </data>
+  <data name="WhatsNew" xml:space="preserve">
+    <value>Yenilikler</value>
+  </data>
+  <data name="PublishedAt" xml:space="preserve">
+    <value>Yayınlanma tarihi: {0}</value>
+  </data>
+  <data name="ViewOnGitHub" xml:space="preserve">
+    <value>GitHub'da Gör</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>Tamam</value>
+  </data>
+  <data name="UpdateAvailableBadge" xml:space="preserve">
+    <value>Güncelleme Mevcut</value>
   </data>
 </root>

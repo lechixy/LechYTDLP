@@ -1093,4 +1093,28 @@ Các thay đổi sẽ được áp dụng sau khi khởi động lại. (Bạn c
   <data name="CookieFileInWrongEncodingMsg" xml:space="preserve">
     <value>Nó cần được mã hóa bằng UTF-8.</value>
   </data>
+  <data name="English" xml:space="preserve">
+    <value>Tiếng Anh</value>
+  </data>
+  <data name="Turkce" xml:space="preserve">
+    <value>Tiếng Thổ Nhĩ Kỳ</value>
+  </data>
+  <data name="Vietnamese" xml:space="preserve">
+    <value>Tiếng Việt</value>
+  </data>
+  <data name="WhatsNew" xml:space="preserve">
+    <value>Có gì mới</value>
+  </data>
+  <data name="PublishedAt" xml:space="preserve">
+    <value>Đã phát hành: {0}</value>
+  </data>
+  <data name="ViewOnGitHub" xml:space="preserve">
+    <value>Xem trên GitHub</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="UpdateAvailableBadge" xml:space="preserve">
+    <value>Có bản cập nhật</value>
+  </data>
 </root>

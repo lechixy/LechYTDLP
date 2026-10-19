@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="LechYTDLP.Components.ChangelogDialog"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:LechYTDLP.Components"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             HorizontalAlignment="Stretch"
+             MaxWidth="620">
+
+    <Grid RowDefinitions="Auto, Auto, *"
+          Margin="0,4,0,0"
+          HorizontalAlignment="Stretch">
+
+        <!-- Header info card: Badges on row 0, date on row 1, GitHub button on right -->
+        <Border Grid.Row="0"
+                Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="6"
+                Padding="12,10"
+                Margin="0,0,0,10"
+                HorizontalAlignment="Stretch">
+            <Grid RowDefinitions="Auto, Auto" RowSpacing="6">
+                <!-- Top row: Version & Mode Badges on left, GitHub button on right -->
+                <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
+                    <StackPanel Grid.Column="0"
+                                Orientation="Horizontal"
+                                Spacing="6"
+                                VerticalAlignment="Center">
+                        <!-- Version badge -->
+                        <Border x:Name="VersionBadgeBorder"
+                                Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                CornerRadius="4"
+                                Padding="8,2"
+                                VerticalAlignment="Center">
+                            <TextBlock x:Name="TagText"
+                                       Foreground="White"
+                                       FontWeight="SemiBold"
+                                       FontSize="12" />
+                        </Border>
+
+                        <!-- Mode pill ("Yenilikler" / "Güncelleme Mevcut") -->
+                        <Border x:Name="ModeBadgeBorder"
+                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="4"
+                                Padding="6,2"
+                                VerticalAlignment="Center">
+                            <TextBlock x:Name="ModeBadgeText"
+                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                       FontWeight="Medium"
+                                       FontSize="11" />
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Open in GitHub button -->
+                    <HyperlinkButton Grid.Column="1"
+                                     x:Name="GitHubLinkButton"
+                                     Padding="6,2"
+                                     VerticalAlignment="Center"
+                                     Click="GitHubLinkButton_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <FontIcon Glyph="&#xE8A7;" FontSize="12" />
+                            <TextBlock x:Name="GitHubLinkText"
+                                       Text="GitHub"
+                                       FontSize="12" />
+                        </StackPanel>
+                    </HyperlinkButton>
+                </Grid>
+
+                <!-- Bottom row: Published At info -->
+                <StackPanel Grid.Row="1"
+                            Orientation="Horizontal"
+                            Spacing="6"
+                            VerticalAlignment="Center">
+                    <FontIcon Glyph="&#xE787;"
+                              FontSize="12"
+                              Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    <TextBlock x:Name="PublishedAtText"
+                               Style="{StaticResource CaptionTextBlockStyle}"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Update notice when update is available -->
+        <InfoBar Grid.Row="1"
+                 x:Name="UpdateNoticeInfoBar"
+                 IsOpen="False"
+                 IsClosable="False"
+                 Severity="Informational"
+                 Margin="0,0,0,10"
+                 HorizontalAlignment="Stretch" />
+
+        <!-- Markdown Changelog Content inside a strictly vertical ScrollViewer -->
+        <ScrollViewer Grid.Row="2"
+                      MaxHeight="450"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      HorizontalAlignment="Stretch">
+            <StackPanel x:Name="MarkdownContainer"
+                        Spacing="4"
+                        Margin="0,0,10,0"
+                        HorizontalAlignment="Stretch" />
+        </ScrollViewer>
+    </Grid>
+</UserControl>

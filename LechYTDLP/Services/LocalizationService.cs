@@ -1,4 +1,4 @@
-﻿using LechYTDLP.Views;
+using LechYTDLP.Views;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.AppLifecycle;
@@ -6,6 +6,7 @@ using Microsoft.Windows.Globalization;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +21,37 @@ namespace LechYTDLP.Services
         private ResourceLoader _loader;
 
         private string _defaultValue = "No translation";
+
+        public static CultureInfo CurrentCulture
+        {
+            get
+            {
+                try
+                {
+                    var selected = SettingsService.AppLanguage?.Value;
+                    if (!string.IsNullOrEmpty(selected) && selected != "system")
+                    {
+                        return new CultureInfo(selected);
+                    }
+
+                    if (!string.IsNullOrEmpty(Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride))
+                    {
+                        return new CultureInfo(Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
+                    }
+
+                    if (Windows.Globalization.ApplicationLanguages.Languages.Count > 0)
+                    {
+                        return new CultureInfo(Windows.Globalization.ApplicationLanguages.Languages[0]);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"[LocalizationService] Error resolving culture: {ex}");
+                }
+
+                return CultureInfo.CurrentUICulture;
+            }
+        }
 
         public LocalizationService()
         {

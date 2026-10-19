@@ -1,4 +1,4 @@
-﻿using LechYTDLP.Services;
+using LechYTDLP.Services;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -95,6 +95,7 @@ public static class UpdateChecker
         public DateTime CheckedAt { get; set; }
         public bool Success { get; set; }
         public bool IsCached { get; set; } = false;
+        public GitHubRelease? Release { get; set; }
     }
 
     /// <summary>
@@ -142,6 +143,17 @@ public static class UpdateChecker
                     var first = root[0];
                     result.NewestVersion = first.GetProperty("tag_name").GetString() ?? string.Empty;
                     result.CurrentVersion = currentVersion;
+                    if (target == UpdateTarget.App)
+                    {
+                        try
+                        {
+                            result.Release = JsonSerializer.Deserialize<GitHubRelease>(first.GetRawText());
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine($"Failed to deserialize release: {ex}");
+                        }
+                    }
                 }
 
                 result.Success = true;

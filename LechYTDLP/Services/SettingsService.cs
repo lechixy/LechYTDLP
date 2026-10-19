@@ -1,4 +1,4 @@
-﻿using LechYTDLP.Classes;
+using LechYTDLP.Classes;
 using LechYTDLP.Util;
 using LechYTDLP.Views;
 using Microsoft.UI.Xaml.Controls;
@@ -196,6 +196,7 @@ namespace LechYTDLP.Services
             new Setting { DisplayName = App.LocalizationService.Get("System"), Value = "system" },
             new Setting { DisplayName = "English", Value = "en-US" },
             new Setting { DisplayName = "Türkçe", Value = "tr-TR" },
+            new Setting { DisplayName = "Tiếng Việt", Value = "vi-VN" },
         ];
         public static string? _DefaultSystemLanguageCode
         {
@@ -385,7 +386,7 @@ namespace LechYTDLP.Services
         public static string _LastUsedVersion
         {
             get => (string?)Settings.Values[nameof(_LastUsedVersion)]
-                   ?? $"v{App.GetAppVersion()}";
+                   ?? string.Empty;
             set => Settings.Values[nameof(_LastUsedVersion)] = value;
         }
 

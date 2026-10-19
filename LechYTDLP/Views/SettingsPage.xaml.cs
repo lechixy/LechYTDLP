@@ -1,4 +1,4 @@
-﻿using LechYTDLP.Classes;
+using LechYTDLP.Classes;
 using LechYTDLP.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -88,6 +88,14 @@ public sealed partial class SettingsPage : Page
         AboutExpanderContent.Text += $" ({App.LocalizationService.Get("DevelopmentVersion")} • {App.LocalizationService.Get("Debug")})";
 #endif
         GithubLink.NavigateUri = new Uri(Util.Main.GetLink(Util.Links.GitHubRepository));
+
+        var whatsNewText = App.LocalizationService.Get("WhatsNew");
+        WhatsNewButtonText.Text = (whatsNewText != "No translation") ? whatsNewText : "What's New";
+    }
+
+    private async void WhatsNewButton_Click(object sender, RoutedEventArgs e)
+    {
+        await ChangelogService.ShowChangelogAsync();
     }
 
     private void ChangeSetting(SettingType Setting)
