@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="65%" src=".github/assets/banner.png">
+  <img width="65%" src=".github/assets/banner.webp">
 </p>
 
 <p align="center">
@@ -27,7 +27,7 @@
 <a href="https://apps.microsoft.com/detail/9n28hrk3320g?referrer=appbadge&cid=GitHub_README&mode=full" target="_blank"  rel="noopener noreferrer">
 	<img src="https://get.microsoft.com/images/en-us%20dark.svg" width="200"/>
 </a>
-<img alt="AppShowcase" src=".github/assets/showcase.png" />
+<img alt="AppShowcase" src=".github/assets/showcase.webp" />
 
 # Features
 - Download videos from YouTube, Instagram, TikTok, Twitter and <b><a href="https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md"> many more platforms. </a></b>
