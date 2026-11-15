@@ -45,8 +45,7 @@
 - Supports downloading videos with custom command-line arguments for advanced users.
 - <b> Ready to use, no installation required.</b>
 
-> A feature is missing? Please open an issue or create a pull request to contribute to the project.
-<br>See [Contributing section](#contributing) for more information.
+> A feature is missing? [Suggest it on GitHub](https://github.com/lechixy/LechYTDLP/issues/new/choose).
 
 <h3 >
 <a font-size="50" href="https://www.notion.so/lechixy/2dc9ce1d06e580d0824fe51030fe51f9?v=2dc9ce1d06e580f38b45000ca867db36&source=copy_link">🗺 Here is the roadmap and to-do list for this project 📌</a>
@@ -74,19 +73,21 @@ This is my first project with Win UI 3 trying to do my best 💖
 8. The App Installer will pop up, press **"Install"**, or **"Update"** if you've installed Lech YT-DLP before
 
 # Contributing
-A feature is missing? Please open an issue or create a pull request to contribute to the project.
+Bug reports, feature ideas, code, and translations are welcome. See the [contributing guide](CONTRIBUTING.md) for local setup and pull requests.
 
-There is a Türkçe saying for this, Google it:
 > _"Bir elin nesi var, iki elin sesi var."_
 
 <p>Your help is <strong>always welcomed (●'◡'●)</strong>💕</p>
+
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Security Policy](SECURITY.md)
 
 # Language Support
 - **English** by [@lechixy](https://github.com/lechixy)
 - **Türkçe** (Turkish) by [@lechixy](https://github.com/lechixy)
 - **Tiếng Việt** (Vietnamese) by [@ahihidongoc-rgb](https://github.com/ahihidongoc-rgb)
 
-> If you want to contribute to the project by adding a new language, i'll gladly accept your pull request.
+> To add or update a translation, see [Translations](CONTRIBUTING.md#translations).
 
 # FAQ (Frequently Asked Questions)
 I will try to answer some of the most common questions here. If you have any other questions, please feel free to ask.
